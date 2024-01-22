@@ -1,0 +1,53 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  creationTimestamp: null
+  name: ubuntu-metrics
+spec:
+  runStrategy: Always
+  template:
+    metadata:
+      creationTimestamp: null
+    spec:
+      domain:
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: containerdisk
+          - disk:
+              bus: virtio
+            name: cloudinit
+          - disk:
+              bus: virtio
+            name: metrics
+          rng: {}
+        resources:
+          requests:
+            cpu: 1 
+            memory: 1Gi
+      terminationGracePeriodSeconds: 180
+      volumes:
+      - name: metrics
+        downwardMetrics: {}
+      - containerDisk:
+          image: quay.io/containerdisks/ubuntu:22.04
+        name: containerdisk
+      - cloudInitNoCloud:
+          userData: |-
+            #cloud-config
+            users:
+              - default
+              - name: cloud
+                passwd: $6$rounds=4096$UIgXBH0f$P/GBRWeOe/VKbzjUysjAcGKrRV5w8REGMC7Yo.8aoKYgak0Dl.7P0Bn39Eerwbnz9/AnAFiRa/zHPnOlCv56f0
+                shell: /bin/bash
+                lock-passwd: false
+                ssh_pwauth: True
+                chpasswd: { expire: False }
+                sudo: ALL=(ALL) NOPASSWD:ALL
+                ssh_authorized_keys:
+                 - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF7hmkqCiaD4nL71DriG/NBoekvwxGfO2HFvsH48P0jA emikar@STHRD-43G6KF
+            ssh_pwauth: False
+
+        name: cloudinit
+status: {}

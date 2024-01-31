@@ -1,0 +1,9 @@
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotClass
+metadata:
+  name: go-deploy-snapshots
+driver: nfs.csi.k8s.io
+deletionPolicy: Delete
+parameters:
+  server: nfs.cloud.cbh.kth.se
+  share: /mnt/cloud/apps/sys/deploy/snapshots

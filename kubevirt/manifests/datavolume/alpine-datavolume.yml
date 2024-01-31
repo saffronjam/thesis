@@ -2,7 +2,7 @@ apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
   labels:
-    kubevirt.io/vm: vm-alpine-datavolume
+    kubevirt.io/vm: alpine-datavolume
   name: alpine-datavolume
 spec:
   running: false
@@ -19,16 +19,18 @@ spec:
             name: datavolumedisk1
         resources:
           requests:
-            memory: 64M
+            memory: 1Gi
       volumes:
       - dataVolume:
-          name: alpine-dv
+          name: alpine-datavolume-dv
         name: datavolumedisk1
   dataVolumeTemplates:
   - metadata:
-      name: alpine-dv
+      name: alpine-datavolume-dv
     spec:
       pvc:
+        storageClassName: nfs
+        volumeName: alpine-datavolume-pv
         accessModes:
         - ReadWriteOnce
         resources:

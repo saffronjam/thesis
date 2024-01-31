@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: alpine-datavolume-pv
+
+spec:
+  storageClassName: nfs
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 2Gi
+
+  nfs:
+    path: /mnt/data/alpine-datavolume
+    server: 10.101.200.167

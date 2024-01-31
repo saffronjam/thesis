@@ -1,0 +1,2 @@
+FROM kubevirt/container-disk-v1alpha
+ADD ubuntu-24-amd64.img /disk

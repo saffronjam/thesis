@@ -20,9 +20,15 @@ spec:
           - disk:
               bus: virtio
             name: cloudinit
+          interfaces:
+          - name: default
+            masquerade: {}
         resources:
           requests:
             memory: 1Gi
+      networks:
+      - pod: {} # Stock pod network
+        name: default
       volumes:
       - dataVolume:
           name: ubuntu-dv-pvc
@@ -53,7 +59,7 @@ spec:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 25Gi
+            storage: 5Gi
       source:
         http:
           url: https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img

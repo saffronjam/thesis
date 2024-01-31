@@ -1,0 +1,46 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  labels:
+    kubevirt.io/vm: alpine-dv
+  name: alpine-dv
+spec:
+  running: true
+  template:
+    metadata:
+      labels:
+        kubevirt.io/vm: alpine-dv
+    spec:
+      domain:
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: datavolumedisk1
+          interfaces:
+          - name: default
+            masquerade: {}
+        resources:
+          requests:
+            memory: 1Gi
+      networks:
+      - pod: {} # Stock pod network
+        name: default
+      volumes:
+      - dataVolume:
+          name: alpine-dv-dv
+        name: datavolumedisk1
+  dataVolumeTemplates:
+  - metadata:
+      name: alpine-dv-dv
+    spec:
+      pvc:
+        storageClassName: go-deploy-vms
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi
+      source:
+        http:
+          url: https://dl-cdn.alpinelinux.org/alpine/v3.19/releases/x86_64/alpine-standard-3.19.0-x86_64.iso

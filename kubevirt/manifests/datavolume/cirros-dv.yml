@@ -2,14 +2,14 @@ apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
   labels:
-    kubevirt.io/vm: alpine-datavolume
-  name: alpine-datavolume
+    kubevirt.io/vm: cirros-dv
+  name: cirros-dv
 spec:
-  running: false
+  running: true
   template:
     metadata:
       labels:
-        kubevirt.io/vm: alpine-datavolume
+        kubevirt.io/vm: cirros-dv
     spec:
       domain:
         devices:
@@ -17,25 +17,31 @@ spec:
           - disk:
               bus: virtio
             name: datavolumedisk1
+          interfaces:
+          - name: default
+            masquerade: {}
+          rng: {}
         resources:
           requests:
             memory: 1Gi
+      networks:
+      - pod: {} # Stock pod network
+        name: default
       volumes:
       - dataVolume:
-          name: alpine-datavolume-dv
+          name: cirros-dv-dv
         name: datavolumedisk1
   dataVolumeTemplates:
   - metadata:
-      name: alpine-datavolume-dv
+      name: cirros-dv-dv
     spec:
       pvc:
-        storageClassName: nfs
-        volumeName: alpine-datavolume-pv
+        storageClassName: go-deploy-vms
         accessModes:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 2Gi
+            storage: 10Gi
       source:
-        http:
-          url: https://dl-cdn.alpinelinux.org/alpine/v3.19/releases/x86_64/alpine-standard-3.19.0-x86_64.iso
+        registry:
+          url: docker://quay.io/kubevirt/cirros-container-disk-demo

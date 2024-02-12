@@ -1,0 +1,14 @@
+*.aux
+*.bbl
+*.blg
+*.log
+*.toc
+*.bcf
+*.run.xml
+*~
+*fdb_latexmk
+*.fls
+*.synctex.gz
+out/
+exempelavhandling.pdf
+examplethesis.pdf

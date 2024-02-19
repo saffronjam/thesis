@@ -9,7 +9,5 @@
 *fdb_latexmk
 *.fls
 *.synctex.gz
-out/
+out/*
 !out/main.pdf
-exempelavhandling.pdf
-examplethesis.pdf

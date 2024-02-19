@@ -1,0 +1,256 @@
+\documentclass{kththesis}
+
+\usepackage{blindtext} % This is just to get some nonsense text in this template, can be safely removed
+
+\usepackage{csquotes} % Recommended by biblatex
+\usepackage[style=numeric,sorting=none,backend=biber]{biblatex}
+\addbibresource{references.bib} % The file containing our references, in BibTeX format
+
+\title{Kubernetes as a Virtual Machine Management System}
+\subtitle{A Comparative Study of KubeVirt and Traditional Approaches}
+\alttitle{Swedish title TBD}
+\author{Emil Karlsson}
+\email{emilk2@kth.se}
+\supervisor{Han Fu}
+\examiner{Cyrille Artho}
+\hostcompany{Net Insght AB} % Remove this line if the project was not done at a host company
+\programme{Master in Computer Science}
+\school{School of Electrical Engineering and Computer Science}
+\date{\today}
+
+% Uncomment the next line to include cover generated at https://intra.kth.se/kth-cover?l=en
+% \kthcover{kth-cover.pdf}
+
+
+\begin{document}
+
+% Frontmatter includes the titlepage, abstracts and table-of-contents
+\frontmatter
+
+\titlepage%
+
+\begin{abstract}
+  
+\end{abstract}
+
+
+\begin{otherlanguage}{swedish}
+  \begin{abstract}
+  \end{abstract}
+\end{otherlanguage}
+
+
+\tableofcontents
+
+
+% Mainmatter is where the actual contents of the thesis goes
+\mainmatter;
+
+
+\chapter{Introduction}
+
+
+\section{Background}
+Virtual machines have long been the core part of IT infrastructure \cite{vm-background}, allowing the underlying hardware to be split into multiple virtual computing units. However, while virtual machines enables robust isolation, they also introduce overhead that could hinder performance of the application running inside of it. A popular alternative to virtual machines is containers, since they reduce the required overhead by sharing the underlying system. This, of course, by sacrificing many of the isolation properties. While there are some architectures that aims to unify the benefits of both virtual machines and containers, such as gVisor and Firecracker, it remains a fact that both containers and virtual machines have their individual use-cases. For this reason, virtual machines and containers have traditionally been managed separately; virtual machines in platforms such as OpenStack and CloudStack, and containers using a platform such as Kubernetes. 
+
+However, with the advent of container orchestration platforms like Kubernetes, there has been an ongoing convergence \cite{vm-background} in how virtual machine and containers are managed. Specifically by integrating virtual machine management in a container-centric environment. KubeVirt \cite{kubevirt}, an extension to Kubernetes, has thus emerged as a solution by enabling the running of virtual machine inside a Kubernetes environment alongside the containers creating a common environment. This approach \cite{kubevirt-cncf}, offers benefits such as reduced architectural complexity (as only Kubernetes is needed) and enhanced integration with the Kubernetes ecosystem;. By managing the virtual machines they same way as any other Kubernetes resource, they benefit from the flexible and scalable Kubernetes infrastructure. 
+
+Additionally, KubeVirt's benefits can be derived from the architectural changes \cite{free-turtles} that can be made when moving virtual machines into Kubernetes. Kubernetes nodes are commonly deployed in virtual machines to improve the flexibility of a cluster. However, with KubeVirt enabling running virtual machines inside Kubernetes, it opens the possibility of running Kubernetes directly on the bare metal servers. This approach could reduce overhead as it reduces nested virtualization, and thus could allow Kubernetes to function as a traditional virtual machine management system.  
+
+\section{Research Question}
+\begin{enumerate}
+  \item What performance, scalability, and operational efficiencies can be gained by integrating virtual machines in Kubernetes?\\
+  \\
+  This could stem from using a single resource scheduler. Several metrics will be used to evaluate this, as described in the background and related work.
+
+  \item What are the current challenges and limitations in managing virtual machines and containerized applications in separate environments?\\
+  \\
+   e.g. running CloudStack/OpenNebula/OpenStack alongside Kubernetes.
+  
+  \item How can system administration be simplified by running virtual machines in Kubernetes using KubeVirt?\\
+  \\
+  e.g. if there is any efficiencies to be gained in terms of usability, for instance:
+  \begin{itemize}
+      \item After clicking \textit{Deploy VM}, how quickly can the virtual machine be accessed?
+      \item How many steps are there before I can access my virtual machine?
+      \item Are there any perceived benefits when interacting with the system, compared to the previous one?
+  \end{itemize}
+\end{enumerate}
+
+\section{Problem}
+
+\section{Purpose}
+
+\section{Goals}
+
+\section{Research Method}
+\begin{itemize}
+  \item Quantitative analysis\\
+  This is tied to \textit{Data collection} and \textit{Data analysis} in Tasks. It includes measuring performance, scalability and operational efficiencies that could arise when using Kubernetes with KubeVirt. Measured using metrics such as deployment speed, how quick scaling is, and how system resources are utilized (idle time, CPU usage per reserved CPU core) - essentially measuring the differences between orchestrating with traditional virtual machine systems and Kubernetes with KubeVirt. 
+  \item Qualitative analysis\\
+  This is tied to \textit{Interview or supervised testing} in Tasks. It includes investigating the usability of an Kubernetes environment with KubeVirt. It will include collecting opinions and feedback from people using the system to answer what the perceived effect of using KubeVirt is. This could be system administrators at Net Insight.
+  \item System Management\\
+  This can be seen as a subsection of both Quantitative analysis and Qualitative analysis, as it emphasises both usability as a qualitative metric as well as quantifiable metrics. It involves investigating possible simplifications of system management tasks, such as creating, deleting, starting, stopping virtual machines etc.
+\end{itemize}
+
+\section{Limitations}
+\begin{enumerate}
+    \item This project will not investigate any solutions for shortcomings in KubeVirt itself, for example, finding alternatives for features that exist in existing virtual machine management systems but not in KubeVirt. As such, this project acknowledges that KubeVirt might not be a complete replacement to traditional virtual machine management tools (also described in \cite{kupenstack}), as it might not offer all the features of an IaaS system. Therefore, only features that exists in KubeVirt and the compared system will be considered when testing. However, any lack of features (KubeVirt or not) will be brought up in the discussions.  
+    \item From the description of this project above, there are also mainly two scenarios that will be evaluated. 
+    \begin{itemize}
+        \item A system uses traditional virtual management (OpenNebula, CloudStack etc.). \\
+        \\
+        In this scenario Kubernetes with KubeVirt is seen mainly as a 1:1 replacement.\\ 
+        \item A system uses both traditional management and Kubernetes. \\
+        \\
+        This scenario is more aimed towards unifying the environments using KubeVirt. \\
+    \end{itemize}
+\end{enumerate}
+
+\section{Structure of the thesis}
+
+\chapter{Background}
+
+In this chapter we will discuss how virtualization has evolved over time to reach the pointer where we are today.
+
+
+\section{Virtualization Fundamentals}
+Virtualization is a technology \cite{virtualization-basics} that enables partitioning or grouping computing resources into operating environments using methods such as partitioning, emulation, and time-sharing. Virtualization could occur in various forms, such as network virtualization, storage virtualization, and server virtualization. More commonly used, though, is hypervisor based virtualization \cite{virtualization-history}, which is a software layer that creates virtual operating environments, or more commonly referred to as virtual machines (VMs).
+
+A VM is a emulation of a physical computer \cite{virtualization-trends} and is perceived as \textit{real} computer by the application running inside it even though underlying resources are, more often than not, shared with other VMs. For this reason, virtualization is often used to improve resource utilization and to isolate applications from each other. Such a setup improves flexibility of the computing environment, but it implies that the underlying mechanism is formally different from that of a physical machine. For instance, hardware abstraction is used to decouple the VM's perceived hardware capabilities from the physical hardware. Abstracting the underlying hardware allows for \textit{virtual} computing resources, such as virtual CPUs and virtual memory, either by grouping or partitioning the physical resources.
+
+Furthermore, the abstraction layer can exist in multiple different layers depending on the virtualization technology used, ranging from the hardware level to the application level, some of which are listed below:
+\begin{itemize}
+    \item Full virtualization (FV): Provides a complete emulation of the underlying physical hardware and creates a complete virtual environment. FV enables fully decoupling the VM from the underlying resource, and does not require any modification \cite{virtualization-basics}\cite{xen-virtualization}\cite{hypervisor-xen}.
+    \item Paravirtualization (PV): A subset of FV aiming to improve the VM performance by reducing the amount of resource that are emulated. The VM is presented with an image that is similar, but not identical, to the underlying hardware. As such, the guest OS is aware it is running inside a VM \cite{xen-virtualization}\cite{hypervisor-xen}.
+    \item Application virtualization (AV): A method where an application is encapsulated in a virtualized lightweight environment, such it perceived it is being run on a specific platform. Application virtualized using AV act as a portable and self-sufficient unit, thus often used to package and distribute applications, such as the JVM \cite{virtualization-basics}\cite{application-virtualization}.
+\end{itemize}
+
+Define virtualization and discuss its significance in modern IT infrastructures, including the evolution from physical to virtual resources.
+\subsection*{Benefits and Challenges}
+Many of benefits with virtualization stems from the fact that there exists an abstraction layer above the physical hardware. The abstraction layer decouples software from hardware, e.g. vendors with different I/O devices can be used in the same environment, allowing for a more flexible and scalable computing environment as whole where hardware is turned into simple pool of computing resources \cite{virtualization-trends}. As such, there are numerous benefits with virtualization, a few of which are listed below:
+\begin{itemize}
+    \item Resource utilization: Virtualization allows for better utilization of hardware resources, as multiple VMs can run on the same physical hardware. This is achieved by sharing the underlying resources, such as CPU and memory, between the VMs \cite{virtualization-basics}. 
+    \item Isolation: VMs are able to isolate their entire state from one another, including operating system (OS), filesystem and application stack. Isolation is also beneficial in scenarios where reproducibility is key, such as in testing and development environments \cite{vm-docker-reproducibility}.
+    \item Flexibility: VMs not tied to a specific hardware, and can be moved between different physical resources.
+    \item Management: VMs can be created and destroyed on demand, and can be managed using software tools \cite{virtualization-basics}.
+    \item Virtual hardware: A VM can be configured with hardware that does not exist in the physical environment, such as a virtual network card or a virtual hard drive \cite{virtualization-basics}.
+\end{itemize}
+
+However, the portability made possible by virtualization comes at a cost of performance. Since, at the core, a VM is a complete but emulated system, it means the every instructions issued must be interpreted in software. As such, despite what level of abstraction layer is used, there is an inescapable added overhead when using virtualization. A common hypervisor such as KVM (see \ref{hypervisors}) introduces an overhead of 5-10\% \cite{kvm-overhead}, and the overhead can be even larger when using a full virtualization approach.
+
+Outline the advantages virtualization offers, such as resource optimization and isolation, alongside potential challenges, such as complexity and overhead.
+
+
+\section{Understanding Hypervisors}
+A hypervisor is a software layer that enables managing multiple VMs on a single physical machine \cite{virtualization-history} by allowing multiple operating systems (termed as \textit{guests}) to share the same hardware \cite{hypervisor-survey}. Hypervisors, often referred to as virtual machine monitors (VMMs), are responsible for creating and managing VMs, and for providing the necessary abstractions to the VMs.
+
+Hypervisors can be categorized into two types, \textit{type 1} and \textit{Type 2}, based on their operational context and how they interact with the underlying hardware \cite{hypervisor-survey}\cite{hypervisor-types-1-2}. While the goals and purpose of type 1 and Type 2 hypervisors is the same, there are some core differences. type 1 hypervisors, commonly referred to as \textit{bare-metal} hypervisors, run directly on top of the physical hardware and do not require an OS underneath. A type 1 hypervisor is therefore scalable to terabytes of RAM and hundreds of CPU cores \cite{hypervisor-types-1-2}. However, without any other additional software, it is also itself responsible to schedule and allocate required system resources to the VMs. Type 2 hypervisors, also known as \textit{hosted hypervisors}, relies on an underlying OS to manage the calls to the CPU and memory resources. The presence of an underlying OS inevitably introduces latency, which is why Type 2 hypervisors are often used for development and testing purposes \cite{hypervisor-survey}.
+
+Furthermore, hypervisors can be further categorized into \textit{monolithic} and \textit{microkernelized} hypervisors \cite{hypervisor-comparion-2013}. Monolithic hypervisors are built as a single large software stack, managing all the VMs and their resources, and hosting drivings for all hardware access. Having all drivers reside within the hypervisor means that the such as hypervisor will only run on selected hardware. However, it also means no operating system is required at all, as the hypervisor acts as a operating system by supporting all the operations of its VMs. Microkernelized hypervisors, on the other hand, does not require devices drivers to be present in the hypervisor. Instead, the drivers are installed in a form of managing VM, often referred to as parent VM. Each VM created by such a hypervisor is thus referred to as a child VM, as it uses the parent VM's drivers to access the hardware. This approach is more flexible, as it can allow the hypervisor to run on any hardware that supports the parent VM's operating system. 
+
+% security rings definition
+In the realm of hypervisors, the concept of \textit{security rings} is often used to describe the level of privilege different part of a hypervisor has. A security ring represents a hierarchical protection domain, where the innermost ring (ring 0), usually reserved for the OS kernel, has the highest privilege, and the outermost ring (ring 3), usually reserved for user applications, has the lowest privilege. The hypervisor itself is often placed in ring 0, its VM kernel space in ring 1, and the VM user space in ring 3. Security rings are thus used to define execution level to provide a system to limit execution capabilities of VMs in order to regulate access to shared memory. This enabled a strong isolation layer between the VMs, and between the VMs and the hypervisor, thus a key part of a hypervisor's security model \cite{hypervisor-comparion-2013}\cite{microkernel-monolithic}.
+
+% use \cite xen-virtualization
+
+Explain what hypervisors are, differentiating between type 1 (bare-metal) and Type 2 (hosted) hypervisors, and their operational contexts.
+\subsection*{Key Hypervisors}
+\label{hypervisors}
+There are several hypervisors available, each with its own set of features and capabilities, some of which are listed below:
+
+\begin{itemize}
+    \item VMware ESXi: A lightweight type 1 monolithic hypervisor often used in enterprise environments. ESXi is known for its ultra lightweight footprint stretching merely a few hundred megabytes, and its ability to run directly on the hardware without an underlying OS \cite{hypervisor-comparion-2013}.
+    \item Microsoft Hyper-V: A type 1 microkernelized hypervisor that is part of the Windows Server operating system. As a microkernelized hypervisor, Hyper-V differentiates between parent and child VMs, and uses the parent VM to manage hardware access for the child VMs \cite{hypervisor-comparion-2013}\cite{hypervisor-hyper-v-esxi}.
+    \item Citrix Hypervisor: Formerly known as XenServer, is a type 1 microkernelized hypervisor based on the Xen Project. It runs using a modified Linux kernel in a VM, called Dom0, that manges hardware I/O and interacts with the other virtual machines, called DomU guests \cite{hypervisor-xen}\cite{hypervisor-comparion-2013}. 
+    \item KVM: A type 1 hypervisor that is part of the Linux kernel. As such, KVM uses most of the functionalities from the Linux kernel, such as the scheduler and memory management. KVM has become a popular alternatives to proprietary hypervisors, such as VMware ESXi and Microsoft Hyper-V, as it is open-source and free to use \cite{hypervisor-comparion-2013}\cite{hypervisor-kvm}. 
+\end{itemize}
+
+Delve into specifics of widely used hypervisors such as VMware's ESXi, Microsoft Hyper-V, and KVM, highlighting their features, performance aspects, and use cases.
+
+\section{VM Management Essentials}
+A management system for VMs involves a set of tools and processes that are used to create, deploy, and manage VMs \cite{openstack-opennebula-comparison}. The management system is responsible for managing the entire lifecycle of a VM, including provisioning, deployment, monitoring, and scaling. Not be confused with a hypervisor, a VM management system lives on a higher-level and aims to provide an abstraction layer in the form of an interface to allow interaction with the VMs, often enabling the support of a set of hypervisors \cite{cloudframeworks-and-hypervisors}. As such, a VM management system unifies hypervisors, typically through an higher-level API, such as a CLI or a web-based user interface.
+
+\subsection*{Concepts and Features}
+With a higher abstraction layer, a VM management system brings a set of concepts to simplify managing VMs, such as clustering, availability, and scalability \cite{cloudframeworks-and-hypervisors}. Clustering includes grouping a set of resources, such as VMs or storage nodes, to provide a image that is perceived as a single resource. Availability refers to the ability to keep a resource active or running, which is, more often than not, clustered resources. Scalability involves technologies to ensure resources are able to manage an increase or decrease in computational load, such as increasing the amount of virtual cores in a VM if it's overloaded.  
+
+\subsection*{Infrastructure as a Service}
+A VM management system is often part of a larger cloud computing infrastructure, such as Infrastructure as a Service (IaaS). IaaS is a lower-level cloud computing model that aims to eliminate the need to install and manage physical hardware by providing virtualized computing resources, such as VMs, virtual network and storage. 
+
+Discuss essential VM management capabilities, including live migration, snapshot management, and scalability.
+\subsection{Comparison of VM Management Systems}
+There exists many VM management system, many of which are a larger platform, such as an IaaS. Some of these systems are presented below: 
+
+\subsection*{OpenStack}
+An open-source IaaS platform that offers a large set of features to manage among many resources, VMs, network, and storage \cite{openstack-opennebula-comparison}. OpenStack's architecture is inherently modular, and it is designed to be deployed in a distributed manner \cite{openstack-overview}. Some of the core components of OpenStack are listed below:
+\begin{itemize}
+    \item Nova: The compute service that manages VMs and provides an interface to manage VMs, such as creating, deleting, and resizing VMs.
+    \item Neutron: The networking service that provides network connectivity as a service between interface devices managed by other OpenStack services.
+    \item Horizon: The dashboard that provides a web-based user interface to interact with OpenStack services.
+\end {itemize}
+
+OpenStack supports features such as live migration, snapshot management, and scalability, and is often used in large-scale cloud environments \cite{openstack-opennebula-comparison}. However, these features 
+
+\subsection*{CloudStack}
+
+\subsection*{OpenNebula}
+
+Briefly introduce traditional VM management systems like OpenStack, CloudStack, and OpenNebula, focusing on how they implement these core features.
+
+\section{Containers and Kubernetes: A Paradigm Shift}
+\subsection{Containers Explained}
+Define containers, their architecture, and how they differ from VMs in terms of overhead and isolation.
+\subsection{Kubernetes as a Container Orchestration Platform}
+Introduce Kubernetes, detailing its components, functionalities, and how it revolutionized container management.
+
+\section{Containers vs. Virtual Machines: Divergence and Use Cases}
+\subsection{Comparative Overview}
+Elaborate on the distinct characteristics of containers and VMs, including performance, isolation, and use cases.
+\subsection{Decision Factors for Deployment}
+Discuss factors influencing whether to deploy applications in containers or VMs, considering scalability, security, and application architecture.
+
+\section{Integrating VMs into Kubernetes with KubeVirt}
+\subsection{KubeVirt Overview}
+Provide an in-depth introduction to KubeVirt, its objectives, architecture, and how it integrates VM management within Kubernetes.
+\subsection{Features and Capabilities}
+Detail the features KubeVirt offers, such as VM lifecycle management, network and storage integrations, and how it compares with traditional VM management approaches.
+
+\section{Evaluating VM Management Systems: Kubernetes with KubeVirt}
+\subsection{Strategies for Evaluation}
+
+% read https://www.etran.rs/2022/zbornik/ICETRAN-22_radovi/066-RTI2.4.pdf
+
+Outline methodologies for assessing VM management systems, including performance metrics, scalability tests, and operational efficiency.
+\subsection{Metrics for Comparison}
+Define specific metrics to be used in comparing KubeVirt against traditional VM management systems, such as deployment time, resource utilization, and ease of management.
+
+\section{Related Work}
+In 2014, \cite{cs-os-benchmark} compared the performance of OpenStack and CloudStack, two of the most popular open-source cloud computing solutions. In the study they used several benchmarks, including deployment time, deletion time, CPU utilization during deployment and deletion, to evaluate quantifiable differences between the systems. Using these methods, they were able to find significant differences between the two. The study is relevant to this project as it provides provably useful metrics when evaluating virtual machine management systems. However, the tests are relatively small, thus do not evaluate how the systems manages virtual machines when reaching some form of limit on the hosting node. Later in 2022, \cite{ibm-kubevirt-scale} benchmarked KubeVirt using a setup with a large amount of virtual machines relatively to the size of the nodes. This was performed in a way to test limits of the system's control plane (scheduler etc.), and findings include a possibly large overhead when KubeVirt provisions a large amount of virtual machines. The study is related to this project as it evaluates the limits of KubeVirt and what the first appearing limits are. Furthermore, in 2019 \cite{openstack-kubevirt-network} compared KubeVirt with OpenStack in terms of network traffic flow and network performance. Some of its findings includes a large overhead with OpenStack when virtual machines on different nodes communicate. The strategies used in the study in a way relevant to this project as it provides a base for comparing network performance as a quantifiable metric.
+
+Issues related to nested virtualization, meaning when virtual machines are run inside other virtual machines, are brought up in \cite{free-turtles}. The study explains how the issues arise when striving for both the isolation of virtual machine and the cloud-native way to deploy them (such as with Kubernetes). They propose a flattened architecture, as could be achieved using a virtual machine management system like KubeVirt. The study is relevant to this project as it brings up KubeVirt in the context of solving nested virtualization.  
+ 
+Finally \cite{kubevirt-migrate-issues} presents shortcomings of KubeVirt when migrating from a traditional virtual machine management system, such as CloudStack and OpenStack. For instance IP addresses changing over time when a static IP address is required. In the study they developed a framework to solve some of the issues on application level, such as DNS queries, and provided a set of guidelines related to KubeVirt's  unique features, such as the Multus Container Network Interface. These findings are especially relevant to this project as they highlight shortcomings that needs to be addressed when migrating a virtual machine to KubeVirt. 
+
+\chapter{Methods}
+\blindtext%
+
+\chapter{Results}
+\blindtext%
+
+\chapter{Discussion}
+\blindtext%
+
+\chapter{Conclusions}
+\blindtext%
+
+% Print the bibliography (and make it appear in the table of contents)
+\printbibliography[heading=bibintoc]
+
+\appendix
+
+\chapter{Something Extra}
+
+% Tailmatter inserts the back cover page (if enabled)
+\tailmatter%
+
+\end{document}

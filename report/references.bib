@@ -1,24 +1,24 @@
-﻿@Article{Li2023,
-author={Li, Guoqing
-and Takahashi, Keichi
-and Ichikawa, Kohei
-and Iida, Hajimu
-and Nakasan, Chawanat
-and Leelaprute, Pattara
-and Thiengburanathum, Pree
-and Phannachitta, Passakorn},
-title={The Convergence of Container and Traditional Virtualization: Strengths and Limitations},
-journal={SN Computer Science},
-year={2023},
-month={May},
-day={11},
-volume={4},
-number={4},
-pages={387},
-abstract={Virtual machines (VMs) are used extensively in the cloud. The underlying hypervisors allow hardware resources to be split into multiple virtual units which enables server consolidation, fault containment, and resource management. However, VMs with traditional architecture introduce heavy overhead and reduce application performance. Containers are becoming popular options for running applications, yet such a solution raises security concerns due to weaker isolation than VMs. We are at the point of container and traditional virtualization convergence where lightweight hypervisors are implemented and integrated into the container ecosystem to maximize the benefits of VM isolation and container performance. However, there has been no comprehensive comparison among different convergence architectures. To identify limitations and best-fit use cases, we investigate the characteristics of Docker, Kata, gVisor, Firecracker, and QEMU/KVM by measuring the performance of disk storage, main memory, CPU, network, system call, and startup time. In addition, we evaluate their performance of running the Nginx web server and the MySQL database management system. We use QEMU/KVM as an example of running traditional VMs, Docker as the standard runc container, and the rest as the representatives of lightweight hypervisors. We compare and analyze the benchmark results, discuss the possible implications, explain the trade-off each organization made, and elaborate on the pros and cons of each architecture.},
-issn={2661-8907},
-doi={10.1007/s42979-023-01827-9},
-note={https://doi.org/10.1007/s42979-023-01827-9}
+﻿@Article{vm-background,
+  author={Li, Guoqing
+  and Takahashi, Keichi
+  and Ichikawa, Kohei
+  and Iida, Hajimu
+  and Nakasan, Chawanat
+  and Leelaprute, Pattara
+  and Thiengburanathum, Pree
+  and Phannachitta, Passakorn},
+  title={The Convergence of Container and Traditional Virtualization: Strengths and Limitations},
+  journal={SN Computer Science},
+  year={2023},
+  month={5},
+  day={11},
+  volume={4},
+  number={4},
+  pages={387},
+  abstract={Virtual machines (VMs) are used extensively in the cloud. The underlying hypervisors allow hardware resources to be split into multiple virtual units which enables server consolidation, fault containment, and resource management. However, VMs with traditional architecture introduce heavy overhead and reduce application performance. Containers are becoming popular options for running applications, yet such a solution raises security concerns due to weaker isolation than VMs. We are at the point of container and traditional virtualization convergence where lightweight hypervisors are implemented and integrated into the container ecosystem to maximize the benefits of VM isolation and container performance. However, there has been no comprehensive comparison among different convergence architectures. To identify limitations and best-fit use cases, we investigate the characteristics of Docker, Kata, gVisor, Firecracker, and QEMU/KVM by measuring the performance of disk storage, main memory, CPU, network, system call, and startup time. In addition, we evaluate their performance of running the Nginx web server and the MySQL database management system. We use QEMU/KVM as an example of running traditional VMs, Docker as the standard runc container, and the rest as the representatives of lightweight hypervisors. We compare and analyze the benchmark results, discuss the possible implications, explain the trade-off each organization made, and elaborate on the pros and cons of each architecture.},
+  issn={2661-8907},
+  doi={10.1007/s42979-023-01827-9},
+  note={https://doi.org/10.1007/s42979-023-01827-9}
 }
 
 @INPROCEEDINGS{cs-os-benchmark,
@@ -30,7 +30,8 @@ note={https://doi.org/10.1007/s42979-023-01827-9}
   number={},
   pages={405-412},
   keywords={Random access memory;Virtual machine monitors;Correlation;Hard disks;Benchmark testing;Cloud computing;Cloud;Benchmark;OpenStack;CloudStack},
-  doi={10.1109/ISORC.2014.12}}
+  doi={10.1109/ISORC.2014.12}
+  }
 
 @INPROCEEDINGS{k8s-gitops,
   author={Gupta, Saumya and Bhatia, Madhulika and Memoria, Meenakshi and Manani, Preeti},
@@ -41,7 +42,8 @@ note={https://doi.org/10.1007/s42979-023-01827-9}
   number={},
   pages={589-596},
   keywords={Productivity;Codes;Process control;Machine learning;Syntactics;Parallel processing;Elasticity;GitOps;DevOps;CI/CD;Continuous Delivery;Continuous Integration;AWS},
-  doi={10.1109/COM-IT-CON54601.2022.9850786}}
+  doi={10.1109/COM-IT-CON54601.2022.9850786}
+  }
 
 @INPROCEEDINGS{free-turtles,
   author={Ye, Mengmei and Ruocco, Angelo and Buono, Daniele and Bottomley, James and Franke, Hubertus},
@@ -52,7 +54,8 @@ note={https://doi.org/10.1007/s42979-023-01827-9}
   number={},
   pages={275-281},
   keywords={Cloud computing;Trusted computing;Emulation;Containers;Virtual machining;Security;Resource management;nested virtualization;confidential computing;Infrastructure as a Service;virtual machines;Platform as a Service;Kubernetes;OpenShift},
-  doi={10.1109/CLOUD60044.2023.00039}}
+  doi={10.1109/CLOUD60044.2023.00039}
+  }
 
 
 @article{kupenstack,
@@ -62,7 +65,14 @@ note={https://doi.org/10.1007/s42979-023-01827-9}
   year={2021}
 }
 
-@misc{ibm-kubevirt-scale, title={Kubevirt scale test by creating 400 vmis on a single node for FOSDEM 2022: IBM Research}, note={https://research.ibm.com/publications/kubevirt-scale-test-by-creating-400-vmis-on-a-single-node}, journal={IBM Research Publications}, author={Amaral, Marcelo}, year={2022}, month={Feb}} 
+@misc{ibm-kubevirt-scale, 
+  title={Kubevirt scale test by creating 400 vmis on a single node for FOSDEM 2022: IBM Research}, 
+  note={https://research.ibm.com/publications/kubevirt-scale-test-by-creating-400-vmis-on-a-single-node}, 
+  journal={IBM Research Publications}, 
+  author={Amaral, Marcelo}, 
+  year={2022}, 
+  month={2}
+} 
 
 @article{openstack-kubevirt-network,
   title={Network Automation, Orchestration, Cloud: Tools and Technologies},
@@ -79,11 +89,26 @@ note={https://doi.org/10.1007/s42979-023-01827-9}
   number={},
   pages={84-89},
   keywords={Computer science;Organizations;Containers;Virtual machining;Network interfaces;IP networks;Guidelines;Kubernetes;Operator SDK;KubeVirt;Container Network Interface;Multus CNI;Kubernetes NMState},
-  doi={10.1109/ICSEC56337.2022.10049369}}
+  doi={10.1109/ICSEC56337.2022.10049369}
+  }
 
-@misc{kubevirt, title={Kubevirt.io}, url={https://kubevirt.io/}, journal={KubeVirt.io}, author={CNCF, The KubeVirt.io website}, year={2024}, month={Jan}} 
+@misc{kubevirt, 
+  title={Kubevirt.io}, 
+  note={https://kubevirt.io/}, 
+  journal={KubeVirt.io}, 
+  author={CNCF, The KubeVirt.io website}, 
+  year={2024}, 
+  month={1}
+} 
 
-@misc{kubevirt-cncf, title={Best practices for transitioning VM clusters to KubeVirt 1.0}, note={https://www.cncf.io/blog/2023/09/22/best-practices-for-transitioning-vm-clusters-to-kubevirt-1-0/}, journal={CNCF}, author={Zou Nengren September 22 and Nengren, Ambassador post by Zou and 22, September}, year={2023}, month={Sep}}
+@misc{kubevirt-cncf, 
+  title={Best practices for transitioning VM clusters to KubeVirt 1.0}, 
+  note={https://www.cncf.io/blog/2023/09/22/best-practices-for-transitioning-vm-clusters-to-kubevirt-1-0/}, 
+  journal={CNCF}, 
+  author={Zou Nengren September 22 and Nengren, Ambassador post by Zou and 22, September}, 
+  year={2023}, 
+  month={9}
+}
 
 @misc{kthcloud,
   title={Designing and implementing a private cloud for student and faculty software projects},
@@ -91,4 +116,198 @@ note={https://doi.org/10.1007/s42979-023-01827-9}
   year={2022}
 }
 
-@misc{kthcloud-web, note={https://cloud.cbh.kth.se/}, journal={cbhcloud}, author={LeFevre, Pierre and Karlsson, Emil}} 
+@misc{kthcloud-web, 
+  note={https://cloud.cbh.kth.se/}, 
+  journal={cbhcloud}, 
+  author={LeFevre, Pierre and Karlsson, Emil}
+} 
+
+@article{virtualization-basics,
+  title={A survey on virtualization technologies},
+  author={Chiueh, Susanta Nanda Tzi-cker and Brook, Stony},
+  journal={Rpe Report},
+  volume={142},
+  year={2005}
+}
+
+@ARTICLE{virtualization-trends,
+  author={Rosenblum, M. and Garfinkel, T.},
+  journal={Computer}, 
+  title={Virtual machine monitors: current technology and future trends}, 
+  year={2005},
+  volume={38},
+  number={5},
+  pages={39-47},
+  keywords={Virtual machine monitors;Hardware;Operating systems;Virtual machining;Costs;Educational institutions;Multitasking;Computer architecture;Security;Application software;virtualization technology;virtual machines;computer architectures;software systems},
+  doi={10.1109/MC.2005.176}
+}
+
+@article{vm-docker-reproducibility,
+  author = {Boettiger, Carl},
+  title = {An introduction to Docker for reproducible research},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {49},
+  number = {1},
+  issn = {0163-5980},
+  note = {https://doi.org/10.1145/2723872.2723882},
+  doi = {10.1145/2723872.2723882},
+  abstract = {As computational work becomes more and more integral to many aspects of scientific research, computational reproducibility has become an issue of increasing importance to computer systems researchers and domain scientists alike. Though computational reproducibility seems more straight forward than replicating physical experiments, the complex and rapidly changing nature of computer environments makes being able to reproduce and extend such work a serious challenge. In this paper, I explore common reasons that code developed for one research project cannot be successfully executed or extended by subsequent researchers. I review current approaches to these issues, including virtual machines and workflow systems, and their limitations. I then examine how the popular emerging technology Docker combines several areas from systems research - such as operating system virtualization, cross-platform portability, modular re-usable elements, versioning, and a 'DevOps' philosophy, to address these challenges. I illustrate this with several examples of Docker use with a focus on the R statistical environment.},
+  journal = {SIGOPS Oper. Syst. Rev.},
+  year = { 2015 },
+  month = {1},
+  pages = {71–79}
+}
+
+@article{xen-virtualization,
+  title={Full and para-virtualization with Xen: a performance comparison},
+  author={Fayyad-Kazan, Hasan and Perneel, Luc and Timmerman, Martin},
+  journal={Journal of Emerging Trends in Computing and Information Sciences},
+  volume={4},
+  number={9},
+  pages={719--727},
+  year={2013}
+}
+
+@ARTICLE{application-virtualization,
+  author={Douglis, Fred and Krieger, Orran},
+  journal={IEEE Internet Computing}, 
+  title={Virtualization}, 
+  year={2013},
+  volume={17},
+  number={2},
+  pages={6-9},
+  keywords={virtualization;javascript;VLAN;multiclouds},
+  doi={10.1109/MIC.2013.42}
+}
+
+@article{kvm-overhead,
+  author = {Rasmusson, Lars and Corcoran, Diarmuid},
+  title = {Performance overhead of KVM on Linux 3.9 on ARM cortex-a15},
+  year = {2014},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {11},
+  number = {2},
+  note = {https://doi.org/10.1145/2668138.2668143},
+  doi = {10.1145/2668138.2668143},
+  abstract = {A number of simple performance measurements on network, CPU and disk speed were done on a dual ARM Cortex-A15 machine running Linux inside a KVM virtual machine that uses virtio disk and networking. Unexpected behaviour was observed in the CPU and memory intensive benchmarks, and in the networking benchmarks. The average overhead of running inside KVM is between zero and 30 percent when the host is lightly loaded (running only the system software and the necessary qemu-system-arm virtualization code), but the relative overhead increases when both host and VM is busy. We conjecture that this is related to the scheduling inside the host Linux.},
+  journal = {SIGBED Rev.},
+  month = {9},
+  pages = {32–38},
+  keywords = {ARM cortex-a15, HVM, Linux KVM, performance, virtualization}
+}
+
+@article{virtualization-history,
+  title={On the evolution of virtualization and cloud computing: A review},
+  author={Oludele, Awodele and Ogu, Emmanuel C and Shade, Kuyoro and Chinecherem, Umezuruike},
+  journal={Journal of Computer Sciences and Applications},
+  volume={2},
+  number={3},
+  pages={40--43},
+  year={2014},
+  publisher={Science and Education Publishing Co., Ltd.}
+}
+
+@article{hypervisor-survey,
+  title={Hypervisor: A survey on concepts and taxonomy},
+  author={Desai, Ankita and Oza, Rachana and Sharma, Pratik and Patel, Bhautik},
+  journal={International Journal of Innovative Technology and Exploring Engineering},
+  volume={2},
+  number={3},
+  pages={222--225},
+  year={2013},
+  publisher={Citeseer}
+}
+
+@misc{hypervisor-types-1-2, 
+  title={What’s the difference between type 1 vs. type 2 hypervisor?: TechTarget}, 
+  note={https://www.techtarget.com/searchitoperations/tip/Whats-the-difference-between-Type-1-vs-Type-2-hypervisor}, 
+  journal={IT Operations}, 
+  publisher={TechTarget}, 
+  author={Bigelow, Stephen J.}, 
+  year={2021}, 
+  month={1}
+} 
+
+@inproceedings{hypervisor-comparion-2010,
+  title={A component-based performance comparison of four hypervisors},
+  author={Hwang, Jinho and Zeng, Sai and y Wu, Frederick and Wood, Timothy},
+  booktitle={2013 IFIP/IEEE International Symposium on Integrated Network Management (IM 2013)},
+  pages={269--276},
+  year={2013},
+  organization={IEEE}
+}
+
+@article{hypervisor-comparion-2013,
+  title={Benchmarking the performance of microsoft hyper-v server, vmware esxi and xen hypervisors},
+  author={Fayyad-Kazan, Hasan and Perneel, Luc and Timmerman, Martin},
+  journal={Journal of Emerging Trends in Computing and Information Sciences},
+  volume={4},
+  number={12},
+  pages={922--933},
+  year={2013}
+}
+
+@article{hypervisor-xen,
+  title={An overview of xen virtualization},
+  author={Abels, Tim and Dhawan, Puneet and Chandrasekaran, Balasubramanian},
+  journal={Dell Power Solutions},
+  volume={8},
+  pages={109--111},
+  year={2005}
+}
+
+@article{hypervisor-kvm,
+  title={Review on KVM Hypervisor},
+  author={Kadam, Pankaj and Alone, Nilesh},
+  journal={International Journal of Recent Technology and Engineering (IJRTE) ISSN},
+  pages={2277--3878},
+  year={2014},
+  publisher={Citeseer}
+}
+
+@inproceedings{microkernel-monolithic,
+  title={Analysis of monolithic and microkernel architectures: Towards secure hypervisor design},
+  author={Shropshire, Jordan},
+  booktitle={2014 47th Hawaii International Conference on System Sciences},
+  pages={5008--5017},
+  year={2014},
+  organization={IEEE}
+}
+
+@article{hypervisor-hyper-v-esxi,
+  title={Benchmarking the performance of microsoft hyper-v server, vmware esxi and xen hypervisors},
+  author={Fayyad-Kazan, Hasan and Perneel, Luc and Timmerman, Martin},
+  journal={Journal of Emerging Trends in Computing and Information Sciences},
+  volume={4},
+  number={12},
+  pages={922--933},
+  year={2013}
+}
+
+@inproceedings{openstack-opennebula-comparison,
+  title={Comparison of open-source cloud management platforms: OpenStack and OpenNebula},
+  author={Wen, Xiaolong and Gu, Genqiang and Li, Qingchun and Gao, Yun and Zhang, Xuejie},
+  booktitle={2012 9th International Conference on Fuzzy Systems and Knowledge Discovery},
+  pages={2457--2461},
+  year={2012},
+  organization={IEEE}
+}
+
+@article{cloudframeworks-and-hypervisors,
+  title={Open source cloud management platforms and hypervisor technologies: A review and comparison},
+  author={Freet, David and Agrawal, Rajeev and Walker, Jessie J and Badr, Youakim},
+  journal={SoutheastCon 2016},
+  pages={1--8},
+  year={2016},
+  publisher={IEEE}
+}
+
+@inproceedings{openstack-overview,
+  title={An overview of openstack architecture},
+  author={Rosado, Tiago and Bernardino, Jorge},
+  booktitle={Proceedings of the 18th International Database Engineering \& Applications Symposium},
+  pages={366--367},
+  year={2014}ear
+}

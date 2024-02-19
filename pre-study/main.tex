@@ -1,0 +1,149 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{csquotes} % Recommended by biblatex
+\usepackage[style=numeric,sorting=none,backend=biber]{biblatex}
+\addbibresource{references.bib} % The file containing our references, in BibTeX format
+
+\title{%
+    Kubernetes as a Virtual Machine Management System \\
+    \large Pre-study \\
+}
+\author{Emil Karlsson | emilk2@kth.se}
+
+\begin{document}
+\maketitle
+
+\section{Background}
+Virtual machines (VMs) \cite{Li2023} have long been the core part of IT infrastructure, allowing the underlying hardware to be split into multiple virtual computing units. However, while VMs enables robust isolation, they also introduce overhead that could hinder performance of the application running inside of it. A popular alternative to VMs is containers, since they reduce the required overhead by sharing the underlying system. This, of course, by sacrificing many of the isolation properties. While there are some architectures that aims to unify the benefits of both VMs and containers, such as gVisor and Firecracker, it remains a fact that both containers and VMs have their individual use-cases. For this reason, VMs and containers have traditionally been managed separately; VMs in platforms such as OpenStack and OpenNebula, and containers using a platform such as Kubernetes. 
+
+However, with the advent of container orchestration platforms like Kubernetes, there has been an ongoing convergence \cite{Li2023} in how VM and containers are managed. Specifically by integrating VM management in a container-centric environment. KubeVirt \cite{kubevirt}, an extension to Kubernetes, has thus emerged as a solution by enabling the running of VMs inside a Kubernetes environment alongside the containers creating a common environment. This approach \cite{kubevirt-cncf}, offers benefits such as reduced architectural complexity (as only Kubernetes is needed) and enhanced integration with the Kubernetes ecosystem. By managing the VMs they same way as any other Kubernetes resource, they benefit from the flexible and scalable Kubernetes infrastructure. 
+
+Additionally, KubeVirt's benefits can be derived from the architectural changes \cite{free-turtles} that can be made when moving VMs into Kubernetes. Kubernetes nodes are commonly deployed in VMs to improve the flexibility of a cluster. However, with KubeVirt enabling running VMs inside Kubernetes, it opens the possibility of running Kubernetes directly on the bare metal servers. This approach could reduce overhead as it reduces nested virtualization, and thus could allow Kubernetes to function as a traditional VM management system. 
+
+\newpage
+\section{Literature Study}
+There are many ongoing research project related to comparing cloud alternatives, many of which evaluates performance and offered features. As this project will focus on several perspectives; performance, features, and usability, it is important to consider what research has already been done in those specific fields. 
+
+In 2014, \cite{cs-os-benchmark} compared the performance of OpenStack and CloudStack, two of the most popular open-source cloud computing solutions. In the study they used several benchmarks, including deployment time, deletion time, CPU utilization during deployment and deletion, to evaluate quantifiable differences between the systems. Using these methods, they were able to find significant differences between the two. The study is relevant to this project as it provides provably useful metrics when evaluating VM management systems. However, the tests are relatively small, thus do not evaluate how the systems manages VMs when reaching some form of limit on the hosting node. Later in 2022, \cite{ibm-kubevirt-scale} benchmarked KubeVirt using a setup with a large amount of VMs relatively to the size of the nodes. This was performed in a way to test limits of the system's control plane (scheduler etc.), and findings include a possibly large overhead when KubeVirt provisions a large amount of VMs. The study is related to this project as it evaluates the limits of KubeVirt and what the first appearing limits are. Furthermore, in 2019 \cite{openstack-kubevirt-network} compared KubeVirt with OpenStack in terms of network traffic flow and network performance. Some of its findings includes a large overhead with OpenStack when VMs on different nodes communicate. The strategies used in the study in a way relevant to this project as it provides a base for comparing network performance as a quantifiable metric.
+
+Issues related to nested virtualization, meaning when VMs are run inside other VMs, are brought up in \cite{free-turtles}. The study explains how the issues arise when striving for both the isolation of VM and the cloud-native way to deploy them (such as with Kubernetes). They propose a flattened architecture, as could be achieved using a VM management system like KubeVirt. The study is relevant to this project as it brings up KubeVirt in the context of solving nested virtualization. 
+
+Benefits of using a declarative approach in system management are described in \cite{declarative-benefits}. A declarative approach is a paradigm that promotes usage of documents that describe a desired state of a system, such as with Kubernetes. The study explains how a declarative approach enables the usage of technologies such as GitOps, which is a way to manage infrastructure using files in Git. The study found that GitOps allowed for simpler environment management, less time consuming resource management, easier rollbacks, as well as the added benefit of being able to use Git's version control that allows for auditing and collaboration. The study is relevant to this project as Kubernetes, and thus KubeVirt, uses a declarative approach.
+
+Finally \cite{kubevirt-migrate-issues} presents shortcomings of KubeVirt when migrating from a traditional VM management system, such as CloudStack and OpenStack. For instance IP addresses changing over time when a static IP address is required. In the study they developed a framework to solve some of the issues on application level, such as DNS queries, and provided a set of guidelines related to KubeVirt's  unique features, such as the Multus Container Network Interface. These findings are especially relevant to this project as they highlight shortcomings that needs to be addressed when migrating a VM to KubeVirt. 
+
+\newpage
+\section{Methods}
+\subsection{Performance Analysis}
+As previously described, \cite{cs-os-benchmark} presents a set of benchmarks used to evaluate CloudStack and OpenStack. These benchmarks were crafted to extract meaningful data when comparing VM management systems. For this project, though, KubeVirt will be compared to OpenNebula, an open-source Infrastructure as a Service (IaaS) system used by the cooperating company, NetInsight (other IaaS systems, such as OpenStack and CloudStack, will be considered in the performance analysis if time allows it). The study's setup were designed to complement the metrics they used to benchmark, such as exponential differences in RAM and CPU. The study does not use VMs with high or low CPU/RAM independently, and only uses notations \textit{tiny}, \textit{small} and \textit{medium}. However, for each type of VM they use a multiple disk sizes. As such, this project will use similar metrics with a similar setup, but with a larger set of VMs to include larger types. 
+
+Furthermore, to be more accurate in the measurements, VMs will use the lightweight Alpine Linux image, as lightweight image is less likely to introduce noise in the measurements \cite{linux-boot-time}. For instance, a heavier image could introduce a larger overhead by requiring installing more packages that requires fetching more data from external sources, which is unrelated to the system's performance. Another reason to use a lightweight image is to reduces the time it takes to run the tests, as a lightweight image is usually faster to boot.
+
+Finally, the tests will be performed on isolated VMs hosted by the same node. This is done to ensure the measurements are able to be reliably recreated. The physical computer hosting the testing VMs has the following specifications:
+\begin{itemize}
+    \item CPU: Intel Core i7-13700K 3.4GHz
+    \item RAM: 32GB DDR5 4800MHz
+    \item Disk: 4TB NVMe SSD
+    \item Network: 1Gbps
+    \item OS and hypervisor: Windows 11 with VirtualBox
+\end{itemize}
+
+\noindent The following is a summary of the setup used in the performance analysis:
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{ |c|c|c|c|c| }
+        \hline
+        System & CPU & RAM & Disk & Network \\
+        \hline
+        OpenNebula & 4 & 16GB & 120GB & 1Gbps \\
+        KubeVirt & 4 & 16GB & 120GB & 1Gbps \\
+        \hline
+    \end{tabular}
+    \caption{Node specifications}
+\end{table}
+
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{ |c|c|c| } 
+        \hline
+        VM Name & CPU & RAM \\ 
+        \hline
+        Tiny & 1 & 512MB \\
+        Small & 2 & 1GB \\
+        Medium & 4 & 4GB \\
+        Large & 8 & 16GB \\
+        \hline
+    \end{tabular}
+    \caption{VM specifications}
+\end{table}
+
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{ |c|c|c| } 
+        \hline
+        Disk Name & Size \\ 
+        \hline
+        Small & 1GB \\
+        Medium & 10GB \\
+        Large & 100GB \\
+        \hline
+    \end{tabular}
+    \caption{Disk specifications}
+\end{table}
+
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{ |c|c| } 
+        \hline
+        Metrics Name & Unit \\
+        \hline
+        Deployment time & Seconds \\
+        Deletion time & Seconds \\
+        CPU utilization during deployment & Percentage \\
+        CPU utilization during deletion & Percentage \\
+        Memory utilization during deployment & Percentage \\
+        Memory utilization during deletion & Percentage \\
+        Disk utilization during deployment & Percentage \\
+        Disk utilization during deletion & Percentage \\
+        \hline
+    \end{tabular} 
+    \caption{Performance metrics}
+\end{table}
+
+% new page
+\newpage
+\subsection{Usability Analysis}
+To accurately measure the usability of KubeVirt, a set of tasks will be crafted. These tasks should be designed to be representative of the tasks that a system administrator would perform when managing VMs, including creation, deleting, and debugging. Crafting the tasks will be done after exploring KubeVirt and other VM management systems to understand their feature sets and what kind of tasks are relevant. However, the tasks will only performed on KubeVirt, since the system administrators are already expected to be familiar with the other systems.
+\\~\\
+Some examples of tasks that could be included are:
+\begin{itemize}
+    \item Create a VM
+    \item Delete a VM
+    \item Start a VM
+    \item Stop a VM
+    \item A VM is not starting, debug why
+\end{itemize}
+
+\subsection{System Management Analysis}
+The last factor that will be considered in this project is the system management. This include exploring how the system is managed, and is mainly concerned with integrations with other technologies in order to understand how well KubeVirt integrates with other systems. This will be done by exploring feature sets and architectural principles of KubeVirt, and other VM management systems. For instance, depending if a system uses a declarative or imperative approach, some technologies or tools could be easier to integrate than others.
+
+
+% Print the bibliography (and make it appear in the table of contents)
+\newpage
+\printbibliography[heading=bibintoc]
+
+\end{document}

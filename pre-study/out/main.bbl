@@ -1,0 +1,383 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.1 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global}
+    \entry{Li2023}{article}{}
+      \name{author}{8}{}{%
+        {{hash=44614b5f5ec8f4fe27540b1f3f99e6d0}{%
+           family={Li},
+           familyi={L\bibinitperiod},
+           given={Guoqing},
+           giveni={G\bibinitperiod}}}%
+        {{hash=21f6cb5786a7ebe21396c28a4123e96c}{%
+           family={Takahashi},
+           familyi={T\bibinitperiod},
+           given={Keichi},
+           giveni={K\bibinitperiod}}}%
+        {{hash=13bc8f669545a44f1d8a984d1e91c8d1}{%
+           family={Ichikawa},
+           familyi={I\bibinitperiod},
+           given={Kohei},
+           giveni={K\bibinitperiod}}}%
+        {{hash=d34ef2b7035fec0a4ebcbdee95501b77}{%
+           family={Iida},
+           familyi={I\bibinitperiod},
+           given={Hajimu},
+           giveni={H\bibinitperiod}}}%
+        {{hash=18e62a7c1eaeb82bf6259d91e3434ed0}{%
+           family={Nakasan},
+           familyi={N\bibinitperiod},
+           given={Chawanat},
+           giveni={C\bibinitperiod}}}%
+        {{hash=2bc45e34584f318b7c904d6257ee8fcd}{%
+           family={Leelaprute},
+           familyi={L\bibinitperiod},
+           given={Pattara},
+           giveni={P\bibinitperiod}}}%
+        {{hash=f5d4d4a23d4e9250e2f181a0e7caf08f}{%
+           family={Thiengburanathum},
+           familyi={T\bibinitperiod},
+           given={Pree},
+           giveni={P\bibinitperiod}}}%
+        {{hash=b4f98598affc893072fd311594ff97f0}{%
+           family={Phannachitta},
+           familyi={P\bibinitperiod},
+           given={Passakorn},
+           giveni={P\bibinitperiod}}}%
+      }
+      \strng{namehash}{89669fa101cd6f91922c280d504d3c85}
+      \strng{fullhash}{50867d0df7c327b66ac4b6b21e448880}
+      \strng{bibnamehash}{89669fa101cd6f91922c280d504d3c85}
+      \strng{authorbibnamehash}{89669fa101cd6f91922c280d504d3c85}
+      \strng{authornamehash}{89669fa101cd6f91922c280d504d3c85}
+      \strng{authorfullhash}{50867d0df7c327b66ac4b6b21e448880}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Virtual machines (VMs) are used extensively in the cloud. The underlying hypervisors allow hardware resources to be split into multiple virtual units which enables server consolidation, fault containment, and resource management. However, VMs with traditional architecture introduce heavy overhead and reduce application performance. Containers are becoming popular options for running applications, yet such a solution raises security concerns due to weaker isolation than VMs. We are at the point of container and traditional virtualization convergence where lightweight hypervisors are implemented and integrated into the container ecosystem to maximize the benefits of VM isolation and container performance. However, there has been no comprehensive comparison among different convergence architectures. To identify limitations and best-fit use cases, we investigate the characteristics of Docker, Kata, gVisor, Firecracker, and QEMU/KVM by measuring the performance of disk storage, main memory, CPU, network, system call, and startup time. In addition, we evaluate their performance of running the Nginx web server and the MySQL database management system. We use QEMU/KVM as an example of running traditional VMs, Docker as the standard runc container, and the rest as the representatives of lightweight hypervisors. We compare and analyze the benchmark results, discuss the possible implications, explain the trade-off each organization made, and elaborate on the pros and cons of each architecture.}
+      \field{issn}{2661-8907}
+      \field{journaltitle}{SN Computer Science}
+      \field{month}{5}
+      \field{note}{https://doi.org/10.1007/s42979-023-01827-9}
+      \field{number}{4}
+      \field{title}{The Convergence of Container and Traditional Virtualization: Strengths and Limitations}
+      \field{volume}{4}
+      \field{year}{2023}
+      \field{pages}{387}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1007/s42979-023-01827-9
+      \endverb
+    \endentry
+    \entry{kubevirt}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=5421b7f9f708fec71b530f9cb19c79fe}{%
+           family={CNCF},
+           familyi={C\bibinitperiod},
+           given={The\bibnamedelimb KubeVirt.io\bibnamedelima website},
+           giveni={T\bibinitperiod\bibinitdelim K\bibinitperiod\bibinitdelim w\bibinitperiod}}}%
+      }
+      \strng{namehash}{5421b7f9f708fec71b530f9cb19c79fe}
+      \strng{fullhash}{5421b7f9f708fec71b530f9cb19c79fe}
+      \strng{bibnamehash}{5421b7f9f708fec71b530f9cb19c79fe}
+      \strng{authorbibnamehash}{5421b7f9f708fec71b530f9cb19c79fe}
+      \strng{authornamehash}{5421b7f9f708fec71b530f9cb19c79fe}
+      \strng{authorfullhash}{5421b7f9f708fec71b530f9cb19c79fe}
+      \field{sortinit}{3}
+      \field{sortinithash}{a37a8ef248a93c322189792c34fc68c9}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{KubeVirt.io}
+      \field{month}{1}
+      \field{note}{https://kubevirt.io/}
+      \field{title}{Kubevirt.io}
+      \field{year}{2024}
+    \endentry
+    \entry{kubevirt-cncf}{misc}{}
+      \name{author}{3}{}{%
+        {{hash=dd2c86df1b66f9f51cf48c84719c3add}{%
+           family={22},
+           familyi={2\bibinitperiod},
+           given={Zou\bibnamedelimb Nengren\bibnamedelima September},
+           giveni={Z\bibinitperiod\bibinitdelim N\bibinitperiod\bibinitdelim S\bibinitperiod}}}%
+        {{hash=a8197d09f3ab10a2c6d50f09ddc75a32}{%
+           family={Nengren},
+           familyi={N\bibinitperiod},
+           given={Ambassador\bibnamedelimb post\bibnamedelimb by\bibnamedelima Zou},
+           giveni={A\bibinitperiod\bibinitdelim p\bibinitperiod\bibinitdelim b\bibinitperiod\bibinitdelim Z\bibinitperiod}}}%
+        {{hash=bbf1b5be61816dad0d1bd57c168339f9}{%
+           family={22},
+           familyi={2\bibinitperiod},
+           given={September},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{5a28fc5b0defcae80e8f728f9dfb6596}
+      \strng{fullhash}{5a28fc5b0defcae80e8f728f9dfb6596}
+      \strng{bibnamehash}{5a28fc5b0defcae80e8f728f9dfb6596}
+      \strng{authorbibnamehash}{5a28fc5b0defcae80e8f728f9dfb6596}
+      \strng{authornamehash}{5a28fc5b0defcae80e8f728f9dfb6596}
+      \strng{authorfullhash}{5a28fc5b0defcae80e8f728f9dfb6596}
+      \field{sortinit}{4}
+      \field{sortinithash}{e071e0bcb44634fab398d68ad04e69f4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{CNCF}
+      \field{month}{9}
+      \field{note}{https://www.cncf.io/blog/2023/09/22/best-practices-for-transitioning-vm-clusters-to-kubevirt-1-0/}
+      \field{title}{Best practices for transitioning VM clusters to KubeVirt 1.0}
+      \field{year}{2023}
+    \endentry
+    \entry{free-turtles}{inproceedings}{}
+      \name{author}{5}{}{%
+        {{hash=865b1362aec7e978a47e4a59717b9999}{%
+           family={Ye},
+           familyi={Y\bibinitperiod},
+           given={Mengmei},
+           giveni={M\bibinitperiod}}}%
+        {{hash=29bc15408933bd3be7abd03b8f911dce}{%
+           family={Ruocco},
+           familyi={R\bibinitperiod},
+           given={Angelo},
+           giveni={A\bibinitperiod}}}%
+        {{hash=d3926904f811327453d669b9d77ba35b}{%
+           family={Buono},
+           familyi={B\bibinitperiod},
+           given={Daniele},
+           giveni={D\bibinitperiod}}}%
+        {{hash=8834ab7bd029abceb2008b190f61d877}{%
+           family={Bottomley},
+           familyi={B\bibinitperiod},
+           given={James},
+           giveni={J\bibinitperiod}}}%
+        {{hash=75e0ffbff76e1a3a1e792f2befbf3381}{%
+           family={Franke},
+           familyi={F\bibinitperiod},
+           given={Hubertus},
+           giveni={H\bibinitperiod}}}%
+      }
+      \strng{namehash}{5e26b4b97ad80754926b07a80ba54b41}
+      \strng{fullhash}{12f692f7dcc28a835fabc7376dedfacd}
+      \strng{bibnamehash}{5e26b4b97ad80754926b07a80ba54b41}
+      \strng{authorbibnamehash}{5e26b4b97ad80754926b07a80ba54b41}
+      \strng{authornamehash}{5e26b4b97ad80754926b07a80ba54b41}
+      \strng{authorfullhash}{12f692f7dcc28a835fabc7376dedfacd}
+      \field{sortinit}{5}
+      \field{sortinithash}{5dd416adbafacc8226114bc0202d5fdd}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{2023 IEEE 16th International Conference on Cloud Computing (CLOUD)}
+      \field{title}{Free the Turtles: Removing Nested Virtualization for Performance and Confidentiality in the Cloud}
+      \field{year}{2023}
+      \field{pages}{275\bibrangedash 281}
+      \range{pages}{7}
+      \verb{doi}
+      \verb 10.1109/CLOUD60044.2023.00039
+      \endverb
+      \keyw{Cloud computing;Trusted computing;Emulation;Containers;Virtual machining;Security;Resource management;nested virtualization;confidential computing;Infrastructure as a Service;virtual machines;Platform as a Service;Kubernetes;OpenShift}
+    \endentry
+    \entry{cs-os-benchmark}{inproceedings}{}
+      \name{author}{3}{}{%
+        {{hash=3995241a3ec77b0e3f08148dafed48d2}{%
+           family={Paradowski},
+           familyi={P\bibinitperiod},
+           given={Aaron},
+           giveni={A\bibinitperiod}}}%
+        {{hash=9b70d85f003fa30a5cae684a692c6e97}{%
+           family={Liu},
+           familyi={L\bibinitperiod},
+           given={Lu},
+           giveni={L\bibinitperiod}}}%
+        {{hash=1ce4eb84b8441cb4f47e328910e194f7}{%
+           family={Yuan},
+           familyi={Y\bibinitperiod},
+           given={Bo},
+           giveni={B\bibinitperiod}}}%
+      }
+      \strng{namehash}{13820e96c58f44221c47dec29a498d8e}
+      \strng{fullhash}{13820e96c58f44221c47dec29a498d8e}
+      \strng{bibnamehash}{13820e96c58f44221c47dec29a498d8e}
+      \strng{authorbibnamehash}{13820e96c58f44221c47dec29a498d8e}
+      \strng{authornamehash}{13820e96c58f44221c47dec29a498d8e}
+      \strng{authorfullhash}{13820e96c58f44221c47dec29a498d8e}
+      \field{sortinit}{6}
+      \field{sortinithash}{7851c86048328b027313775d8fbd2131}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{2014 IEEE 17th International Symposium on Object/Component/Service-Oriented Real-Time Distributed Computing}
+      \field{title}{Benchmarking the Performance of OpenStack and CloudStack}
+      \field{year}{2014}
+      \field{pages}{405\bibrangedash 412}
+      \range{pages}{8}
+      \verb{doi}
+      \verb 10.1109/ISORC.2014.12
+      \endverb
+      \keyw{Random access memory;Virtual machine monitors;Correlation;Hard disks;Benchmark testing;Cloud computing;Cloud;Benchmark;OpenStack;CloudStack}
+    \endentry
+    \entry{ibm-kubevirt-scale}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=48d542727da72b8fd7ca7e55a4bd5129}{%
+           family={Amaral},
+           familyi={A\bibinitperiod},
+           given={Marcelo},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{48d542727da72b8fd7ca7e55a4bd5129}
+      \strng{fullhash}{48d542727da72b8fd7ca7e55a4bd5129}
+      \strng{bibnamehash}{48d542727da72b8fd7ca7e55a4bd5129}
+      \strng{authorbibnamehash}{48d542727da72b8fd7ca7e55a4bd5129}
+      \strng{authornamehash}{48d542727da72b8fd7ca7e55a4bd5129}
+      \strng{authorfullhash}{48d542727da72b8fd7ca7e55a4bd5129}
+      \field{sortinit}{7}
+      \field{sortinithash}{f615fb9c6fba11c6f962fb3fd599810e}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{IBM Research Publications}
+      \field{month}{2}
+      \field{note}{https://research.ibm.com/publications/kubevirt-scale-test-by-creating-400-vmis-on-a-single-node}
+      \field{title}{Kubevirt scale test by creating 400 vmis on a single node for FOSDEM 2022: IBM Research}
+      \field{year}{2022}
+    \endentry
+    \entry{openstack-kubevirt-network}{article}{}
+      \name{author}{2}{}{%
+        {{hash=dd9095591dd070a1538746d8c0627708}{%
+           family={OTTAVIO},
+           familyi={O\bibinitperiod},
+           given={RISSO\bibnamedelimb FULVIO\bibnamedelima GIOVANNI},
+           giveni={R\bibinitperiod\bibinitdelim F\bibinitperiod\bibinitdelim G\bibinitperiod}}}%
+        {{hash=6e255ee48f291cc6fb64fc671a1351db}{%
+           family={Kolahdouzan},
+           familyi={K\bibinitperiod},
+           given={Alireza},
+           giveni={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{cb5e47052925e3e7b81273e1ef54a44e}
+      \strng{fullhash}{cb5e47052925e3e7b81273e1ef54a44e}
+      \strng{bibnamehash}{cb5e47052925e3e7b81273e1ef54a44e}
+      \strng{authorbibnamehash}{cb5e47052925e3e7b81273e1ef54a44e}
+      \strng{authornamehash}{cb5e47052925e3e7b81273e1ef54a44e}
+      \strng{authorfullhash}{cb5e47052925e3e7b81273e1ef54a44e}
+      \field{sortinit}{8}
+      \field{sortinithash}{1b24cab5087933ef0826a7cd3b99e994}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Network Automation, Orchestration, Cloud: Tools and Technologies}
+      \field{year}{2019}
+    \endentry
+    \entry{declarative-benefits}{article}{}
+      \name{author}{1}{}{%
+        {{hash=eb598e029e14e4824be8f6a166119708}{%
+           family={Sonninen},
+           familyi={S\bibinitperiod},
+           given={Oskar},
+           giveni={O\bibinitperiod}}}%
+      }
+      \strng{namehash}{eb598e029e14e4824be8f6a166119708}
+      \strng{fullhash}{eb598e029e14e4824be8f6a166119708}
+      \strng{bibnamehash}{eb598e029e14e4824be8f6a166119708}
+      \strng{authorbibnamehash}{eb598e029e14e4824be8f6a166119708}
+      \strng{authornamehash}{eb598e029e14e4824be8f6a166119708}
+      \strng{authorfullhash}{eb598e029e14e4824be8f6a166119708}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Perceived benefits of declarative software deployment: an exploratory case study}
+      \field{year}{2020}
+    \endentry
+    \entry{kubevirt-migrate-issues}{inproceedings}{}
+      \name{author}{2}{}{%
+        {{hash=cff66dd1dc37517ebc67b9c9d4cd387c}{%
+           family={Trakulmaiphol},
+           familyi={T\bibinitperiod},
+           given={Supakorn},
+           giveni={S\bibinitperiod}}}%
+        {{hash=984f99d302cbf3cff5c991d3d1c9a6c6}{%
+           family={Piromsopa},
+           familyi={P\bibinitperiod},
+           given={Krerk},
+           giveni={K\bibinitperiod}}}%
+      }
+      \strng{namehash}{09ab727135998258c64fcfe55e415d80}
+      \strng{fullhash}{09ab727135998258c64fcfe55e415d80}
+      \strng{bibnamehash}{09ab727135998258c64fcfe55e415d80}
+      \strng{authorbibnamehash}{09ab727135998258c64fcfe55e415d80}
+      \strng{authornamehash}{09ab727135998258c64fcfe55e415d80}
+      \strng{authorfullhash}{09ab727135998258c64fcfe55e415d80}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{2022 26th International Computer Science and Engineering Conference (ICSEC)}
+      \field{title}{An Implementation of DNS Operator and Network Guideline for Migrating Virtual Machine to KubeVirt}
+      \field{year}{2022}
+      \field{pages}{84\bibrangedash 89}
+      \range{pages}{6}
+      \verb{doi}
+      \verb 10.1109/ICSEC56337.2022.10049369
+      \endverb
+      \keyw{Computer science;Organizations;Containers;Virtual machining;Network interfaces;IP networks;Guidelines;Kubernetes;Operator SDK;KubeVirt;Container Network Interface;Multus CNI;Kubernetes NMState}
+    \endentry
+    \entry{linux-boot-time}{inproceedings}{}
+      \name{author}{4}{}{%
+        {{hash=c318b9afc99e2b0da5134464661222f9}{%
+           family={Schmoll},
+           familyi={S\bibinitperiod},
+           given={Robert-Steve},
+           giveni={R\bibinithyphendelim S\bibinitperiod}}}%
+        {{hash=f78022e2bfa45cef5967c827e7ce71df}{%
+           family={Fischer},
+           familyi={F\bibinitperiod},
+           given={Tobias},
+           giveni={T\bibinitperiod}}}%
+        {{hash=4d04b28e7b88d2f3acfe078fb8e97344}{%
+           family={Salah},
+           familyi={S\bibinitperiod},
+           given={Hani},
+           giveni={H\bibinitperiod}}}%
+        {{hash=d3e7f971501ea31ce2bc16e2c490eb05}{%
+           family={Fitzek},
+           familyi={F\bibinitperiod},
+           given={Frank\bibnamedelima HP},
+           giveni={F\bibinitperiod\bibinitdelim H\bibinitperiod}}}%
+      }
+      \list{organization}{1}{%
+        {IEEE}%
+      }
+      \strng{namehash}{d95fd60beb2c4b7507303f218e7c36ee}
+      \strng{fullhash}{5f6704f4726c1eb2dbc5cb4f71d5b568}
+      \strng{bibnamehash}{d95fd60beb2c4b7507303f218e7c36ee}
+      \strng{authorbibnamehash}{d95fd60beb2c4b7507303f218e7c36ee}
+      \strng{authornamehash}{d95fd60beb2c4b7507303f218e7c36ee}
+      \strng{authorfullhash}{5f6704f4726c1eb2dbc5cb4f71d5b568}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{2019 IEEE 2nd 5G World Forum (5GWF)}
+      \field{title}{Comparing and evaluating application-specific boot times of virtualized instances}
+      \field{year}{2019}
+      \field{pages}{602\bibrangedash 606}
+      \range{pages}{5}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

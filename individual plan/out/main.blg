@@ -1,0 +1,22 @@
+[0] Config.pm:304> INFO - This is Biber 2.14 (beta)
+[0] Config.pm:307> INFO - Logfile is 'out/main.blg'
+[73] biber:322> INFO - === mån feb 19, 2024, 09:54:44
+[87] Biber.pm:415> INFO - Reading 'out/main.bcf'
+[139] Biber.pm:943> INFO - Found 12 citekeys in bib section 0
+[158] Biber.pm:4256> INFO - Processing section 0
+[159] Utils.pm:75> INFO - Globbing data source 'references.bib'
+[159] Utils.pm:91> INFO - Globbed data source 'references.bib' to references.bib
+[169] Biber.pm:4455> INFO - Looking for bibtex format file 'references.bib' for section 0
+[171] bibtex.pm:1653> INFO - LaTeX decoding ...
+[189] bibtex.pm:1471> INFO - Found BibTeX data source 'references.bib'
+[219] Utils.pm:293> WARN - month field 'May' in entry 'Li2023' is not an integer - this will probably not sort properly.
+[224] Utils.pm:293> WARN - month field 'Jan' in entry 'kubevirt' is not an integer - this will probably not sort properly.
+[228] Utils.pm:293> WARN - month field 'Sep' in entry 'kubevirt-cncf' is not an integer - this will probably not sort properly.
+[259] Utils.pm:293> WARN - month field 'Feb' in entry 'ibm-kubevirt-scale' is not an integer - this will probably not sort properly.
+[294] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[294] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[294] Biber.pm:4084> INFO - Sorting list 'none/global//global/global' of type 'entry' with template 'none' and locale 'en-US'
+[294] Biber.pm:4090> INFO - No sort tailoring available for locale 'en-US'
+[310] bbl.pm:652> INFO - Writing 'out/main.bbl' with encoding 'UTF-8'
+[324] bbl.pm:755> INFO - Output to out/main.bbl
+[324] Biber.pm:128> INFO - WARNINGS: 4

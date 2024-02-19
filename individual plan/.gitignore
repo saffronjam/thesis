@@ -10,6 +10,6 @@
 *.fls
 *.synctex.gz
 out/
-!out/thesis.pdf
+!out/main.pdf
 exempelavhandling.pdf
 examplethesis.pdf

@@ -31,6 +31,20 @@ microkernel-monolithic https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=
 
 ## VM Management
 
+cs-overview https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=Apache+CloudStack%3A+Open+Source+Infrastructure+as+a+Service+Cloud+Computing+Platform+&btnG=
+cs-os-benchmark https://ieeexplore.ieee.org/abstract/document/6899177
 openstack-opennebula-comparison https://ieeexplore.ieee.org/abstract/document/6234218
 cloudframeworks-and-hypervisors https://ieeexplore.ieee.org/abstract/document/7506698
 openstack-overview https://dl.acm.org/doi/abs/10.1145/2628194.2628195?casa_token=qIxFY2CX3kwAAAAA:31820YiicQcI8tokP_q3QtuMcj3jLNu0syfLikzENFfD7-nE0919qQAWerbKukXxCa6bxiSIoX14tVY
+opennebula-tele-teaching https://ieeexplore.ieee.org/abstract/document/6654452
+iaas-comparisons https://link.springer.com/chapter/10.1007/978-3-030-92038-8_45
+openstack-website https://www.openstack.org/software/
+ec2-overview https://www.researchgate.net/profile/Anurag-Choudhary-3/publication/355979224_A_walkthrough_of_Amazon_Elastic_Compute_Cloud_Amazon_EC2_A_Review/links/6187b835d7d1af224bc18690/A-walkthrough-of-Amazon-Elastic-Compute-Cloud-Amazon-EC2-A-Review.pdf
+ec2-overview-web https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html
+public-cloud-comparison https://pdfs.semanticscholar.org/10bf/f6d5dee2c2dd62f85eac3ea1900045cae820.pdf
+azure-overview https://link.springer.com/chapter/10.1007/978-1-4842-1043-7_6
+azure-cost-effective https://ieeexplore.ieee.org/abstract/document/9634127
+gce-overview-web https://www.techtarget.com/searchaws/definition/Google-Compute-Engine#:~:text=Google%20Compute%20Engine%20(GCE)%20is,compute%20clusters%20for%20that%20purpose.
+gce-overview https://link.springer.com/chapter/10.1007/978-1-4842-1004-8_4
+public-private-cloud https://www.researchgate.net/profile/Gurudatt-Kulkarni/publication/258253155_Private_Vs_Public_Cloud/links/00b7d5279d2e6dfb22000000/Private-Vs-Public-Cloud.pdf
+hybrid-cloud https://iopscience.iop.org/article/10.1088/1742-6596/1025/1/012091/pdf

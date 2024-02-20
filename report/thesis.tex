@@ -51,11 +51,7 @@
 
 
 \section{Background}
-Virtual machines have long been the core part of IT infrastructure \cite{vm-background}, allowing the underlying hardware to be split into multiple virtual computing units. However, while virtual machines enables robust isolation, they also introduce overhead that could hinder performance of the application running inside of it. A popular alternative to virtual machines is containers, since they reduce the required overhead by sharing the underlying system. This, of course, by sacrificing many of the isolation properties. While there are some architectures that aims to unify the benefits of both virtual machines and containers, such as gVisor and Firecracker, it remains a fact that both containers and virtual machines have their individual use-cases. For this reason, virtual machines and containers have traditionally been managed separately; virtual machines in platforms such as OpenStack and CloudStack, and containers using a platform such as Kubernetes. 
 
-However, with the advent of container orchestration platforms like Kubernetes, there has been an ongoing convergence \cite{vm-background} in how virtual machine and containers are managed. Specifically by integrating virtual machine management in a container-centric environment. KubeVirt \cite{kubevirt}, an extension to Kubernetes, has thus emerged as a solution by enabling the running of virtual machine inside a Kubernetes environment alongside the containers creating a common environment. This approach \cite{kubevirt-cncf}, offers benefits such as reduced architectural complexity (as only Kubernetes is needed) and enhanced integration with the Kubernetes ecosystem;. By managing the virtual machines they same way as any other Kubernetes resource, they benefit from the flexible and scalable Kubernetes infrastructure. 
-
-Additionally, KubeVirt's benefits can be derived from the architectural changes \cite{free-turtles} that can be made when moving virtual machines into Kubernetes. Kubernetes nodes are commonly deployed in virtual machines to improve the flexibility of a cluster. However, with KubeVirt enabling running virtual machines inside Kubernetes, it opens the possibility of running Kubernetes directly on the bare metal servers. This approach could reduce overhead as it reduces nested virtualization, and thus could allow Kubernetes to function as a traditional virtual machine management system.  
 
 \section{Research Question}
 \begin{enumerate}
@@ -84,14 +80,6 @@ Additionally, KubeVirt's benefits can be derived from the architectural changes 
 \section{Goals}
 
 \section{Research Method}
-\begin{itemize}
-  \item Quantitative analysis\\
-  This is tied to \textit{Data collection} and \textit{Data analysis} in Tasks. It includes measuring performance, scalability and operational efficiencies that could arise when using Kubernetes with KubeVirt. Measured using metrics such as deployment speed, how quick scaling is, and how system resources are utilized (idle time, CPU usage per reserved CPU core) - essentially measuring the differences between orchestrating with traditional virtual machine systems and Kubernetes with KubeVirt. 
-  \item Qualitative analysis\\
-  This is tied to \textit{Interview or supervised testing} in Tasks. It includes investigating the usability of an Kubernetes environment with KubeVirt. It will include collecting opinions and feedback from people using the system to answer what the perceived effect of using KubeVirt is. This could be system administrators at Net Insight.
-  \item System Management\\
-  This can be seen as a subsection of both Quantitative analysis and Qualitative analysis, as it emphasises both usability as a qualitative metric as well as quantifiable metrics. It involves investigating possible simplifications of system management tasks, such as creating, deleting, starting, stopping virtual machines etc.
-\end{itemize}
 
 \section{Limitations}
 \begin{enumerate}
@@ -143,6 +131,7 @@ Outline the advantages virtualization offers, such as resource optimization and 
 
 
 \section{Understanding Hypervisors}
+\label{hypervisors}
 A hypervisor is a software layer that enables managing multiple VMs on a single physical machine \cite{virtualization-history} by allowing multiple operating systems (termed as \textit{guests}) to share the same hardware \cite{hypervisor-survey}. Hypervisors, often referred to as virtual machine monitors (VMMs), are responsible for creating and managing VMs, and for providing the necessary abstractions to the VMs.
 
 Hypervisors can be categorized into two types, \textit{type 1} and \textit{Type 2}, based on their operational context and how they interact with the underlying hardware \cite{hypervisor-survey}\cite{hypervisor-types-1-2}. While the goals and purpose of type 1 and Type 2 hypervisors is the same, there are some core differences. type 1 hypervisors, commonly referred to as \textit{bare-metal} hypervisors, run directly on top of the physical hardware and do not require an OS underneath. A type 1 hypervisor is therefore scalable to terabytes of RAM and hundreds of CPU cores \cite{hypervisor-types-1-2}. However, without any other additional software, it is also itself responsible to schedule and allocate required system resources to the VMs. Type 2 hypervisors, also known as \textit{hosted hypervisors}, relies on an underlying OS to manage the calls to the CPU and memory resources. The presence of an underlying OS inevitably introduces latency, which is why Type 2 hypervisors are often used for development and testing purposes \cite{hypervisor-survey}.
@@ -179,25 +168,63 @@ A VM management system is often part of a larger cloud computing infrastructure,
 
 Discuss essential VM management capabilities, including live migration, snapshot management, and scalability.
 \subsection{Comparison of VM Management Systems}
-There exists many VM management system, many of which are a larger platform, such as an IaaS. Some of these systems are presented below: 
+Managing VMs can be done in many ways, and there are many VM management systems available, each with its own set of features and capabilities. Many such systems are a part of a larger platform, such as an IaaS or even as large as a cloud platform. Some of the most prevalent platforms that has been used in the industry are OpenStack, CloudStack, and OpenNebula, and some of the most popular public cloud platforms are Amazon EC2, Azure Virtual Machines, and Google Compute Engine.
 
-\subsection*{OpenStack}
-An open-source IaaS platform that offers a large set of features to manage among many resources, VMs, network, and storage \cite{openstack-opennebula-comparison}. OpenStack's architecture is inherently modular, and it is designed to be deployed in a distributed manner \cite{openstack-overview}. Some of the core components of OpenStack are listed below:
+\subsubsection*{OpenStack}
+An open-source IaaS platform that offers a large set of features to manage VMs, network, and storage \cite{openstack-opennebula-comparison}. OpenStack's architecture is inherently modular, and it is designed to be deployed in a distributed manner \cite{openstack-overview}. The architecture includes three major parts:
 \begin{itemize}
-    \item Nova: The compute service that manages VMs and provides an interface to manage VMs, such as creating, deleting, and resizing VMs.
-    \item Neutron: The networking service that provides network connectivity as a service between interface devices managed by other OpenStack services.
-    \item Horizon: The dashboard that provides a web-based user interface to interact with OpenStack services.
+    \item \textit{Nova}: The compute service that manages VMs and provides an interface to manage VMs. Nova support all operation regarding the life cycle of a VM, such as creating, deleting, and migrating VMs. Nova is itself divided into multiple copmonents, each employing a \textit{shared-nothing} and \textit{messaging-based} policy, which means every component is independent and communicates with other components using a message queue. 
+    \item \textit{Swift}: The object storage service that provides a scalable and redundant storage system for VMs. It is a long-term storage for static data, such as images and backups, and is comparable to Amazon S3.
+    \item \textit{Glance}: The image service that provides a catalog of VM images that can be used to create new VMs. 
 \end {itemize}
 
-OpenStack supports features such as live migration, snapshot management, and scalability, and is often used in large-scale cloud environments \cite{openstack-opennebula-comparison}. However, these features 
+OpenStack supports features such as live migration, snapshot management, and scalability, and is often used in large-scale cloud environments \cite{openstack-opennebula-comparison}. However, these features are often hypervisor-specific, and requires both support from the hypervisor and specific configuration to work \cite{openstack-live-migration}.
 
-\subsection*{CloudStack}
+\subsubsection*{CloudStack}
+An open-source IaaS platform and cloud computing software that manages computing, networking and storage resources, and is used to build and manage public and private cloud environments \cite{cs-overview}. On a high level, CloudStack is built in a monolithic fashion, encapsulating all the management features into two software packages called the management server and agent. The management server is responsible for managing the lifecycle of VMs, including provisioning, deployment, and scaling, and is comparable to a control node. The agent, however, is installed on each node in the cloud and is responsible for low-level management task of the VMs on that node, such as interacting with the underlying hypervisor. While it is a monolithic system, CloudStack is designed to be horizontally scalable, and can be deployed in a distributed manner with multiple management servers \cite{cs-overview}. 
 
-\subsection*{OpenNebula}
+CloudStack supports a large variety of hypervisors, such as VMware, KVM, and XenServer, and storage services, such as Amazon S3, allowing it to function as an abridgment layer for compute, network, and storage to unify a wide range of existing infrastructure \cite{cs-overview}. Features such as live migration, snapshot management, and scalability are supported, but are often hypervisor-specific and requires specific configuration to work \cite{cs-live-migration}.
+
+\subsubsection*{OpenNebula}
+An open-source IaaS platform and toolkit used to provide open, scalable, and comprehensive management of virtualized data centers \cite{openstack-opennebula-comparison}. OpenStack employs a modular architecture divided in three layers \cite{openenbula-tele-teaching}\cite{iaas-comparisons}: 
+\begin{itemize}
+    \item \textit{Tools layer}: Provides a set of interfaces such as a CLI and web-based user interface to interact with the system, but also high-level management tools such as scheduling.
+    \item \textit{Core layer}: Provides the core functionalities of the system, such as host management, VM management, and virtual network management.
+    \item \textit{Driver layer}: Provides an abstraction on top of the underlying infrastructure to enable the system to support a wide range of hardware, including networking, storage, and hypervisors. As such, the driver layer is responsible for allocation, deallocation and monitoring of resources, such as VMs and storage. 
+\end{itemize}
+
+By dividing the system into these layers, OpenNebula provides modularity that enables the system to be extended and customized to fit specific needs, such as integrating with other systems or using OpenNebula to build a private cloud.
+
+\subsubsection*{Amazon EC2}
+Amazon Elastic Compute Cloud (EC2) is a web service that provides on-demand compute resources over the cloud \cite{ec2-overview}\cite{ec2-overview-web}. EC2 is part of Amazon Web Services (AWS), and is designed be scalable and flexible, and is often used to host general-purpose applications, including web applications, databases and enterprise applications. While EC2 platform uses Xen-based hypervisors under the hood \cite{public-cloud-comparison}, it acts as a complete abstraction layer over the underlying hardware and hypervisors, and instead provides a rich set of tools to manage the VMs. 
+
+EC2 provides a large set of preconfigured templates called Amazon Machine Images (AMIs) that can be used to create new VMs, as well as a configurations in terms of specifications. This enables EC2 to provide a wide range of VMs, such as general-purpose, compute-optimized, memory-optimized, and storage-optimized VMs \cite{ec2-overview}. Features such as live migration, snapshot management, and auto-scaling are supported, 
+
+\subsubsection*{Azure Virtual Machines}
+Azure Virtual Machines is a service provided by Azure to manage VMs in the cloud \cite{azure-overview}, and is designed to be a cost-effective alternative to on-premises hardware \cite{azure-cost-effective}. Azure Virtual Machine provides a set of preconfigured VMs that can be used to create VMs for specific purposes, such as general-purpose or high-performance computing (HPC).
+
+Behind the scenes Azure Virtual Machines runs on Hyper-V (see \ref{hypervisors}) and provides a set of features such as live migration, snapshot management, and auto-scaling \cite{azure-overview-web}.
+
+\subsubsection*{Google Compute Engine}
+Google Compute Engine is a service provided by Google Cloud to manage computing resources in the cloud \cite{gce-overview-web}. Compute Engine consists of three major parts: VMs, storage, and networking, where VMs is the core component. VMs are offered in a wide range of configurations, such as standard, high-memory, and high-CPU, making them suitable for different computational workloads \cite{gce-overview}. 
+
+Compute Engine uses KVM as its hypervisor (see \ref{hypervisors}), and provides many features such as live migration, snapshot management, and auto-scaling \cite{gce-overview-web}\cite{public-cloud-comparison}.
+
+
+\subsubsection{Comparison}
+\label{vm-management-comparison}
+
+OpenStack, OpenNebula, and CloudStack are all examples of software that can be used to build private cloud platforms \cite{public-private-cloud}\cite{hybrid-cloud}. A private cloud is an on-premise cloud that hosted within an organization, more often than not for that organization's internal use. A common denominator for these systems is that they are open-source, and that they are highly customizable and extendable. As such, much of the configuration and management of the system is done by the user, and the system can be integrated with other systems to fit specific needs. This means many of the conveniences, such as preconfigured VMs, and features, such as live migration, often requires specific configuration and setup. 
+
+On the other hand, VM management systems part of a public clouds, such as Amazon EC2, Azure Virtual Machines and Google Compute Engine, are designed to be more user-friendly and to provide a more complete abstraction layer over the underlying hardware and hypervisors \cite{public-private-cloud}. As such, many of the conveniences and features are provided out of the box, and are perceived as hypervisor- and hardware-agnostic. This means that the user does not need to worry about the underlying hardware and hypervisors, and can instead focus on managing the VMs.
+
+Both private and public cloud solutions for VM management are designed to be scalable and flexible, and support a wide range of use cases (although private cloud solutions scales worse in practice \cite{hybrid-cloud}). Which solution to use depends on the specific needs of the organization, and the level of control, customization needs, and the required security level of the system. 
 
 Briefly introduce traditional VM management systems like OpenStack, CloudStack, and OpenNebula, focusing on how they implement these core features.
 
 \section{Containers and Kubernetes: A Paradigm Shift}
+
+
 \subsection{Containers Explained}
 Define containers, their architecture, and how they differ from VMs in terms of overhead and isolation.
 \subsection{Kubernetes as a Container Orchestration Platform}
@@ -225,11 +252,6 @@ Outline methodologies for assessing VM management systems, including performance
 Define specific metrics to be used in comparing KubeVirt against traditional VM management systems, such as deployment time, resource utilization, and ease of management.
 
 \section{Related Work}
-In 2014, \cite{cs-os-benchmark} compared the performance of OpenStack and CloudStack, two of the most popular open-source cloud computing solutions. In the study they used several benchmarks, including deployment time, deletion time, CPU utilization during deployment and deletion, to evaluate quantifiable differences between the systems. Using these methods, they were able to find significant differences between the two. The study is relevant to this project as it provides provably useful metrics when evaluating virtual machine management systems. However, the tests are relatively small, thus do not evaluate how the systems manages virtual machines when reaching some form of limit on the hosting node. Later in 2022, \cite{ibm-kubevirt-scale} benchmarked KubeVirt using a setup with a large amount of virtual machines relatively to the size of the nodes. This was performed in a way to test limits of the system's control plane (scheduler etc.), and findings include a possibly large overhead when KubeVirt provisions a large amount of virtual machines. The study is related to this project as it evaluates the limits of KubeVirt and what the first appearing limits are. Furthermore, in 2019 \cite{openstack-kubevirt-network} compared KubeVirt with OpenStack in terms of network traffic flow and network performance. Some of its findings includes a large overhead with OpenStack when virtual machines on different nodes communicate. The strategies used in the study in a way relevant to this project as it provides a base for comparing network performance as a quantifiable metric.
-
-Issues related to nested virtualization, meaning when virtual machines are run inside other virtual machines, are brought up in \cite{free-turtles}. The study explains how the issues arise when striving for both the isolation of virtual machine and the cloud-native way to deploy them (such as with Kubernetes). They propose a flattened architecture, as could be achieved using a virtual machine management system like KubeVirt. The study is relevant to this project as it brings up KubeVirt in the context of solving nested virtualization.  
- 
-Finally \cite{kubevirt-migrate-issues} presents shortcomings of KubeVirt when migrating from a traditional virtual machine management system, such as CloudStack and OpenStack. For instance IP addresses changing over time when a static IP address is required. In the study they developed a framework to solve some of the issues on application level, such as DNS queries, and provided a set of guidelines related to KubeVirt's  unique features, such as the Multus Container Network Interface. These findings are especially relevant to this project as they highlight shortcomings that needs to be addressed when migrating a virtual machine to KubeVirt. 
 
 \chapter{Methods}
 \blindtext%

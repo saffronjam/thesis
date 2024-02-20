@@ -196,7 +196,7 @@ An open-source IaaS platform and toolkit used to provide open, scalable, and com
 By dividing the system into these layers, OpenNebula provides modularity that enables the system to be extended and customized to fit specific needs, such as integrating with other systems or using OpenNebula to build a private cloud.
 
 \subsubsection*{Amazon EC2}
-Amazon Elastic Compute Cloud (EC2) is a web service that provides on-demand compute resources over the cloud \cite{ec2-overview}\cite{ec2-overview-web}. EC2 is part of Amazon Web Services (AWS), and is designed be scalable and flexible, and is often used to host general-purpose applications, including web applications, databases and enterprise applications. While EC2 platform uses Xen-based hypervisors under the hood \cite{public-cloud-comparison}, it acts as a complete abstraction layer over the underlying hardware and hypervisors, and instead provides a rich set of tools to manage the VMs. 
+Amazon Elastic Compute Cloud (EC2) is a web service that provides on-demand compute resources over the cloud \cite{ec2-overview}\cite{ec2-overview-web}. EC2 is part of Amazon Web Services (AWS), and is designed be scalable and flexible, and is often used to host general-purpose applications, including web applications, databases and enterprise applications. While EC2 platform uses Xen-based hypervisors (see \ref{hypervisors}) under the hood \cite{public-cloud-comparison}, it acts as a complete abstraction layer over the underlying hardware and hypervisors, and instead provides a rich set of tools to manage the VMs. 
 
 EC2 provides a large set of preconfigured templates called Amazon Machine Images (AMIs) that can be used to create new VMs, as well as a configurations in terms of specifications. This enables EC2 to provide a wide range of VMs, such as general-purpose, compute-optimized, memory-optimized, and storage-optimized VMs \cite{ec2-overview}. Features such as live migration, snapshot management, and auto-scaling are supported, 
 
@@ -223,12 +223,37 @@ Both private and public cloud solutions for VM management are designed to be sca
 Briefly introduce traditional VM management systems like OpenStack, CloudStack, and OpenNebula, focusing on how they implement these core features.
 
 \section{Containers and Kubernetes: A Paradigm Shift}
+Besides the common cloud service models (IaaS, PaaS, and SaaS), another service models has emerged, called \textit{Container as a Service (CaaS)} \cite{caas}. CaaS is a container based cloud service model that has gained significant traction due to the lightweight and portable nature of a container, allowing for simple application bundling that is able to run in a vast range of environments. 
 
+Containers are often used in conjunction with a container orchestration platform, such as Kubernetes, to manage the lifecycle of the containers, including deployment, scaling, and monitoring. As such, they are often used to build, test, and deploy applications in a consistent manner. ThiA common use case for containers is to run microservices, which is a software architecture that employs a set of small, independent and loosely coupled applications \cite{microservices-overview}. 
 
 \subsection{Containers Explained}
+Containers are a form of virtualization that offers a horizontally scalable and lightweight alternative to VMs \cite{container-k8s-benchmark}\cite{container-vm-overview}. Unlike VMs, containers do not require a hypervisor to run, and instead run on top of an OS and shares the OS kernel with other containers. By not requiring a hypervisor, containers are able to run with less overhead than VMs, making their lifecycle relatively fast and efficient compared to VMs. 
+
+The Open Container Initiative (OCI) is a standardization effort that was created to ensure that containers are portable and interoperable across different platforms \cite{oci}. The OCI standard defines a runtime specification, image specification, and distribution specification, allowing for a container to be consistent in terms of its runtime environment, image format, and distribution method. 
+
+Creating, deploying, and managing containers is using a container runtime, such as containerd \cite{container-runtimes}. Most runtimes, including containerd, implement the OCI runtime specification, and are able to run containers in a consistent manner. This also suggests that the OCI can be viewed as an abstraction layers, where, for instance, the OCI runtime specification acts as an intermediary between the container runtime and the OS kernel.  
+
+% TODO add a simplified version of this image: https://www.docker.com/blog/what-is-containerd-runtime/
+
 Define containers, their architecture, and how they differ from VMs in terms of overhead and isolation.
-\subsection{Kubernetes as a Container Orchestration Platform}
-Introduce Kubernetes, detailing its components, functionalities, and how it revolutionized container management.
+\subsection{Orchestration Using Kubernetes}
+Kubernetes is an open-source container orchestration platform that manages containers. It maintains a set of abstraction layers to manage the life cycle of containers and to provide a consistent environment for the containers to run in, such as scheduling, scaling, and networking \cite{container-vm-overview}.
+
+Kubernetes is inherently declarative, meaning that instead of issuing commands to perform a specific task, such as starting a container, Kubernetes is given a desired state for a set of resources, and it is responsible for ensuring that the current state of the resources matches a desired state \cite{container-vm-overview}\cite{k8s-overview}. As such, Kubernetes provides auto-restart, re-schedule, and replication control to ensure a resource stays in the desired state. By specifying the desired state, an entire application is able to be contained in a single configuration file, including its container, networking, storage, and security requirements. 
+
+Some of the abstractions used in Kubernetes includes \textit{Pods}, \textit{Services}, and \textit{Deployments} \cite{k8s-overview}. A Pod is the smallest deployable unit in Kubernetes, and represents a group of one or more containers that are scheduled to run on a node. A Service represents a single-point-of-entry communication layer for a set of Pods, and is used to provide a consistent way to access the Pods, such as load balancing. A Deployment is a higher-level abstraction on top of Pods that is used to manage the life cycle of the Pods, such as scaling and rolling updates. A Deployment does not represent an executable resource, but instead describes a desired state in which a set of Pods should be in. There are many other abstractions in Kubernetes, each with its own set of features and capabilities that together creates a feature complete platform for container orchestration. 
+
+% TODO: Add an image describing the concepts above. 
+% https://kubernetes.io/docs/concepts/overview/
+
+A Custom Resource Definition (CRDs) is a form of extension for Kubernetes resources that allows for the creation of custom resources \cite{k8s-overview}\cite{k8s-crd-webiste}. CRDs are used to extend the Kubernetes existing abstractions to provide additional features and capabilities to allow for a more feature complete platform when custom behavior is needed. For instance, a CRD can be used to enforce certain fields to be specified in order to create the resource, or to provide a custom validation logic \cite{k8s-crds}.
+
+Kubernetes uses a client-server architecture, where the server, often referred to as the control plane, is responsible for managing the state of the cluster, and the client, often referred to as the worker node, is responsible for running the containers \cite{k8s-overview}. The control plane runs system-related services, such as the API server, scheduler, and controller manager, and is thus responsible for managing the state of the cluster. The API server can be viewed as the primary service for a Kubernetes cluster as it is the main management point for the cluster, receiving and processing request from the client. The worker node, on the other hand, is responsible for running the containers containers. The worker node consist of two primary components: the kubelet and the kube-proxy. The kubelet is a service that includes a container runtime, which runs containers in according to requests from the control plane. Meanwhile, the kube-proxy service manages the network communication for the containers. To interact with Kubernetes form a user perspective, a client is used to send requests to the API server. The client can be a CLI, such as kubectl, a web-based user interface, or through a programmatic interface such as a REST API \cite{k8s-overview}. The CLI tool kubectl is the most common way to interact with Kubernetes, and is used to create, delete, and manage resources in the cluster. 
+\\~\\
+Through its abstractions, life cycle management, and declarative client-server architecture, Kubernetes provides a consistent and feature rich platform for container orchestration. 
+
+Introduce Kubernetes, detailing its components, functionalities, and how it revolutionized container management. 
 
 \section{Containers vs. Virtual Machines: Divergence and Use Cases}
 \subsection{Comparative Overview}

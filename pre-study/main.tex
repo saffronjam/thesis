@@ -46,18 +46,13 @@ Finally \cite{kubevirt-migrate-issues} presents shortcomings of KubeVirt when mi
 \newpage
 \section{Methods}
 \subsection{Performance Analysis}
-As previously described, \cite{cs-os-benchmark} presents a set of benchmarks used to evaluate CloudStack and OpenStack. These benchmarks were crafted to extract meaningful data when comparing VM management systems. For this project, though, KubeVirt will be compared to OpenNebula, an open-source Infrastructure as a Service (IaaS) system used by the cooperating company, NetInsight (other IaaS systems, such as OpenStack and CloudStack, will be considered in the performance analysis if time allows it). The study's setup were designed to complement the metrics they used to benchmark, such as exponential differences in RAM and CPU. The study does not use VMs with high or low CPU/RAM independently, and only uses notations \textit{tiny}, \textit{small} and \textit{medium}. However, for each type of VM they use a multiple disk sizes. As such, this project will use similar metrics with a similar setup, but with a larger set of VMs to include larger types. 
+As previously described, \cite{cs-os-benchmark} presents a set of benchmarks used to evaluate CloudStack and OpenStack. These benchmarks were crafted to extract meaningful data when comparing VM management systems. For this project, though, KubeVirt will be compared to the most popular open-source Iaas platforms: OpenStack, CloudStack, and OpenNebula. 
+
+In the study, the designed the setup to complement the metrics they were benchmarking, such as by using exponential differences in RAM and CPU. The study does not use VMs with high or low CPU/RAM independently, and only uses the notations \textit{tiny}, \textit{small} and \textit{medium}. As such, this project will use a similar approach. 
 
 Furthermore, to be more accurate in the measurements, VMs will use the lightweight Alpine Linux image, as lightweight image is less likely to introduce noise in the measurements \cite{linux-boot-time}. For instance, a heavier image could introduce a larger overhead by requiring installing more packages that requires fetching more data from external sources, which is unrelated to the system's performance. Another reason to use a lightweight image is to reduces the time it takes to run the tests, as a lightweight image is usually faster to boot.
 
-Finally, the tests will be performed on isolated VMs hosted by the same node. This is done to ensure the measurements are able to be reliably recreated. The physical computer hosting the testing VMs has the following specifications:
-\begin{itemize}
-    \item CPU: Intel Core i7-13700K 3.4GHz
-    \item RAM: 32GB DDR5 4800MHz
-    \item Disk: 4TB NVMe SSD
-    \item Network: 1Gbps
-    \item OS and hypervisor: Windows 11 with VirtualBox
-\end{itemize}
+Finally, the tests will be performed on a VM in a cloud environment, such as Azure or AWS. This is to ensure that the tests are not affected by the underlying hardware, and to ensure that the tests are reproducible. For each test case, the test environments will be installed from scratch, and the tests will be run multiple times to ensure that the results are consistent. After the tests are finished, the VMs will be deleted.
 
 \noindent The following is a summary of the setup used in the performance analysis:
 \begin{table}[!ht]
@@ -66,6 +61,8 @@ Finally, the tests will be performed on isolated VMs hosted by the same node. Th
         \hline
         System & CPU & RAM & Disk & Network \\
         \hline
+        OpenStack & 4 & 16GB & 120GB & 1Gbps \\
+        CloudStack & 4 & 16GB & 120GB & 1Gbps \\
         OpenNebula & 4 & 16GB & 120GB & 1Gbps \\
         KubeVirt & 4 & 16GB & 120GB & 1Gbps \\
         \hline
@@ -76,51 +73,31 @@ Finally, the tests will be performed on isolated VMs hosted by the same node. Th
 
 \begin{table}[!ht]
     \centering
-    \begin{tabular}{ |c|c|c| } 
+    \begin{tabular}{ |c|c|c|c| } 
         \hline
-        VM Name & CPU & RAM \\ 
+        VM Name & CPU & RAM & Disk Size\\ 
         \hline
-        Tiny & 1 & 512MB \\
-        Small & 2 & 1GB \\
-        Medium & 4 & 4GB \\
-        Large & 8 & 16GB \\
+        Small & 1 & 1GB & 1GB \\
+        Medium & 2 & 4GB & 10GB \\
+        Large & 4 & 16GB & 100GB \\
         \hline
     \end{tabular}
     \caption{VM specifications}
 \end{table}
 
-
+% use the above table but create a 2D table with tasks, such as create,delete,snapshot, on one axis, and the measured metrics on the other axis, such as CPU, Memory, and Disk on the other axis.
 \begin{table}[!ht]
     \centering
-    \begin{tabular}{ |c|c|c| } 
+    \begin{tabular}{ |c|c|c|c|c| }
         \hline
-        Disk Name & Size \\ 
+        & \textbf{CPU usage} & \textbf{Memory usage} & \textbf{Disk usage} & \textbf{Duration} \\
         \hline
-        Small & 1GB \\
-        Medium & 10GB \\
-        Large & 100GB \\
+        \textbf{Create VM} & & & & \\
+        \textbf{Delete VM} & & &  & \\
+        \textbf{Create Snapshot} & & & & \\
+        \textbf{Delete Snapshot} & & & & \\
         \hline
     \end{tabular}
-    \caption{Disk specifications}
-\end{table}
-
-
-\begin{table}[!ht]
-    \centering
-    \begin{tabular}{ |c|c| } 
-        \hline
-        Metrics Name & Unit \\
-        \hline
-        Deployment time & Seconds \\
-        Deletion time & Seconds \\
-        CPU utilization during deployment & Percentage \\
-        CPU utilization during deletion & Percentage \\
-        Memory utilization during deployment & Percentage \\
-        Memory utilization during deletion & Percentage \\
-        Disk utilization during deployment & Percentage \\
-        Disk utilization during deletion & Percentage \\
-        \hline
-    \end{tabular} 
     \caption{Performance metrics}
 \end{table}
 

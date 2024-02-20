@@ -48,3 +48,15 @@ gce-overview-web https://www.techtarget.com/searchaws/definition/Google-Compute-
 gce-overview https://link.springer.com/chapter/10.1007/978-1-4842-1004-8_4
 public-private-cloud https://www.researchgate.net/profile/Gurudatt-Kulkarni/publication/258253155_Private_Vs_Public_Cloud/links/00b7d5279d2e6dfb22000000/Private-Vs-Public-Cloud.pdf
 hybrid-cloud https://iopscience.iop.org/article/10.1088/1742-6596/1025/1/012091/pdf
+
+# Containers and Kubernetes
+
+caas https://link.springer.com/chapter/10.1007/978-3-319-69462-7_31
+container-k8s-benchmark https://ieeexplore.ieee.org/abstract/document/8968907
+microservices-overview https://arxiv.org/abs/1710.04049
+container-runtimes https://pdfs.semanticscholar.org/af89/2db0220dc3e48b953070a6f8573349d8490d.pdf'
+oci https://opencontainers.org/
+container-vm-overview https://sciendo.com/abstract/journals/acss/23/1/article-p21.xml
+k8s-overview https://dzone.com/storage/attachments/14131598-dzone-kubernetes-bundle.pdf
+k8s-crds https://link.springer.com/chapter/10.1007/978-981-19-5292-0_29
+k8s-kubectl https://link.springer.com/chapter/10.1007/978-1-4842-5519-3_4

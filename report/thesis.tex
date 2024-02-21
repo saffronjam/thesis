@@ -103,6 +103,7 @@ In this chapter we will discuss how virtualization has evolved over time to reac
 
 
 \section{Virtualization Fundamentals}
+\label{virtualization}
 Virtualization is a technology \cite{virtualization-basics} that enables partitioning or grouping computing resources into operating environments using methods such as partitioning, emulation, and time-sharing. Virtualization could occur in various forms, such as network virtualization, storage virtualization, and server virtualization. More commonly used, though, is hypervisor based virtualization \cite{virtualization-history}, which is a software layer that creates virtual operating environments, or more commonly referred to as virtual machines (VMs).
 
 A VM is a emulation of a physical computer \cite{virtualization-trends} and is perceived as \textit{real} computer by the application running inside it even though underlying resources are, more often than not, shared with other VMs. For this reason, virtualization is often used to improve resource utilization and to isolate applications from each other. Such a setup improves flexibility of the computing environment, but it implies that the underlying mechanism is formally different from that of a physical machine. For instance, hardware abstraction is used to decouple the VM's perceived hardware capabilities from the physical hardware. Abstracting the underlying hardware allows for \textit{virtual} computing resources, such as virtual CPUs and virtual memory, either by grouping or partitioning the physical resources.
@@ -255,10 +256,35 @@ Through its abstractions, life cycle management, and declarative client-server a
 
 Introduce Kubernetes, detailing its components, functionalities, and how it revolutionized container management. 
 
-\section{Containers vs. Virtual Machines: Divergence and Use Cases}
+\section{Containers vs. Virtual Machines}
+
+Virtualization has enabled the commoditization of computing resources due to the benefits of being able to map virtual to physical hardware (see \ref{virtualization}), and has been key in enabling cloud computing \cite{container-vm-overview}\cite{container-vm-comparison}. It has enabled the creation of flexible and scalable computing environments, and has been used to build and manage large-scale cloud platforms. Virtualization has mainly brought two technologies, hypervisors and containers. Hypervisors are used to create VMs, including all associated aspects such as an OS. Containers, on the other hand, are used to create a lightweight and portable environment for an application to run in, and are often run inside VMs. As such, a container comes with less overhead when compared to a hypervisor. However, by its nature, a VM is able to provide a more isolated environment than a container, leading to a more secure environment. Thus, the benefits of containers does not come without a cost, and there is a trade-off between the two technologies; one is lightweight, portable, and quick to start, while the other is more independent and secure. 
+
 \subsection{Comparative Overview}
+While containers and hypervisors are both technologies brought by virtualization, they operate on distinct levels of abstraction \cite{container-vm-comparison}. Containers operate on the application level using OS-level virtualization, which leads to sharing parts the OS kernel with other containers. A hypervisor on the other hand is able to virtualize the entire hardware stack, including the entire OS, depending on the type of hypervisor used (see \ref{hypervisors}). As such, the two technologies have different use cases, and are often used in conjunction with each other.
+
+\subsubsection*{Isolation}
+The main difference between containers and VMs in the level of isolation they provide. Containers share the OS kernel with other containers, and VMs do not. While this means a container is able to share resources more efficiently, it also means that a container is subject to a larger attack surface, as a vulnerability in the OS kernel can affect all containers running on the same host. VMs, on the other hand, are able to provide a more isolated environment, as they run on their own OS and are not subject to the same attack surface.
+
+Another aspect of isolation is the how co-located containers and VMs are able to share resources. 
+When sharing resources, such as CPU and memory, containers are vulnerable to the noisy neighbor problem \cite{vm-noisy-neighbor}. The noise neighbor problem occurs when a resource sharing mechanism, such as a scheduler, is unable to provide a fair share of resources to a container. Some scenarios include when a container is able to consume all available resources, or when a container intentionally consumes all available resources to starve other containers. VMs, on the other hand, are able to provide a more fair share of resources, as they are able to provide a more isolated environment \cite{container-vm-comparison}. Hypervisors, on the other hand, are able to provide a more fair share of resources, as they are able to provide a more isolated environment, leading to more resilient and predictable performance. However, a VM's isolation does not mitigate the noisy neighbor problem for all resource types. For instance, a VM is still vulnerable to the noisy neighbor problem when sharing network related resources, such as network bandwidth and network-based storage. 
+
+\subsubsection*{Overcommitment}
+Overcommitment is a technique used to improve packing efficiency, often referred to as \textit{consolidation ratio}, and it is often necessary to overcommit physical resources \cite{container-vm-comparison}\cite{vm-overcommitment}. Containers use the overcommitment mechanisms built into the OS itself, such as CPU overcommitment by multiplexing and memory overcommitment through virtual memory and memory swapping. Hypervisors, on the other hand, provide overcommitment by mapping virtual hardware devices onto the actual physical hardware, creating virtual computing resources that are not directly tied to the physical resources. Depending on the consolidation ratio, overcommitment for hypervisors can lead to a degradation in performance as the guest OS believes it has access to more resources than it actually has. Memory overcommitment, though, is a more complex issues in hypervisors than in containers due to the way hypervisors allocate memory. Unlike containers, hypervisors assign a static amount of memory to a VM when it is created. However, methods such as memory ballooning exist to address this limitation \cite{vm-ballooning}. Memory ballooning is a technique used to treat memory as a shared resource across VMs, and allow the hypervisor to reclaim memory from VMs when it is needed elsewhere, thereby reducing the need for memory overcommitment.
+
+% TODO: add image showing the difference between cpu overcommitment and memory overcommitment for containers and hypervisors
+
+\subsubsection*{Live Migration}
+Live migration is a technique used to move a running resource from one host to another without interrupting the services provided by the resource \cite{vm-live-migration}. The technique is often used to balance the load of the hosting nodes or to perform maintenance on the hosting node. 
+
+Live migration of VMs is a mature and wildely used in large data centers, and works by copying memory pages from the source host to the destination host, then transferring the control of the VM from the source hypervisor to the destination hypervisor. As VM disks are often stored on a shared storage, such as a Storage Attached Network (SAN), the VM's disk is not moved during the live migration, and the VM can safely continue to run after its running state has been transferred to the destination host. 
+
+Live migration for containers, on the other hand, is not as mature as for VMs. Unlike VMs, containers require process migration, which is not as reliable. However, there are several projects that aim to provide live migration for containers, such as Checkpoint-restore in Userspace (CRUI) \cite{container-criu}\cite{container-criu-web}. CRUI operates by checkpointing the state of a container, such as its memory and file descriptors, and then restoring the state on another host. Another approach for the live migration of containers involves simply terminating them and restarting them on another host. This approach is often sufficient in practice, as containers are typically stateless.  
+
 Elaborate on the distinct characteristics of containers and VMs, including performance, isolation, and use cases.
-\subsection{Decision Factors for Deployment}
+\subsection{Decision Factors}
+The choice between containers and VMs depends on the specific use case, and there are several factors to consider when deciding which technology to use. 
+
 Discuss factors influencing whether to deploy applications in containers or VMs, considering scalability, security, and application architecture.
 
 \section{Integrating VMs into Kubernetes with KubeVirt}

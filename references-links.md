@@ -1,6 +1,7 @@
 # References as links
 
-## Virtualization
+## Report 
+### Virtualization
 
 virtualization-history: https://www.researchgate.net/profile/Chinecherem-Umezuruike-2/publication/270162063_On_the_Evolution_of_Virtualization_and_Cloud_Computing_A_Review/links/59855672a6fdcc75624fc87c/On-the-Evolution-of-Virtualization-and-Cloud-Computing-A-Review.pdf
 
@@ -16,7 +17,7 @@ application-virtualization: https://ieeexplore.ieee.org/abstract/document/648866
 
 kvm-performance: https://dl.acm.org/doi/abs/10.1145/2668138.2668143?casa_token=UkpdZyu-hXQAAAAA:vpxVpWCp2FBfaBUPSFzvTPdPlxE-pJ8vAQ1Ybr6huQ_rFZPG9tU7lRXXqjhGxDv13NEINjldWa6yxWE
 
-## Hyper Visor 
+### Hyper Visor 
 
 hypervisor-survery: https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=650fe84a42c2914fb94c282cb3736c48e506d462
 hypervisor-types-1-2: https://www.techtarget.com/searchitoperations/tip/Whats-the-difference-between-Type-1-vs-Type-2-hypervisor
@@ -29,7 +30,7 @@ hypervisor-hyper-v-esxi https://ieeexplore.ieee.org/abstract/document/8345548
 microkernel-monolithic https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6759218
 
 
-## VM Management
+### VM Management
 
 cs-overview https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=Apache+CloudStack%3A+Open+Source+Infrastructure+as+a+Service+Cloud+Computing+Platform+&btnG=
 cs-os-benchmark https://ieeexplore.ieee.org/abstract/document/6899177
@@ -49,7 +50,7 @@ gce-overview https://link.springer.com/chapter/10.1007/978-1-4842-1004-8_4
 public-private-cloud https://www.researchgate.net/profile/Gurudatt-Kulkarni/publication/258253155_Private_Vs_Public_Cloud/links/00b7d5279d2e6dfb22000000/Private-Vs-Public-Cloud.pdf
 hybrid-cloud https://iopscience.iop.org/article/10.1088/1742-6596/1025/1/012091/pdf
 
-# Containers and Kubernetes
+### Containers and Kubernetes
 
 caas https://link.springer.com/chapter/10.1007/978-3-319-69462-7_31
 container-k8s-benchmark https://ieeexplore.ieee.org/abstract/document/8968907
@@ -60,3 +61,19 @@ container-vm-overview https://sciendo.com/abstract/journals/acss/23/1/article-p2
 k8s-overview https://dzone.com/storage/attachments/14131598-dzone-kubernetes-bundle.pdf
 k8s-crds https://link.springer.com/chapter/10.1007/978-981-19-5292-0_29
 k8s-kubectl https://link.springer.com/chapter/10.1007/978-1-4842-5519-3_4
+
+### Containers vs VMs
+
+container-vm-overview https://sciendo.com/abstract/journals/acss/23/1/article-p21.xml
+container-vm-comparison https://dl.acm.org/doi/pdf/10.1145/2988336.2988337
+vm-overcommitment https://www.cs.umd.edu/~ishan/files/memoc.pdf
+vm-ballooning https://dl.acm.org/doi/abs/10.1145/2818950.2818967
+vm-live-migration https://www.usenix.org/legacy/event/nsdi05/tech/full_papers/clark/clark_html/
+container-criu https://link.springer.com/chapter/10.1007/978-3-030-02465-9_13
+
+
+## Pre-study
+cs-os-benchmark https://ieeexplore.ieee.org/abstract/document/6899177
+ibm-kubevirt-scale https://research.ibm.com/publications/kubevirt-scale-test-by-creating-400-vmis-on-a-single-node
+declarative-benefits https://lutpub.lut.fi/handle/10024/161089
+kubevirt-migrate-issues https://ieeexplore.ieee.org/document/10049369

@@ -1,11 +1,16 @@
 # References as links
 
 ## Report 
+### Introduction
+
+### Related Work
+declarative-benefits https://lutpub.lut.fi/handle/10024/161089
+
 ### Virtualization
 
 virtualization-history: https://www.researchgate.net/profile/Chinecherem-Umezuruike-2/publication/270162063_On_the_Evolution_of_Virtualization_and_Cloud_Computing_A_Review/links/59855672a6fdcc75624fc87c/On-the-Evolution-of-Virtualization-and-Cloud-Computing-A-Review.pdf
 
-virtualization-survery: http://132.248.181.216/MV/CursoMaquinasVirtuales/Bibliograf%C3%ADaMaquinasVirtuales/VirtualizationSurveyTR179.pdf
+virtualization-basics: http://132.248.181.216/MV/CursoMaquinasVirtuales/Bibliograf%C3%ADaMaquinasVirtuales/VirtualizationSurveyTR179.pdf
 
 virtualization-trends: https://ieeexplore.ieee.org/abstract/document/1430630?signout=success
 
@@ -77,3 +82,8 @@ cs-os-benchmark https://ieeexplore.ieee.org/abstract/document/6899177
 ibm-kubevirt-scale https://research.ibm.com/publications/kubevirt-scale-test-by-creating-400-vmis-on-a-single-node
 declarative-benefits https://lutpub.lut.fi/handle/10024/161089
 kubevirt-migrate-issues https://ieeexplore.ieee.org/document/10049369
+k8s-cern https://cds.cern.ch/record/2867528/files/CERN-THESIS-2023-123.pdf
+kubevirt-storware https://storware.eu/blog/what-is-kubevirt/
+container-vm-overview https://sciendo.com/abstract/journals/acss/23/1/article-p21.xml
+virtualization-basics: http://132.248.181.216/MV/CursoMaquinasVirtuales/Bibliograf%C3%ADaMaquinasVirtuales/VirtualizationSurveyTR179.pdf
+container-as-vm-comparison https://link.springer.com/article/10.1007/s10586-021-03517-8

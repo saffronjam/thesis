@@ -87,3 +87,7 @@ kubevirt-storware https://storware.eu/blog/what-is-kubevirt/
 container-vm-overview https://sciendo.com/abstract/journals/acss/23/1/article-p21.xml
 virtualization-basics: http://132.248.181.216/MV/CursoMaquinasVirtuales/Bibliograf%C3%ADaMaquinasVirtuales/VirtualizationSurveyTR179.pdf
 container-as-vm-comparison https://link.springer.com/article/10.1007/s10586-021-03517-8
+azure-pricing https://azure.microsoft.com/sv-se/pricing/calculator/
+kubevirt-docs-disks https://kubevirt.io/user-guide/virtual_machines/disks_and_volumes/
+kubevirt-docs-validation https://kubevirt.io/user-guide/operations/api_validation/
+kubevirt-docs-virtctl https://kubevirt.io/user-guide/operations/virtctl_client_tool/

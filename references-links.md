@@ -66,6 +66,12 @@ container-vm-overview https://sciendo.com/abstract/journals/acss/23/1/article-p2
 k8s-overview https://dzone.com/storage/attachments/14131598-dzone-kubernetes-bundle.pdf
 k8s-crds https://link.springer.com/chapter/10.1007/978-981-19-5292-0_29
 k8s-kubectl https://link.springer.com/chapter/10.1007/978-1-4842-5519-3_4
+container-docker-reproducibility https://ieeexplore.ieee.org/abstract/document/5739643
+container-docker-layers https://docs.docker.com/build/guide/layers/
+container-dockerfile https://docs.docker.com/reference/dockerfile/
+container-registries https://link.springer.com/chapter/10.1007/978-1-4842-5519-3_2
+container-registries-redhat https://www.redhat.com/en/topics/cloud-native-apps/what-is-a-container-registry
+container-kata-security https://ieeexplore.ieee.org/abstract/document/8939164
 
 ### Containers vs VMs
 
@@ -74,8 +80,22 @@ container-vm-comparison https://dl.acm.org/doi/pdf/10.1145/2988336.2988337
 vm-overcommitment https://www.cs.umd.edu/~ishan/files/memoc.pdf
 vm-ballooning https://dl.acm.org/doi/abs/10.1145/2818950.2818967
 vm-live-migration https://www.usenix.org/legacy/event/nsdi05/tech/full_papers/clark/clark_html/
-container-criu https://link.springer.com/chapter/10.1007/978-3-030-02465-9_13
-
+container-criu-linux https://link.springer.com/chapter/10.1007/978-3-030-02465-9_13
+container-criu-overview https://www.kernel.org/doc/ols/2008/ols2008v2-pages-85-90.pdf
+container-vm-scale https://dl.acm.org/doi/pdf/10.1145/2988336.2988337
+cgroups https://link.springer.com/chapter/10.1007/978-1-4842-6283-2_4
+container-vm-decision https://sysdig.com/learn-cloud-native/kubernetes-security/containers-vs-virtual-machines-making-an-informed-decision/
+configuration-drift-tripwire https://www.tripwire.com/state-of-security/what-is-configuration-drift
+container-vm-decision-redhat https://www.redhat.com/en/topics/containers/containers-vs-vms
+cloud-native https://ieeexplore.ieee.org/abstract/document/8125550
+vm-decision-microsoft https://azure.microsoft.com/en-us/resources/cloud-computing-dictionary/what-is-a-virtual-machine
+vm-decision-kong https://konghq.com/learning-center/service-mesh/virtual-machines
+sandboxing https://ieeexplore.ieee.org/abstract/document/5739643
+container-kata-security https://ieeexplore.ieee.org/abstract/document/8939164
+container-kata-overview https://katacontainers.io/collateral/kata-containers-1pager.pdf
+container-runtimes-overview file:///home/emikar/Downloads/978-3-030-63089-8.pdf
+container-firecracker https://dl.acm.org/doi/pdf/10.1145/3381052.3381315
+container-gvisor-firecracker https://dl.acm.org/doi/pdf/10.1145/3381052.3381315
 
 ## Pre-study
 cs-os-benchmark https://ieeexplore.ieee.org/abstract/document/6899177

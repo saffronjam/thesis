@@ -44,10 +44,10 @@ The integration of VM management into Kubernetes through KubeVirt represents a s
 \subsection{Current challenges}
 The Cloud Native Computing Foundation (CNCF) presents in a report some of the challenges of managing VMs using a traditional IaaS platforms, and uses OpenStack as an example. While OpenStack has been a popular choice for managing VMs, it has been criticized for being complex and difficult to manage, as well as having a steep learning curve. They argue that the complexity of OpenStack is not always needed, and that it is possible to manage VMs using a simpler and more efficient platform, such as Kubernetes with KubeVirt \cite{kubevirt-cncf}.
 
-Additionally, the CNCF report highlights the importance of having a unified platform for managing both VMs and containers, as it could reduce the complexity of the underlying technology stack and management costs. These claims are further supported by a report by Kubaski M. that argues that managing VMs using traditional VM management systems along side Kubernetes leads to unnecessary costs, such as maintaining personnel and skill sets for two technologies \cite{kubevirt-storware}. Kubsaki further argues that by allowing the coexistence of VMs and containers in a single platform, KubeVirt could potentially reduce the any barrier of entry with managing VMs for organizations that are already using Kubernetes for container orchestration, or to act as a catalyst for organizations considering adopting Kubernetes. 
+Additionally, the CNCF report highlights the importance of having a unified platform for managing both VMs and containers, as it could reduce the complexity of the underlying technology stack and management costs. These claims are further supported by a report by Kubacki M. that argues that managing VMs using traditional VM management systems along side Kubernetes leads to unnecessary costs, such as maintaining personnel and skill sets for two technologies \cite{kubevirt-storware}. Kubacki further argues that by allowing the coexistence of VMs and containers in a single platform, KubeVirt could potentially reduce the any barrier of entry with managing VMs for organizations that are already using Kubernetes for container orchestration, or to act as a catalyst for organizations considering adopting Kubernetes. 
 
 \subsection{KubeVirt challenges}
-While KubeVirt is presented as a solution to challenges of managing VMs using traditional VM management systems, it is important to consider the challenges of using KubeVirt itself. A study by Trakulmaiphol S. and Piromsopa K. presents some shortcomings when migrating from a traditional VM management system to KubeVirt \cite{kubevirt-migrate-issues}. One of the issues identified is the management of of IP addresses, particularly when maintaining static IP addresses in a dynamic IP environment, such as Kubernetes. In the study they developed a framework to solve some of the issues on application level, such as DNS queries, and provided a set of guidelines related to KubeVirt's  unique features, such as the Multus Container Network Interface. 
+While KubeVirt is presented as a solution to challenges of managing VMs using traditional VM management systems, it is important to consider the challenges of using KubeVirt itself. A study by Trakulmaiphol S. and Piromsopa K. presents some shortcomings when migrating from a traditional VM management system to KubeVirt \cite{kubevirt-migrate-issues}. One of the issues identified is the management of IP addresses, particularly when maintaining static IP addresses in a dynamic IP environment, such as Kubernetes. In the study they developed a framework to solve some of the issues on application level, such as DNS queries, and provided a set of guidelines related to KubeVirt's  unique features, such as the Multus Container Network Interface. 
 
 \subsection{Usability of Kubernetes and KubeVirt}
 Using Kubernetes as a VM management system is a relatively new concepts, and there is limited research on the usability of KubeVirt. However, there are several studies that have evaluated the usability of Kubernetes, which is relevant as KubeVirt is an extension built on top of Kubernetes.
@@ -89,7 +89,7 @@ Below is a summary of the metrics that will be used to evaluate the performance 
     \end{itemize}
 \end{itemize}
 
-\noindent Below is a summary of the tests that will be performed. They can be divided into three categories: basic, limit testing, and scaling. The basic tests are designed to test the basic functionality of the VM management systems, such as creating and deleting VMs. The limit testing tests are designed to evaluate how a VM management system handles a VMs when the maximum capacity of a worker node is reached. The scaling tests are designed to evaluate how a VM management system handles a scale-out and scale-in of worker nodes, both with and without VMs on it (that would need to be migrated). Each tests will be run 10 times. 
+\noindent Below is a summary of the tests that will be performed. They can be divided into three categories: basic, limit testing, and scaling. The basic tests are designed to evaluate the basic functionality of the VM management systems, such as creating and deleting VMs. The limit testing tests are designed to evaluate how a VM management operates when the maximum capacity is reached in the worker nodes. The scaling tests are designed to evaluate how a VM management system handles scale-out and scale-in of worker nodes, both with and without VMs on it (that would need to be migrated). Each test will be run 10 times. 
 
 \begin{itemize}
     \item Tests
@@ -159,12 +159,9 @@ Below is a summary of the tasks that will be performed. The tasks will be perfor
     \end{itemize}
 
     \item\textbf{Maintenance}\\
-    This task is designed to evaluate how well KubeVirt supports tasks related to maintenance. 
-    The first part of this tasks includes creating a snapshot of a preconfigured VM, after it is finished, the system administrator will asked to restore the VM from the snapshot.
+    This task is designed to evaluate how well KubeVirt supports tasks related to maintenance. The first part of this tasks includes creating a snapshot of a preconfigured VM, after it is finished, the system administrator will asked to restore the VM from the snapshot. The second part of this tasks is migrating a VM from one node to another. The system administrator will be presented with a VM that is running on a node, and will be asked to migrate the VM to another node. Links to KubeVirt official documentation will be provided as a reference.
 
-    The second part of this tasks is migrating a VM from one node to another. The system administrator will be presented with a VM that is running on a node, and will be asked to migrate the VM to another node.
-
-    In this task, the preconfigured VM will use a containerDisk, as it provides a stateless VM that is reinstalled at every boot. By reinstalling the VM at every boot, the system administrator can easily reset the VM to a known state, which is useful when migrating the VM.
+    In this task, the preconfigured VM will use a containerDisk, as it provides a stateless VM that is reinstalled at every boot. By reinstalling the VM at every boot, the system administrator can easily reset the VM to a known state, which prevents any issues related to the VM's state.
 
     After the task is finished, the system administrator will be asked to provide feedback on the experience by answering the following questions:
     \begin{itemize}
@@ -174,14 +171,14 @@ Below is a summary of the tasks that will be performed. The tasks will be perfor
     \end{itemize}
 
     \item\textbf{Debugging}\\
-    This task is designed to evaluate how well KubeVirt supports debugging. KubeVirt uses API validation to ensure that VMs are correctly configured before creating them \cite{kubevirt-docs-validation}. However, it is still possible that a VM is not starting if the misconfiguration is validated at runtime. For this reason, a system administrator will be presented with a VM that is not accessible due to cloud-init misconfiguration, and will be asked to debug the issue.
+    This task is designed to evaluate how well KubeVirt supports debugging. KubeVirt uses API validation to ensure that VMs are correctly configured before creating them \cite{kubevirt-docs-validation}. However, it is still possible that a VM is not starting if the misconfiguration is validated at runtime. For this reason, a system administrator will be presented with a VM that is not accessible due to cloud-init misconfiguration that prevents SSH access to the VM, but is accessible using VNC. The system administrator will be asked to debug the issue and fix the misconfiguration. Links to KubeVirt official documentation will be provided as a reference.
 
     In this task, the preconfigured VM will use a containerDisk, as it provides a stateless VM that is reinstalled at every boot. By reinstalling the VM at every boot, the system administrator can easily reset the VM to a known state, which is useful when debugging.
     
     After the task is finished, the system administrator will be asked to provide feedback on the experience by answering the following questions:
     \begin{itemize}
-        \item How straightforward was it to debug the issue?
-        \item How would you compare the experience of using KubeVirt with other VM management systems you have used?
+        \item How easy was it to debug and find the issue?
+        \item How easy was it to fix the issue?
         \item Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?
     \end{itemize}    
 \end{itemize}
@@ -194,7 +191,7 @@ Below is a summary of the tasks that will be performed. The tasks will be perfor
 \end{itemize}
 
 \subsubsection*{System Management}
-\noindent The last factor that will be considered in this project is the system management. This include exploring how the system is managed, and is mainly concerned with integrations with other technologies in order to understand how well KubeVirt integrates with other systems. This will be done by exploring feature sets and architectural principles of KubeVirt, and other VM management systems. For instance, depending if a system uses a declarative or imperative approach, some technologies or tools could be easier to integrate than others. For instance, it is easier to integrate GitOps in a system using a declarative approach \cite{k8s-gitops}.
+\noindent The last factor that will be considered in this project is the system management. This include exploring how the system is managed, and is mainly concerned with integrations with other technologies in order to understand how well KubeVirt integrates with other systems. For instance, how well KubeVirt integrates with GitOps, a way to manage infrastructure using files in Git, which is used mainly for systems using a declarative approach i.e. Kubernetes \cite{declarative-benefits}\cite{k8s-gitops}. Exploring system management also involved exploring how well VMs in KubeVirt can communicate with other Kubernetes resources, such as Pods, as reflects the integrations with container-based applications. This will be evaluated through literature and documentation study \cite{k8s-gitops}
 
 
 % Print the bibliography (and make it appear in the table of contents)

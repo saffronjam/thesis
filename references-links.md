@@ -9,11 +9,8 @@ declarative-benefits https://lutpub.lut.fi/handle/10024/161089
 ### Virtualization
 
 virtualization-history: https://www.researchgate.net/profile/Chinecherem-Umezuruike-2/publication/270162063_On_the_Evolution_of_Virtualization_and_Cloud_Computing_A_Review/links/59855672a6fdcc75624fc87c/On-the-Evolution-of-Virtualization-and-Cloud-Computing-A-Review.pdf
-
 virtualization-basics: http://132.248.181.216/MV/CursoMaquinasVirtuales/Bibliograf%C3%ADaMaquinasVirtuales/VirtualizationSurveyTR179.pdf
-
 virtualization-trends: https://ieeexplore.ieee.org/abstract/document/1430630?signout=success
-
 vm-docker-reproducibility: https://dl.acm.org/doi/pdf/10.1145/2723872.2723882
 
 fv-pv: https://d1wqtxts1xzle7.cloudfront.net/67117106/Full_and_Para-Virtualization_with_Xen_A_20210505-16161-up57zd.pdf?1620206996=&response-content-disposition=inline%3B+filename%3DFull_and_Para_Virtualization_with_Xen_A.pdf&Expires=1707830916&Signature=XhXYVUYM3maTfNcmASWUk~rQbE1VFPm2ZS8vwd4eNyNux3IO4qASD8pmi7omRbs3tXOyv22~B4~ngrh20e9oAyWlkOwtQxzGBBuvmOus7xDBKi7SZy3Z5uSHJZCT5ai-72FIvfgjCJLcpZhExb3bRHv-LTz3gGNspTmPGbmHDHdkc8Qudcry~5FO-WOJXcAizGZor0Wj3mNVzj0B72ue119kcrv4KQOwgW5jiVr7WGBc3YaF32y0p9FkquaoPWWFcJlc8c-EhEw3Pycj4JiJd6x-Woi8YMamiVEOq2rJbKhN2KgOF7nAK6iDGaVcuyo1O3zdTvyrxG30JjBZbwXUFg__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA
@@ -100,14 +97,16 @@ container-gvisor-firecracker https://dl.acm.org/doi/pdf/10.1145/3381052.3381315
 ## Pre-study
 cs-os-benchmark https://ieeexplore.ieee.org/abstract/document/6899177
 ibm-kubevirt-scale https://research.ibm.com/publications/kubevirt-scale-test-by-creating-400-vmis-on-a-single-node
+container-runtimes-overview file:///home/emikar/Downloads/978-3-030-63089-8.pdf
 declarative-benefits https://lutpub.lut.fi/handle/10024/161089
 kubevirt-migrate-issues https://ieeexplore.ieee.org/document/10049369
 k8s-cern https://cds.cern.ch/record/2867528/files/CERN-THESIS-2023-123.pdf
 kubevirt-storware https://storware.eu/blog/what-is-kubevirt/
 container-vm-overview https://sciendo.com/abstract/journals/acss/23/1/article-p21.xml
-virtualization-basics: http://132.248.181.216/MV/CursoMaquinasVirtuales/Bibliograf%C3%ADaMaquinasVirtuales/VirtualizationSurveyTR179.pdf
+virtualization-basics http://132.248.181.216/MV/CursoMaquinasVirtuales/Bibliograf%C3%ADaMaquinasVirtuales/VirtualizationSurveyTR179.pdf
 container-as-vm-comparison https://link.springer.com/article/10.1007/s10586-021-03517-8
 azure-pricing https://azure.microsoft.com/sv-se/pricing/calculator/
 kubevirt-docs-disks https://kubevirt.io/user-guide/virtual_machines/disks_and_volumes/
 kubevirt-docs-validation https://kubevirt.io/user-guide/operations/api_validation/
 kubevirt-docs-virtctl https://kubevirt.io/user-guide/operations/virtctl_client_tool/
+kubevirt-vs-aws-creation https://kubevirt.io/2022/KubeVirt-Introduction-of-instancetypes.html

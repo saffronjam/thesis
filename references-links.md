@@ -110,3 +110,4 @@ kubevirt-docs-disks https://kubevirt.io/user-guide/virtual_machines/disks_and_vo
 kubevirt-docs-validation https://kubevirt.io/user-guide/operations/api_validation/
 kubevirt-docs-virtctl https://kubevirt.io/user-guide/operations/virtctl_client_tool/
 kubevirt-vs-aws-creation https://kubevirt.io/2022/KubeVirt-Introduction-of-instancetypes.html
+free-turtles https://ieeexplore.ieee.org/abstract/document/10255007

@@ -94,7 +94,23 @@ container-runtimes-overview file:///home/emikar/Downloads/978-3-030-63089-8.pdf
 container-firecracker https://dl.acm.org/doi/pdf/10.1145/3381052.3381315
 container-gvisor-firecracker https://dl.acm.org/doi/pdf/10.1145/3381052.3381315
 
+### KubeVirt
+
+k8s-controllers https://kubernetes.io/docs/concepts/architecture/controller/
+k8s-scheduler https://kubernetes.io/docs/reference/command-line-tools-reference/kube-scheduler/
+k8s-persistent-volumes https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+kubevirt-architecture https://kubevirt.io/user-guide/architecture/
+kubevirt-validation https://kubevirt.io/user-guide/operations/api_validation/
+kubevirt-tech-comparison https://kubevirt.io/2017/technology-comparison.html
+kubevirt-network-plugin https://kubevirt.io/user-guide/virtual_machines/network_binding_plugins/
+kubevirt-disks https://kubevirt.io/user-guide/virtual_machines/disks_and_volumes/
+kubevirt-virtctl https://kubevirt.io/user-guide/operations/virtctl_client_tool/
+kubevirt-live-migration https://kubevirt.io/user-guide/operations/live_migration/
+kubevirt-gitops https://kubevirt.io/user-guide/operations/gitops/
+gitops-evolution https://ieeexplore.ieee.org/abstract/document/9565152
+
 ## Pre-study
+
 cs-os-benchmark https://ieeexplore.ieee.org/abstract/document/6899177
 ibm-kubevirt-scale https://research.ibm.com/publications/kubevirt-scale-test-by-creating-400-vmis-on-a-single-node
 container-runtimes-overview file:///home/emikar/Downloads/978-3-030-63089-8.pdf

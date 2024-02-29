@@ -10,4 +10,4 @@
 *.fls
 *.synctex.gz
 out/*
-!out/main.pdf
+!out/*.pdf

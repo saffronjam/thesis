@@ -1,0 +1,171 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{csquotes} % Recommended by biblatex
+\usepackage[style=numeric,sorting=none,backend=biber]{biblatex}
+\addbibresource{references.bib} % The file containing our references, in BibTeX format
+
+\title{Individual Plan}
+\author{Emil Karlsson | emilk2@kth.se}
+
+\begin{document}
+\maketitle
+
+\section{Project information}
+\begin{itemize}
+    \item Title: Kubernetes as a Virtual Machine Management System: A Comparative Study of KubeVirt and Traditional Approaches
+    \item Student: Emil Karlsson emilk2@kth.se
+    \item Examiner: Cyrille Artho
+    \item Supervisor (KTH): Han Fu
+    \item External supervisor (Net Insight): Robert Ödman robert.odman@netinsight.net
+\end{itemize}
+
+\section{Background}
+Virtual machines (VMs) have long been the core part of IT infrastructure, serving as foundational components for deploying a wide range of applications. A VM is a type of virtualization technology and has been a key factor in enabling cloud computing through its efficient resource utilization by allowing the underlying hardware to split into multiple virtual computing units. The isolation properties of VMs have also been a key factor in their popularity, as they enable robust isolation through low-level hardware virtualization \cite{virtualization-basics}. 
+
+In parallel with the evolution of VMs, containers have emerged as an alternative to VMs. Containerization is another form of virtualization that requires less overhead, offering faster startup times and a higher density of application instances per physical server by sharing the OS kernel \cite{container-vm-overview}. However, the efficiency of containers comes at the cost of the deep isolation properties inherent to VMs. While there exist technologies that aim to unify the benefits of both VMs and containers, such as Kata Containers, gVisor and Firecracker, it remains a fact that both containers and VMs have their use cases \cite{container-runtimes-overview}\cite{container-as-vm-comparison}. 
+
+For this reason, VMs and containers have traditionally been managed separately, with VMs being orchestrated by platforms such as OpenStack, CloudStack, and OpenNebula, and container orchestration has been dominated by Kubernetes. The separation in management further reflects the differences in architecture and level of virtualization for VMs and containers. However, with the evolution and adaption of container orchestration platforms like Kubernetes, there has been an ongoing convergence in how VMs and containers are managed \cite{Li2023}. 
+
+Kubernetes, originally designed to manage containerized applications at scale, has recently been extended to accommodate VMs through the KubeVirt project. KubeVirt is an API extension for Kubernetes, that enables the running of VMs inside a Kubernetes environment alongside the containers, creating a common environment for both virtualization technologies \cite{kubevirt}. This approach not only offers benefits in terms of reduced architectural complexity by consolidating the management of both VMs and containers into a single platform but also by leveraging the already existing Kubernetes ecosystem; VMs can be managed the same way as any other Kubernetes resource, benefitting from the flexible and scalable Kubernetes infrastructure \cite{kubevirt-cncf}.
+
+The integration of VM management into Kubernetes through KubeVirt represents a significant milestone toward a more agile, efficient, and unified IT infrastructure \cite{kubevirt-storware}. However, KubeVirt's practicality in a real-world scenario is yet to be fully assessed, as such, this project aims to evaluate Kubernetes with KubeVirt as a VM management system and compare it with traditional approaches to understand its practicality and limitations.
+
+\section{Objective}
+This project aims to explore the integration of virtual machines into Kubernetes environments using the API extension KubeVirt. By comparing how virtual machines are managed using KubeVirt against traditional virtual machine management systems, this project aims to address possible inefficiencies and complexities that arise when managing virtual machines outside of Kubernetes. This includes performance comparisons with metrics such as virtual machine deployment time, deletion time, and CPU utilization during those operations. It also includes assessing available features, such as supported virtualization technologies, snapshot management tools, integration with external tools such as GitOps etc. Additionally, the comparison will include the perspective of a system administrator; How quickly can virtual machines be deployed? Finally, the comparisons will consider an application-to-application perspective, which includes addressing potential usability improvements when consolidating to a single API. 
+
+\subsection{Case Study: Net Insight}
+This project is particularly relevant to Net Insight, the company collaborating on this project. Net Insight is a company specializing in live-streaming media, and they host their development environment on-premise using the virtual machine management system OpenNebula. Many of their use cases involve testing software in containers, but also in virtual machines when a completely isolated environment is required. Furthermore, allowing for well-adapted features in Kubernetes such as GitOps \cite{k8s-gitops} could potentially improve the deployment streamline when testing their software. Finally, many of their developers, more accustomed to Kubernetes, could prefer a Kubernetes-based environment. Adopting Kubernetes with KubeVirt could thus enhance the developer experience and efficiency.
+
+\subsection{Case Study: kthcloud}
+The project is also of interest to the kthcloud project \cite{kthcloud}\cite{kthcloud-web} at KTH Royal Institute of Technology, a private cloud offering computing and hosting resources for students and researchers. The kthcloud project faces challenges in how virtual machines are managed, but also in running virtual machines and containers in separate environments (CloudStack and Kubernetes). These challenges include separate APIs (imperative vs declarative REST APIs), inefficient use of hardware resources due to having two different resource schedulers and nested virtualization, and the difficulty in training new team members in two different systems. 
+
+
+\subsection{Literature Study}
+\subsection{Current challenges}
+The Cloud Native Computing Foundation (CNCF) presents in a report some of the challenges of managing VMs using a traditional IaaS platform and uses OpenStack as an example \cite{kubevirt-cncf}. While OpenStack has been a popular choice for managing VMs, it has been criticized for being complex and difficult to manage, as well as having a steep learning curve. They argue that the complexity of OpenStack is not always needed and that it is possible to manage VMs using a simpler and more efficient platform, such as Kubernetes with KubeVirt. 
+
+Additionally, the CNCF report highlights the importance of having a unified platform for managing both VMs and containers, as it could reduce the complexity of the underlying technology stack and management costs. These claims are further supported by a report by Kubacki M. that argues that managing VMs using traditional VM management systems alongside Kubernetes leads to unnecessary costs, such as maintaining personnel and skill sets for two technologies \cite{kubevirt-storware}. Kubacki further argues that by allowing the coexistence of VMs and containers in a single platform, KubeVirt could potentially reduce any barrier of entry around managing VMs for organizations that are already using Kubernetes for container orchestration, or act as a catalyst for organizations considering adopting Kubernetes. 
+
+\subsection{KubeVirt challenges}
+While KubeVirt is presented as a solution to the challenges of managing VMs using traditional VM management systems, it is important to consider the challenges of using KubeVirt itself. A study by Trakulmaiphol S. and Piromsopa K. presents some shortcomings when migrating from a traditional VM management system to KubeVirt \cite{kubevirt-migrate-issues}. One of the issues identified is the management of IP addresses, particularly when maintaining static IP addresses in a dynamic IP environment, such as Kubernetes. In the study, they developed a framework to solve some of the issues on the application level, such as DNS queries, and provided a set of guidelines related to KubeVirt's unique features, such as the Multus Container Network Interface. 
+
+A common practice when managing Kubernetes clusters is to deploy Kubernetes nodes on VMs created by a VM management system. This means that when using KubeVirt, VMs are created inside other VMs leading to nested virtualization. Ye M. et al. argue in a study that nested virtualization raises security concerns due to the introduction of a larger trusted computing base (TCB) \cite{free-turtles}. By using a larger TCB, the size of the system's attack vector increases leading to an increased risk for vulnerabilities. For this reason, nested virtualization might not be suitable when strict security is required, such as applications managing sensitive or confidential data. This study is particularly relevant as it highlights a potential limitation if KubeVirt is simply seen as another Kubernetes resource, and not as a VM management system. 
+
+\subsection{Usability of Kubernetes and KubeVirt}
+Using Kubernetes as a VM management system is a relatively new concept, and there is limited research on the usability of KubeVirt. However, several studies have evaluated the usability of Kubernetes, which is relevant as KubeVirt is an extension built on top of Kubernetes.
+
+Kubernetes API is inherently declarative, meaning an approach that promotes the usage of documents that describe a desired state of a system. Sonninen O. investigates many of the possible benefits of using a declarative approach in system architecture \cite{declarative-benefits}. The study found that a declarative approach facilitates GitOps, a way to manage infrastructure using files in Git, which enabled simpler environment management, efficient resource management, and easier rollbacks. Using Git as a source of truth for the desired state of the system has the added benefits of version control, audit and collaboration.
+
+These benefits are exemplified in a study by Badran R. that describes the benefits they experienced when migrating from a VM cluster to Kubernetes for the CMS project at CERN \cite{k8s-cern}. Using Kubernetes, they were able to manage the entire infrastructure as code, which enabled simpler management and easier rollbacks. These studies highlight the importance of accounting for the benefits of Kubernetes as a platform when evaluating KubeVirt, as these are inherited by KubeVirt.
+
+\subsection{Performance Evaluation}
+Regarding performance, several studies have evaluated popular systems that can manage VMs, such as OpenStack and CloudStack. A notable comparison between OpenStack and CloudStack was conducted by Paradowski et al. in 2014 \cite{cs-os-benchmark}. The comparison focused on performance and used several benchmarks such as deployment time, deletion time, and CPU utilization during deployment and deletion, and revealed significant and quantifiable differences between the two platforms. However, the scale of the tests used in the comparison was relatively small and did not explore how the systems manage VMs under higher load. Analyzing the performance of a VM management system under higher load is important, as it can reveal how well a system scales when the ratio between VMs and nodes increases. 
+
+In contrast, a later study by Amaral M. benchmarked KubeVirt using a setup with a large number of VMs relative to the size of the nodes, aiming to explore the limits of KubeVirt's control plane (scheduler etc.) \cite{ibm-kubevirt-scale}. The study found that, while KubeVirt was able to create all VMs, the control plane suffered a heavy load, indicating a possible large overhead when KubeVirt provisions a large number of VMs. This finding is important to consider when evaluating KubeVirt, as it indicates that KubeVirt may not yet be suitable for managing a large number of VMs.
+
+
+\section{Research Questions}
+
+\begin{enumerate}
+    \item What are the current challenges and limitations in managing virtual machines and containerized applications in separate environments?\\
+    \\
+     e.g. running CloudStack/OpenNebula/OpenStack alongside Kubernetes.
+
+    \item What performance, scalability, and operational efficiencies can be gained by integrating virtual machines in Kubernetes?\\
+    \\
+    This could stem from using a single resource scheduler. Several metrics will be used to evaluate this, as described in the background and related work.
+
+    \item How can system administration be simplified by running virtual machines in Kubernetes using KubeVirt?\\
+    \\
+    e.g. if there is any efficiencies to be gained in terms of usability, for instance:
+    \begin{itemize}
+        \item After clicking \textit{Deploy VM}, how quickly can the virtual machine be accessed?
+        \item How many steps are there before I can access my virtual machine?
+        \item Are there any perceived benefits when interacting with the system, compared to the previous one?
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Hypothesis}
+Managing virtual machines in Kubernetes significantly improves operational efficiency compared to traditional virtual machine management systems. The improvement is hypothesized to stem from accelerated deployment speed, easier management, simplified scalability, and improved resource utilization.
+
+\section{Tasks}
+\begin{enumerate}
+    \item Literature review\\
+    Review existing literature on Kubernetes, KubeVirt and traditional virtual machine management systems, such as OpenStack, CloudStack and OpenNebula. The literature review should include feature explorations, benchmarks and evaluations.
+    \item Environment setup\\
+    Establish a testing environment that can be used for exploration and feature evaluation. This includes Kubernetes with KubeVirt, OpenStack, OpenNebula, and CloudStack. The latter two are already present at Net Insight and kthcloud respectively, but there will still be laboratory setups in order to perform fair tests and benchmarks.  
+    \item Research\\
+    This includes the technologies behind KubeVirt and how deeply it integrates with Kubernetes.
+    \item Data collection\\
+    Collect data regarding measurements for performance and resource utilization.
+    \item Data analysis\\
+    Analyze the collected data to identify patterns, trends, and correlations between different variables, such as performance metrics and resource utilization in each environment. KPI’s could be time to deploy a virtual machine, CPU usage, memory consumption, network usage when deploying/deleting a virtual machine etc.
+    \item Interview or supervised testing\\
+    Perform some form of qualitative analysis, this could be an interview with some system administrators at Net Insight, or some form of observation when using KubeVirt; Does a system administrator experience KubeVirt as an improvement? The questions or tasks should be crafted to ensure they improve the research’s objectives.
+    \item Develop guidelines\\
+    Create practical guidelines for transitioning to an environment with Kubernetes with KubeVirt. This should include relevant disclaimers about when to and when not to move to KubeVirt. 
+\end{enumerate}
+
+\section{Methods}
+\begin{itemize}
+    \item Quantitative analysis\\
+    This is tied to \textit{Data collection} and \textit{Data analysis} in Tasks. It includes measuring performance, scalability and operational efficiencies that could arise when using Kubernetes with KubeVirt. Measured using metrics such as deployment speed, how quick scaling is, and how system resources are utilized (idle time, CPU usage per reserved CPU core) - essentially measuring the differences between orchestrating with traditional virtual machine systems and Kubernetes with KubeVirt. 
+    \item Qualitative analysis\\
+    This is tied to \textit{Interview or supervised testing} in Tasks. It includes investigating the usability of a Kubernetes environment with KubeVirt. It will include collecting opinions and feedback from people using the system to answer what the perceived effect of using KubeVirt is. This could be system administrators at Net Insight.
+    \item System Management\\
+    This can be seen as a subsection of both Quantitative analysis and Qualitative analysis, as it emphasizes both usability as a qualitative metric as well as quantifiable metrics. It involves investigating possible simplifications of system management tasks, such as creating, deleting, starting, and stopping virtual machines etc.
+\end{itemize}
+
+\section{Ethics and Sustainability}
+One interest in this project is comparing the hardware resource efficiency, which is indicated by the relation between how much work is required by the hardware and the amount of effective work that is done. This could mean that, given an environment that uses resources more efficiently (by moving to KubeVirt), less power could be needed.
+
+Further, as the project also aims to unify environments, it could also mean more efficient use of servers. For instance, if different servers are dedicated to each environment before, a unified environment could share the physical hardware more evenly, thus requiring less hardware to be acquired. 
+
+\section{Limitations}
+\begin{enumerate}
+    \item This project will not investigate any solutions for shortcomings in KubeVirt itself, for example, finding alternatives for features that exist in existing virtual machine management systems but not in KubeVirt. As such, this project acknowledges that KubeVirt might not be a complete replacement to traditional virtual machine management tools (also described in \cite{kupenstack}), as it might not offer all the features of an IaaS system. Therefore, only features that exist in KubeVirt and the compared system will be considered when testing. 
+    \item From the description of this project above, there are also mainly two scenarios that will be evaluated. 
+    \begin{itemize}
+        \item A system uses traditional virtual management (OpenNebula, CloudStack etc.). \\
+        \\
+        In this scenario, Kubernetes with KubeVirt is seen mainly as a 1:1 replacement.\\ 
+        \item A system uses both traditional management and Kubernetes. \\
+        \\
+        This scenario is more aimed towards unifying the environments using KubeVirt. \\
+    \end{itemize}
+\end{enumerate}
+
+\section{Risks}
+This project will require both hardware and existing environments to properly evaluate the possible benefits of using KubeVirt. Acquiring hardware and asserting access to existing environments is crucial to ensure that all aspects of the project are able to be completed. 
+
+To avoid any issues with the aforementioned, I will consult my supervisor at Net Insight as early as possible with the required hardware to complete the project. I will also ensure that I am given access to any testing environments as early as possible.
+
+\section{Evaluation}
+Fulfillment of objects is determined by a combination of the results of qualitative feedback from Net Insight users (interviews, supervised testing) and quantitative measurements of performance and resource utilization. 
+
+\subsection{Expected Scientific Results}
+The result of this project will contribute to the understanding of the integration of virtual machines in Kubernetes, as such a take is not widely spread. This means it could extend what is commonly associated with Kubernetes (containers and networking) to also include virtual machines. It will provide empirical data that could suggest, apart from possible benefits in administration and management, a measurable boost in performance and resource utilization. This research will be of interest to developers and IT professionals managing hybrid environments. 
+
+
+\section{Conditions}
+This project will require physical servers and, preferably, access to virtual machines when exploring features myself. Both of which will be provided by Net Insight.
+This project also requires access to previous dual environments, one of which exists in Net Insight and one in KTH (kthcloud) (see Project proposal). These will be used as a base when doing before-and-after evaluations, and as a guide when building a transition roadmap (See Methods).
+
+The external supervisor will ensure I am given the correct equipment, such as servers and virtual machines, and that I am not stuck due to, for instance, bad credentials. Since the supervisor is also responsible for Net Insight’s current dual environment, he will guide them through their setup, possibly undocumented parts, and any unclear configuration they might use. 
+
+
+% Print the bibliography (and make it appear in the table of contents)
+\printbibliography[heading=bibintoc]
+
+\end{document}

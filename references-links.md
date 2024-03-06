@@ -1,10 +1,48 @@
 # References as links
 
+# Good papers, pick!
+k8s-scheduler-algorithm https://link.springer.com/article/10.1186/s13677-023-00471-1
+
+
 ## Report 
 ### Introduction
+virtualization-overview https://dl.acm.org/doi/abs/10.1145/2431211.2431216
+virtualization-history: https://www.researchgate.net/profile/
+virtualization-ibm https://www.ibm.com/topics/virtualization
+cs-os-benchmark https://ieeexplore.ieee.org/abstract/document/6899177
+ibm-kubevirt-scale https://research.ibm.com/publications/kubevirt-scale-test-by-creating-400-vmis-on-a-single-node
+container-runtimes-overview file:///home/emikar/Downloads/978-3-030-63089-8.pdf
+declarative-benefits https://lutpub.lut.fi/handle/10024/161089
+kubevirt-migrate-issues https://ieeexplore.ieee.org/document/10049369
+k8s-cern https://cds.cern.ch/record/2867528/files/CERN-THESIS-2023-123.pdf
+kubevirt-storware https://storware.eu/blog/what-is-kubevirt/
+container-vm-overview https://sciendo.com/abstract/journals/acss/23/1/article-p21.xml
+virtualization-basics http://132.248.181.216/MV/CursoMaquinasVirtuales/Bibliograf%C3%ADaMaquinasVirtuales/VirtualizationSurveyTR179.pdf
+container-as-vm-comparison https://link.springer.com/article/10.1007/s10586-021-03517-8
+azure-pricing https://azure.microsoft.com/sv-se/pricing/calculator/
+kubevirt-docs-disks https://kubevirt.io/user-guide/virtual_machines/disks_and_volumes/
+kubevirt-docs-validation https://kubevirt.io/user-guide/operations/api_validation/
+kubevirt-docs-virtctl https://kubevirt.io/user-guide/operations/virtctl_client_tool/
+kubevirt-vs-aws-creation https://kubevirt.io/2022/KubeVirt-Introduction-of-instancetypes.html
+free-turtles https://ieeexplore.ieee.org/abstract/document/10255007
 
 ### Related Work
 declarative-benefits https://lutpub.lut.fi/handle/10024/161089
+k8s-cern https://cds.cern.ch/record/2867528/files/CERN-THESIS-2023-123.pdf
+kubevirt-openstack-network https://webthesis.biblio.polito.it/secure/13094/1/tesi.pdf
+openstack-ec2-comparison https://ieeexplore.ieee.org/abstract/document/8030603
+k8s-user-experience https://dl.acm.org/doi/pdf/10.1145/3437359.3465603
+k8s-cern https://cds.cern.ch/record/2867528/files/CERN-THESIS-2023-123.pdf
+k8s-cloud-foundry https://www.theseus.fi/bitstream/handle/10024/780987/Sravanthi_Gelley.pdf?sequence=2
+cs-os-comparison-2009 https://ieeexplore.ieee.org/abstract/document/7433780
+cs-os-comparison-2013 https://ieeexplore.ieee.org/abstract/document/6899177
+k8s-migration-king https://www.diva-portal.org/smash/get/diva2:1442654/FULLTEXT01.pdf
+cloudstack-webpage https://cloudstack.apache.org/
+openstack-webpage https://www.openstack.org/
+opennebula-webpage https://opennebula.io/
+k8s-webpage https://kubernetes.io/
+nomad-webpage https://www.nomadproject.io/
+docker-swarm-webpage https://docs.docker.com/engine/swarm/
 
 ### Virtualization
 
@@ -109,8 +147,16 @@ kubevirt-live-migration https://kubevirt.io/user-guide/operations/live_migration
 kubevirt-gitops https://kubevirt.io/user-guide/operations/gitops/
 gitops-evolution https://ieeexplore.ieee.org/abstract/document/9565152
 
-## Pre-study
 
+# Method
+kubevirt-docs-disks https://kubevirt.io/user-guide/virtual_machines/disks_and_volumes/
+linux-boot-time https://ieeexplore.ieee.org/abstract/document/8911615
+azure-pricing https://azure.microsoft.com/en-in/pricing/calculator
+kubevirt-docs-disks https://kubevirt.io/user-guide/virtual_machines/disks_and_volumes/
+kubevirt-docs-validation https://kubevirt.io/user-guide/operations/api_validation/
+kubevirt-docs-virtctl https://kubevirt.io/user-guide/operations/virtctl_client_tool/
+
+## Pre-study
 cs-os-benchmark https://ieeexplore.ieee.org/abstract/document/6899177
 ibm-kubevirt-scale https://research.ibm.com/publications/kubevirt-scale-test-by-creating-400-vmis-on-a-single-node
 container-runtimes-overview file:///home/emikar/Downloads/978-3-030-63089-8.pdf

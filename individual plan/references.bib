@@ -1,27 +1,36 @@
-﻿@Article{Li2023,
-author={Li, Guoqing
-and Takahashi, Keichi
-and Ichikawa, Kohei
-and Iida, Hajimu
-and Nakasan, Chawanat
-and Leelaprute, Pattara
-and Thiengburanathum, Pree
-and Phannachitta, Passakorn},
-title={The Convergence of Container and Traditional Virtualization: Strengths and Limitations},
-journal={SN Computer Science},
-year={2023},
-month={May},
-day={11},
-volume={4},
-number={4},
-pages={387},
-abstract={Virtual machines (VMs) are used extensively in the cloud. The underlying hypervisors allow hardware resources to be split into multiple virtual units which enables server consolidation, fault containment, and resource management. However, VMs with traditional architecture introduce heavy overhead and reduce application performance. Containers are becoming popular options for running applications, yet such a solution raises security concerns due to weaker isolation than VMs. We are at the point of container and traditional virtualization convergence where lightweight hypervisors are implemented and integrated into the container ecosystem to maximize the benefits of VM isolation and container performance. However, there has been no comprehensive comparison among different convergence architectures. To identify limitations and best-fit use cases, we investigate the characteristics of Docker, Kata, gVisor, Firecracker, and QEMU/KVM by measuring the performance of disk storage, main memory, CPU, network, system call, and startup time. In addition, we evaluate their performance of running the Nginx web server and the MySQL database management system. We use QEMU/KVM as an example of running traditional VMs, Docker as the standard runc container, and the rest as the representatives of lightweight hypervisors. We compare and analyze the benchmark results, discuss the possible implications, explain the trade-off each organization made, and elaborate on the pros and cons of each architecture.},
-issn={2661-8907},
-doi={10.1007/s42979-023-01827-9},
-note={https://doi.org/10.1007/s42979-023-01827-9}
+﻿@article{vm-background,
+  author={Li, Guoqing
+  and Takahashi, Keichi
+  and Ichikawa, Kohei
+  and Iida, Hajimu
+  and Nakasan, Chawanat
+  and Leelaprute, Pattara
+  and Thiengburanathum, Pree
+  and Phannachitta, Passakorn},
+  title={The Convergence of Container and Traditional Virtualization: Strengths and Limitations},
+  journal={SN Computer Science},
+  year={2023},
+  month={5},
+  day={11},
+  volume={4},
+  number={4},
+  pages={387},
+  abstract={Virtual machines (VMs) are used extensively in the cloud. The underlying hypervisors allow hardware resources to be split into multiple virtual units which enables server consolidation, fault containment, and resource management. However, VMs with traditional architecture introduce heavy overhead and reduce application performance. Containers are becoming popular options for running applications, yet such a solution raises security concerns due to weaker isolation than VMs. We are at the point of container and traditional virtualization convergence where lightweight hypervisors are implemented and integrated into the container ecosystem to maximize the benefits of VM isolation and container performance. However, there has been no comprehensive comparison among different convergence architectures. To identify limitations and best-fit use cases, we investigate the characteristics of Docker, Kata, gVisor, Firecracker, and QEMU/KVM by measuring the performance of disk storage, main memory, CPU, network, system call, and startup time. In addition, we evaluate their performance of running the Nginx web server and the MySQL database management system. We use QEMU/KVM as an example of running traditional VMs, Docker as the standard runc container, and the rest as the representatives of lightweight hypervisors. We compare and analyze the benchmark results, discuss the possible implications, explain the trade-off each organization made, and elaborate on the pros and cons of each architecture.},
+  issn={2661-8907},
+  doi={10.1007/s42979-023-01827-9},
 }
 
-@INPROCEEDINGS{cs-os-benchmark,
+
+@inproceedings{cs-os-comparison-2009,
+  title={A comparative study of OpenStack and CloudStack},
+  author={Mullerikkal, Jaison Paul and Sastri, Yedhu},
+  booktitle={2015 Fifth International Conference on Advances in Computing and Communications (ICACC)},
+  pages={81--84},
+  year={2015},
+  organization={IEEE}
+}
+
+@inproceedings{cs-os-comparison-2013,
   author={Paradowski, Aaron and Liu, Lu and Yuan, Bo},
   booktitle={2014 IEEE 17th International Symposium on Object/Component/Service-Oriented Real-Time Distributed Computing}, 
   title={Benchmarking the Performance of OpenStack and CloudStack}, 
@@ -30,9 +39,10 @@ note={https://doi.org/10.1007/s42979-023-01827-9}
   number={},
   pages={405-412},
   keywords={Random access memory;Virtual machine monitors;Correlation;Hard disks;Benchmark testing;Cloud computing;Cloud;Benchmark;OpenStack;CloudStack},
-  doi={10.1109/ISORC.2014.12}}
+  doi={10.1109/ISORC.2014.12}
+  }
 
-@INPROCEEDINGS{k8s-gitops,
+@inproceedings{k8s-gitops,
   author={Gupta, Saumya and Bhatia, Madhulika and Memoria, Meenakshi and Manani, Preeti},
   booktitle={2022 International Conference on Machine Learning, Big Data, Cloud and Parallel Computing (COM-IT-CON)}, 
   title={Prevalence of GitOps, DevOps in Fast CI/CD Cycles}, 
@@ -41,9 +51,10 @@ note={https://doi.org/10.1007/s42979-023-01827-9}
   number={},
   pages={589-596},
   keywords={Productivity;Codes;Process control;Machine learning;Syntactics;Parallel processing;Elasticity;GitOps;DevOps;CI/CD;Continuous Delivery;Continuous Integration;AWS},
-  doi={10.1109/COM-IT-CON54601.2022.9850786}}
+  doi={10.1109/COM-IT-CON54601.2022.9850786}
+  }
 
-@INPROCEEDINGS{free-turtles,
+@inproceedings{free-turtles,
   author={Ye, Mengmei and Ruocco, Angelo and Buono, Daniele and Bottomley, James and Franke, Hubertus},
   booktitle={2023 IEEE 16th International Conference on Cloud Computing (CLOUD)}, 
   title={Free the Turtles: Removing Nested Virtualization for Performance and Confidentiality in the Cloud}, 
@@ -52,7 +63,8 @@ note={https://doi.org/10.1007/s42979-023-01827-9}
   number={},
   pages={275-281},
   keywords={Cloud computing;Trusted computing;Emulation;Containers;Virtual machining;Security;Resource management;nested virtualization;confidential computing;Infrastructure as a Service;virtual machines;Platform as a Service;Kubernetes;OpenShift},
-  doi={10.1109/CLOUD60044.2023.00039}}
+  doi={10.1109/CLOUD60044.2023.00039}
+  }
 
 
 @article{kupenstack,
@@ -62,7 +74,13 @@ note={https://doi.org/10.1007/s42979-023-01827-9}
   year={2021}
 }
 
-@misc{ibm-kubevirt-scale, title={Kubevirt scale test by creating 400 vmis on a single node for FOSDEM 2022: IBM Research}, note={https://research.ibm.com/publications/kubevirt-scale-test-by-creating-400-vmis-on-a-single-node}, journal={IBM Research Publications}, author={Amaral, Marcelo}, year={2022}, month={Feb}} 
+@online{ibm-kubevirt-scale, 
+  title={Kubevirt scale test by creating 400 vmis on a single node for FOSDEM 2022: IBM Research}, 
+  url={https://research.ibm.com/publications/kubevirt-scale-test-by-creating-400-vmis-on-a-single-node}, 
+  author={Amaral, Marcelo}, 
+  year={2022}, 
+  month={2}
+} 
 
 @article{openstack-kubevirt-network,
   title={Network Automation, Orchestration, Cloud: Tools and Technologies},
@@ -70,7 +88,7 @@ note={https://doi.org/10.1007/s42979-023-01827-9}
   year={2019}
 }
 
-@INPROCEEDINGS{kubevirt-migrate-issues,
+@inproceedings{kubevirt-migrate-issues,
   author={Trakulmaiphol, Supakorn and Piromsopa, Krerk},
   booktitle={2022 26th International Computer Science and Engineering Conference (ICSEC)}, 
   title={An Implementation of DNS Operator and Network Guideline for Migrating Virtual Machine to KubeVirt}, 
@@ -79,11 +97,24 @@ note={https://doi.org/10.1007/s42979-023-01827-9}
   number={},
   pages={84-89},
   keywords={Computer science;Organizations;Containers;Virtual machining;Network interfaces;IP networks;Guidelines;Kubernetes;Operator SDK;KubeVirt;Container Network Interface;Multus CNI;Kubernetes NMState},
-  doi={10.1109/ICSEC56337.2022.10049369}}
+  doi={10.1109/ICSEC56337.2022.10049369}
+  }
 
-@misc{kubevirt, title={Kubevirt.io}, url={https://kubevirt.io/}, journal={KubeVirt.io}, author={CNCF, The KubeVirt.io website}, year={2024}, month={Jan}} 
+@online{kubevirt, 
+  title={Kubevirt.io}, 
+  url={https://kubevirt.io/}, 
+  author={CNCF, The KubeVirt.io website}, 
+  year={2024}, 
+  month={1}
+} 
 
-@misc{kubevirt-cncf, title={Best practices for transitioning VM clusters to KubeVirt 1.0}, note={https://www.cncf.io/blog/2023/09/22/best-practices-for-transitioning-vm-clusters-to-kubevirt-1-0/}, journal={CNCF}, author={Zou Nengren September 22 and Nengren, Ambassador post by Zou and 22, September}, year={2023}, month={Sep}}
+@online{kubevirt-cncf, 
+  title={Best practices for transitioning VM clusters to KubeVirt 1.0}, 
+  url={https://www.cncf.io/blog/2023/09/22/best-practices-for-transitioning-vm-clusters-to-kubevirt-1-0/}, 
+  author={Zou Nengren September 22 and Nengren, Ambassador post by Zou and 22, September}, 
+  year={2023}, 
+  month={9}
+}
 
 @misc{kthcloud,
   title={Designing and implementing a private cloud for student and faculty software projects},
@@ -91,7 +122,11 @@ note={https://doi.org/10.1007/s42979-023-01827-9}
   year={2022}
 }
 
-@misc{kthcloud-web, note={https://cloud.cbh.kth.se/}, journal={cbhcloud}, author={LeFevre, Pierre and Karlsson, Emil}} 
+@online{kthcloud-web, 
+  title={kthcloud},
+  url={https://cloud.cbh.kth.se/}, 
+  author={LeFevre, Pierre and Karlsson, Emil}
+} 
 
 @article{virtualization-basics,
   title={A survey on virtualization technologies},
@@ -99,6 +134,372 @@ note={https://doi.org/10.1007/s42979-023-01827-9}
   journal={Rpe Report},
   volume={142},
   year={2005}
+}
+
+@article{virtualization-trends,
+  author={Rosenblum, M. and Garfinkel, T.},
+  journal={Computer}, 
+  title={Virtual machine monitors: current technology and future trends}, 
+  year={2005},
+  volume={38},
+  number={5},
+  pages={39-47},
+  keywords={Virtual machine monitors;Hardware;Operating systems;Virtual machining;Costs;Educational institutions;Multitasking;Computer architecture;Security;Application software;virtualization technology;virtual machines;computer architectures;software systems},
+  doi={10.1109/MC.2005.176}
+}
+
+@article{vm-docker-reproducibility,
+  author = {Boettiger, Carl},
+  title = {An introduction to Docker for reproducible research},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {49},
+  number = {1},
+  issn = {0163-5980},
+  note = {https://doi.org/10.1145/2723872.2723882},
+  doi = {10.1145/2723872.2723882},
+  abstract = {As computational work becomes more and more integral to many aspects of scientific research, computational reproducibility has become an issue of increasing importance to computer systems researchers and domain scientists alike. Though computational reproducibility seems more straight forward than replicating physical experiments, the complex and rapidly changing nature of computer environments makes being able to reproduce and extend such work a serious challenge. In this paper, I explore common reasons that code developed for one research project cannot be successfully executed or extended by subsequent researchers. I review current approaches to these issues, including virtual machines and workflow systems, and their limitations. I then examine how the popular emerging technology Docker combines several areas from systems research - such as operating system virtualization, cross-platform portability, modular re-usable elements, versioning, and a 'DevOps' philosophy, to address these challenges. I illustrate this with several examples of Docker use with a focus on the R statistical environment.},
+  journal = {SIGOPS Oper. Syst. Rev.},
+  year = { 2015 },
+  month = {1},
+  pages = {71–79}
+}
+
+@article{xen-virtualization,
+  title={Full and para-virtualization with Xen: a performance comparison},
+  author={Fayyad-Kazan, Hasan and Perneel, Luc and Timmerman, Martin},
+  journal={Journal of Emerging Trends in Computing and Information Sciences},
+  volume={4},
+  number={9},
+  pages={719--727},
+  year={2013}
+}
+
+@article{application-virtualization,
+  author={Douglis, Fred and Krieger, Orran},
+  journal={IEEE Internet Computing}, 
+  title={Virtualization}, 
+  year={2013},
+  volume={17},
+  number={2},
+  pages={6-9},
+  keywords={virtualization;javascript;VLAN;multiclouds},
+  doi={10.1109/MIC.2013.42}
+}
+
+@article{kvm-overhead,
+  author = {Rasmusson, Lars and Corcoran, Diarmuid},
+  title = {Performance overhead of KVM on Linux 3.9 on ARM cortex-a15},
+  year = {2014},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {11},
+  number = {2},
+  note = {https://doi.org/10.1145/2668138.2668143},
+  doi = {10.1145/2668138.2668143},
+  abstract = {A number of simple performance measurements on network, CPU and disk speed were done on a dual ARM Cortex-A15 machine running Linux inside a KVM virtual machine that uses virtio disk and networking. Unexpected behaviour was observed in the CPU and memory intensive benchmarks, and in the networking benchmarks. The average overhead of running inside KVM is between zero and 30 percent when the host is lightly loaded (running only the system software and the necessary qemu-system-arm virtualization code), but the relative overhead increases when both host and VM is busy. We conjecture that this is related to the scheduling inside the host Linux.},
+  journal = {SIGBED Rev.},
+  month = {9},
+  pages = {32–38},
+  keywords = {ARM cortex-a15, HVM, Linux KVM, performance, virtualization}
+}
+
+@article{virtualization-history,
+  title={On the evolution of virtualization and cloud computing: A review},
+  author={Oludele, Awodele and Ogu, Emmanuel C and Shade, Kuyoro and Chinecherem, Umezuruike},
+  journal={Journal of Computer Sciences and Applications},
+  volume={2},
+  number={3},
+  pages={40--43},
+  year={2014},
+  publisher={Science and Education Publishing Co., Ltd.}
+}
+
+@article{hypervisor-survey,
+  title={Hypervisor: A survey on concepts and taxonomy},
+  author={Desai, Ankita and Oza, Rachana and Sharma, Pratik and Patel, Bhautik},
+  journal={International Journal of Innovative Technology and Exploring Engineering},
+  volume={2},
+  number={3},
+  pages={222--225},
+  year={2013},
+  publisher={Citeseer}
+}
+
+@online{hypervisor-types-1-2, 
+  title={What’s the difference between type 1 vs. type 2 hypervisor?: TechTarget}, 
+  url={https://www.techtarget.com/searchitoperations/tip/Whats-the-difference-between-Type-1-vs-Type-2-hypervisor}, 
+  publisher={TechTarget}, 
+  author={Bigelow, Stephen J.}, 
+  year={2021}, 
+  month={1}
+} 
+
+@inproceedings{hypervisor-comparion-2010,
+  title={A component-based performance comparison of four hypervisors},
+  author={Hwang, Jinho and Zeng, Sai and y Wu, Frederick and Wood, Timothy},
+  booktitle={2013 IFIP/IEEE International Symposium on Integrated Network Management (IM 2013)},
+  pages={269--276},
+  year={2013},
+  organization={IEEE}
+}
+
+@article{hypervisor-comparion-2013,
+  title={Benchmarking the performance of microsoft hyper-v server, vmware esxi and xen hypervisors},
+  author={Fayyad-Kazan, Hasan and Perneel, Luc and Timmerman, Martin},
+  journal={Journal of Emerging Trends in Computing and Information Sciences},
+  volume={4},
+  number={12},
+  pages={922--933},
+  year={2013}
+}
+
+@article{hypervisor-xen,
+  title={An overview of xen virtualization},
+  author={Abels, Tim and Dhawan, Puneet and Chandrasekaran, Balasubramanian},
+  journal={Dell Power Solutions},
+  volume={8},
+  pages={109--111},
+  year={2005}
+}
+
+@article{hypervisor-kvm,
+  title={Review on KVM Hypervisor},
+  author={Kadam, Pankaj and Alone, Nilesh},
+  journal={International Journal of Recent Technology and Engineering (IJRTE) ISSN},
+  pages={2277--3878},
+  year={2014},
+  publisher={Citeseer}
+}
+
+@inproceedings{microkernel-monolithic,
+  title={Analysis of monolithic and microkernel architectures: Towards secure hypervisor design},
+  author={Shropshire, Jordan},
+  booktitle={2014 47th Hawaii International Conference on System Sciences},
+  pages={5008--5017},
+  year={2014},
+  organization={IEEE}
+}
+
+@article{hypervisor-hyper-v-esxi,
+  title={Benchmarking the performance of microsoft hyper-v server, vmware esxi and xen hypervisors},
+  author={Fayyad-Kazan, Hasan and Perneel, Luc and Timmerman, Martin},
+  journal={Journal of Emerging Trends in Computing and Information Sciences},
+  volume={4},
+  number={12},
+  pages={922--933},
+  year={2013}
+}
+
+@inproceedings{openstack-opennebula-comparison,
+  title={Comparison of open-source cloud management platforms: OpenStack and OpenNebula},
+  author={Wen, Xiaolong and Gu, Genqiang and Li, Qingchun and Gao, Yun and Zhang, Xuejie},
+  booktitle={2012 9th International Conference on Fuzzy Systems and Knowledge Discovery},
+  pages={2457--2461},
+  year={2012},
+  organization={IEEE}
+}
+
+@article{cloudframeworks-and-hypervisors,
+  title={Open source cloud management platforms and hypervisor technologies: A review and comparison},
+  author={Freet, David and Agrawal, Rajeev and Walker, Jessie J and Badr, Youakim},
+  journal={SoutheastCon 2016},
+  pages={1--8},
+  year={2016},
+  publisher={IEEE}
+}
+
+@inproceedings{openstack-overview,
+  title={An overview of openstack architecture},
+  author={Rosado, Tiago and Bernardino, Jorge},
+  booktitle={Proceedings of the 18th International Database Engineering \& Applications Symposium},
+  pages={366--367},
+  year={2014}
+}
+
+@inproceedings{openenbula-tele-teaching,
+  title={Enhancing a virtual security lab with a private cloud framework},
+  author={Moritz, Daniel and Willems, Christian and Goderbauer, Michael and Moeller, Paul and Meinel, Christoph},
+  booktitle={Proceedings of 2013 IEEE International Conference on Teaching, Assessment and Learning for Engineering (TALE)},
+  pages={314--320},
+  year={2013},
+  organization={IEEE}
+}
+
+@inproceedings{iaas-comparisons,
+  title={An experimental performance evaluation of OpenNebula and eucalyptus cloud platform solutions},
+  author={Khair, Younes and Dennai, Abdeslam and Elmir, Youssef},
+  booktitle={Artificial Intelligence and Heuristics for Smart Energy Efficiency in Smart Cities: Case Study: Tipasa, Algeria},
+  pages={450--457},
+  year={2022},
+  organization={Springer}
+}
+
+@article{cs-overview,
+  title={Apache cloudstack: Open source infrastructure as a service cloud computing platform},
+  author={Kumar, Rakesh and Jain, Kanishk and Maharwal, Hitesh and Jain, Neha and Dadhich, Anjali},
+  journal={Proceedings of the International Journal of advancement in Engineering technology, Management and Applied Science},
+  volume={111},
+  pages={116},
+  year={2014}
+}
+
+@online{openstack-live-migration,
+  title={OpenStack Live Migration}, 
+  url={https://docs.openstack.org/nova/pike/admin/live-migration-usage.html}, 
+  author={OpenStack Foundation}, 
+  year={2024}, 
+  month={2}
+}
+
+@online{cs-live-migration,
+  title={CloudStack Live Migration}, 
+  url={https://svn.apache.org/repos/asf/cloudstack/docsite/html/docs/en-US/Apache_CloudStack/4.2.0/html/Admin_Guide/manual-live-migration.html}, 
+  author={Apache CloudStack}, 
+  year={2024}, 
+  month={2}
+}
+
+@article{ec2-overview,
+  title={A walkthrough of Amazon Elastic Compute Cloud (Amazon EC2): A Review},
+  author={Choudhary, Anurag and Verma, Pradeep Kumar and Rai, Piyush},
+  journal={International Journal for Research in Applied Science and Engineering Technology},
+  volume={9},
+  number={11},
+  pages={93--97},
+  year={2021}
+}
+
+@article{public-cloud-comparison,
+  title={Comparative study of cloud platforms-microsoft azure, google cloud platform and amazon EC2},
+  author={Wankhede, Pallavi and Talati, Minaiy and Chinchamalatpure, Rutuja},
+  journal={J. Res. Eng. Appl. Sci},
+  volume={5},
+  number={02},
+  pages={60--64},
+  year={2020}
+}
+
+@online{ec2-overview-web,
+  title={Amazon EC2}, 
+  url={https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html}, 
+  author={Amazon Web Services}, 
+  year={2024}, 
+  month={2}
+}
+
+@article{azure-overview,
+  title={Getting started with Azure virtual machines},
+  author={Copeland, Marshall and Soh, Julian and Puca, Anthony and Manning, Mike and Gollob, David and Copeland, Marshall and Soh, Julian and Puca, Anthony and Manning, Mike and Gollob, David},
+  journal={Microsoft Azure: Planning, Deploying, and Managing Your Data center in the Cloud},
+  pages={147--176},
+  year={2015},
+  publisher={Springer}
+}
+
+@inproceedings{azure-cost-effective,
+  title={Analyzing the Cost-Effectiveness of Running HPC Applications on Microsoft Azure Virtual Machines},
+  author={Aljamal, Rawan and Jubair, Fahed and El-Mousa, Ali},
+  booktitle={2021 IEEE Jordan International Joint Conference on Electrical Engineering and Information Technology (JEEIT)},
+  pages={78--82},
+  year={2021},
+  organization={IEEE}
+}
+
+@online{azure-overview-web,
+  title={Azure Virtual Machines}, 
+  url={https://learn.microsoft.com/en-us/azure/virtual-machines/overview}, 
+  author={Microsoft}, 
+  year={2024}, 
+  month={2}
+}
+
+@online{gce-overview-web,
+  title={Google Compute Engine}, 
+  url={https://www.techtarget.com/searchaws/definition/Google-Compute-Engine#:~:text=Google%20Compute%20Engine%20(GCE)%20is,compute%20clusters%20for%20that%20purpose.}, 
+  author={TechTarget},
+  year={2024}, 
+  month={2}
+}
+
+@article{gce-overview,
+  title={Google compute engine},
+  author={Krishnan, SPT and Gonzalez, Jose L Ugia and Krishnan, SPT and Gonzalez, Jose L Ugia},
+  journal={Building Your Next Big Thing with Google Cloud Platform: A Guide for Developers and Enterprise Architects},
+  pages={53--81},
+  year={2015},
+  publisher={Springer}
+}
+
+@article{public-private-cloud,
+  title={Private vs public cloud},
+  author={Vikas, Solanke and Gurudatt, Kulkarni and Vishnu, Maske and Prashant, Kumbharkar},
+  journal={International Journal of Computer Science \& Communication Networks},
+  volume={3},
+  number={2},
+  pages={79},
+  year={2013},
+  publisher={Technopark Publications}
+}
+
+@inproceedings{hybrid-cloud,
+  title={Hybrid cloud: bridging of private and public cloud computing},
+  author={Aryotejo, Guruh and Kristiyanto, Daniel Y and others},
+  booktitle={Journal of Physics: Conference Series},
+  volume={1025},
+  number={1},
+  pages={012091},
+  year={2018},
+  organization={IOP Publishing}
+}
+
+@online{docker-overview-web,
+  title={Docker Overview}, 
+  url={https://www.techtarget.com/searchitoperations/feature/The-history-of-Dockers-climb-in-the-container-management-market}, 
+  author={TechTarget}, 
+  year={2024}, 
+  month={2}
+}
+
+@inproceedings{caas,
+  title={From VM to container: A linear program for outsourcing a business process to cloud containers},
+  author={Boukadi, Khouloud and Grati, Rima and Rekik, Molka and Abdallah, Han{\^e}ne Ben},
+  booktitle={On the Move to Meaningful Internet Systems. OTM 2017 Conferences: Confederated International Conferences: CoopIS, C\&TC, and ODBASE 2017, Rhodes, Greece, October 23-27, 2017, Proceedings, Part I},
+  pages={488--504},
+  year={2017},
+  organization={Springer}
+}
+
+@inproceedings{container-k8s-benchmark,
+  title={A performance evaluation of containers running on managed kubernetes services},
+  author={Ferreira, Arnaldo Pereira and Sinnott, Richard},
+  booktitle={2019 IEEE international conference on cloud computing technology and science (CloudCom)},
+  pages={199--208},
+  year={2019},
+  organization={IEEE}
+}
+
+@article{microservices-overview,
+  title={About microservices, containers and their underestimated impact on network performance},
+  author={Kratzke, Nane},
+  journal={arXiv preprint arXiv:1710.04049},
+  year={2017}
+}
+
+@inproceedings{container-runtimes,
+  title={Performance Evaluation of Container Runtimes.},
+  author={Espe, Lennart and Jindal, Anshul and Podolskiy, Vladimir and Gerndt, Michael},
+  booktitle={CLOSER},
+  pages={273--281},
+  year={2020}
+}
+
+@online{oci,
+  title={Open Container Initiative}, 
+  url={https://opencontainers.org/}, 
+  author={Open Container Initiative}, 
+  year={2024}, 
+  month={2}
 }
 
 @article{container-vm-overview,
@@ -111,6 +512,264 @@ note={https://doi.org/10.1007/s42979-023-01827-9}
   year={2018}
 }
 
+@article{k8s-overview,
+  title={Kubernetes},
+  author={Arun Gurta},
+  journal={Kubernetes. Retrieved May},
+  volume={24},
+  pages={2019},
+  year={2019}
+}
+
+@incollection{k8s-crds,
+  title={A Survey on Kubernetes Policy Report Custom Resource Definition Kube-Bench Adapter},
+  author={Banerjee, Kakoli and Agarwall, Deepti and Bali, Vikram and Sharma, Mritunjay and Prajwal, SS and Arsh, Md},
+  booktitle={Advances in Data and Information Sciences: Proceedings of ICDIS 2022},
+  pages={315--322},
+  year={2022},
+  publisher={Springer}
+}
+
+@online{k8s-crd-webiste,
+  title={Custom Resource Definitions}, 
+  url={https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/}, 
+  author={Kubernetes}, 
+  year={2024}, 
+  month={2}
+}
+
+@article{k8s-kubectl,
+  title={kubectl Overview},
+  author={Buchanan, Steve and Rangama, Janaka and Bellavance, Ned and Buchanan, Steve and Rangama, Janaka and Bellavance, Ned},
+  journal={Introducing Azure Kubernetes Service: A Practical Guide to Container Orchestration},
+  pages={51--62},
+  year={2020},
+  publisher={Springer}
+}
+
+@inproceedings{container-vm-comparison,
+  title={Containers and virtual machines at scale: A comparative study},
+  author={Sharma, Prateek and Chaufournier, Lucas and Shenoy, Prashant and Tay, YC},
+  booktitle={Proceedings of the 17th international middleware conference},
+  pages={1--13},
+  year={2016}
+}
+
+@article{vm-overcommitment,
+  title={Memory overcommitment in the ESX server},
+  author={Banerjee, Ishan and Guo, Fei and Tati, Kiran and Venkatasubramanian, Rajesh},
+  journal={VMware Technical Journal},
+  volume={2},
+  number={1},
+  pages={2--12},
+  year={2013}
+}
+
+@inproceedings{vm-ballooning,
+  title={Dynamic memory pressure aware ballooning},
+  author={Kim, Jinchun and Fedorov, Viacheslav and Gratz, Paul V and Reddy, AL Narasimha},
+  booktitle={Proceedings of the 2015 International Symposium on Memory Systems},
+  pages={103--112},
+  year={2015}
+}
+
+@online{vm-noisy-neighbor,
+  title={Noisy Neighbor}, 
+  url={https://docs.aws.amazon.com/wellarchitected/latest/saas-lens/noisy-neighbor.html},
+  author={Amazon Web Services},
+  year={2024},
+  month={2},
+}
+
+@inproceedings{vm-live-migration,
+  title={Live migration of virtual machines},
+  author={Clark, Christopher and Fraser, Keir and Hand, Steven and Hansen, Jacob Gorm and Jul, Eric and Limpach, Christian and Pratt, Ian and Warfield, Andrew},
+  booktitle={Proceedings of the 2nd conference on Symposium on Networked Systems Design \& Implementation-Volume 2},
+  pages={273--286},
+  year={2005}
+}
+
+@inproceedings{container-criu-linux,
+  title={Efficient live migration of linux containers},
+  author={Stoyanov, Radostin and Kollingbaum, Martin J},
+  booktitle={High Performance Computing: ISC High Performance 2018 International Workshops, Frankfurt/Main, Germany, June 28, 2018, Revised Selected Papers 33},
+  pages={184--193},
+  year={2018},
+  organization={Springer}
+}
+
+@online{container-criu-web,
+  title={CRIU}, 
+  url={https://criu.org/}, 
+  author={CRIU}, 
+  year={2024}, 
+  month={2}
+}
+
+@article{declarative-benefits,
+  title={Perceived benefits of declarative software deployment: an exploratory case study},
+  author={Sonninen, Oskar},
+  year={2020}
+}
+
+@inproceedings{container-criu-overview,
+  title={Containers checkpointing and live migration},
+  author={Mirkin, Andrey and Kuznetsov, Alexey and Kolyshkin, Kir},
+  booktitle={Proceedings of the Linux Symposium},
+  volume={2},
+  pages={85--90},
+  year={2008}
+}
+
+@inproceedings{container-vm-scale,
+  title={Containers and virtual machines at scale: A comparative study},
+  author={Sharma, Prateek and Chaufournier, Lucas and Shenoy, Prashant and Tay, YC},
+  booktitle={Proceedings of the 17th international middleware conference},
+  pages={1--13},
+  year={2016}
+}
+
+@article{cgroups,
+  title={Cgroups},
+  author={Jain, Shashank Mohan and Jain, Shashank Mohan},
+  journal={Linux Containers and Virtualization: A Kernel Perspective},
+  pages={45--80},
+  year={2020},
+  publisher={Springer}
+}
+
+@online{container-vm-decision,
+  title={Containers vs. Virtual Machines – Making an Informed Decision},
+  url={https://sysdig.com/learn-cloud-native/kubernetes-security/containers-vs-virtual-machines-making-an-informed-decision/},
+  author={Sysdig},
+  year={2024},
+  month={2}
+}
+
+@online{configuration-drift-tripwire,
+  title={What is Configuration Drift?},
+  url={https://www.tripwire.com/state-of-security/what-is-configuration-drift}, 
+  author={Tripwire}, 
+  year={2024}, 
+  month={2}
+}
+
+@online{configuration-drift-wiz,
+  title={Configuration Drift Explained},
+  url={https://www.wiz.io/academy/configuration-drift},
+  author={Shared Rotlevi},
+  publisher={Wiz},
+  year={2024}, 
+  month={2}
+}
+
+@online{container-vm-decision-redhat,
+  title={Containers vs VMs},
+  url={https://www.redhat.com/en/topics/containers/containers-vs-vms},
+  author={Red Hat},
+  year={2024},
+  month={2}
+}
+
+@article{cloud-native,
+  title={Cloud-native applications},
+  author={Gannon, Dennis and Barga, Roger and Sundaresan, Neel},
+  journal={IEEE Cloud Computing},
+  volume={4},
+  number={5},
+  pages={16--21},
+  year={2017},
+  publisher={IEEE}
+}
+
+@online{vm-decision-microsoft,
+  title={Virtual machines: virtual computers within computers},
+  url={https://azure.microsoft.com/en-us/resources/cloud-computing-dictionary/what-is-a-virtual-machine},
+  author={Microsoft},
+  year={2024},
+  month={2}
+}
+
+@article{sandboxing,
+  title={Sandboxing and virtualization: Modern tools for combating malware},
+  author={Greamo, Chris and Ghosh, Anup},
+  journal={IEEE Security \& Privacy},
+  volume={9},
+  number={2},
+  pages={79--82},
+  year={2011},
+  publisher={IEEE}
+}
+
+@online{vm-decision-kong,
+  title={What Are Virtual Machines (VMs)?},
+  url={https://konghq.com/learning-center/service-mesh/virtual-machines},
+  author={Kong},
+  year={2024},
+  month={2}
+}
+
+@article{container-docker-reproducibility,
+  title={An introduction to Docker for reproducible research},
+  author={Boettiger, Carl},
+  journal={ACM SIGOPS Operating Systems Review},
+  volume={49},
+  number={1},
+  pages={71--79},
+  year={2015},
+  publisher={ACM New York, NY, USA}
+}
+
+@online{container-dockerfile,
+  title={Dockerfile reference},
+  url={https://docs.docker.com/reference/dockerfile/},
+  author={Docker},
+  year={2024},
+  month={2}
+}
+
+@online{container-docker-layers,
+  title={Layers},
+  url={https://docs.docker.com/build/guide/layers/},
+  author={Docker},
+  year={2024},
+  month={2}
+}
+
+@article{container-registries,
+  title={Container registries},
+  author={Buchanan, Steve and Rangama, Janaka and Bellavance, Ned and Buchanan, Steve and Rangama, Janaka and Bellavance, Ned},
+  journal={Introducing Azure Kubernetes Service: A Practical Guide to Container Orchestration},
+  pages={17--34},
+  year={2020},
+  publisher={Springer}
+}
+
+@online{container-registries-redhat,
+  title={What is a container registry?},
+  url={https://www.redhat.com/en/topics/cloud-native-apps/what-is-a-container-registry},
+  author={Red Hat},
+  year={2024},
+  month={2}
+}
+
+@inproceedings{container-kata-security,
+  title={Kata containers: An emerging architecture for enabling mec services in fast and secure way},
+  author={Randazzo, Alessandro and Tinnirello, Ilenia},
+  booktitle={2019 Sixth International Conference on Internet of Things: Systems, Management and Security (IOTSMS)},
+  pages={209--214},
+  year={2019},
+  organization={IEEE}
+}
+
+@online{container-kata-overview,
+  title={Kata Containers: The speed of containers, the security of VMs},
+  url={https://katacontainers.io/collateral/kata-containers-1pager.pdf},
+  author={Kata Containers},
+  year={2024},
+  month={2}
+}
+
 @inproceedings{container-runtimes-overview,
   title={Containers runtimes war: a comparative study},
   author={Debab, Ramzi and Hidouci, Walid Khaled},
@@ -118,6 +777,165 @@ note={https://doi.org/10.1007/s42979-023-01827-9}
   pages={135--161},
   year={2021},
   organization={Springer}
+}
+
+@inproceedings{container-firecracker,
+  title={Blending containers and virtual machines: a study of firecracker and gVisor},
+  author={Anjali and Caraza-Harter, Tyler and Swift, Michael M},
+  booktitle={Proceedings of the 16th ACM SIGPLAN/SIGOPS International Conference on Virtual Execution Environments},
+  pages={101--113},
+  year={2020}
+}
+
+@inproceedings{container-gvisor-firecracker,
+  title={Blending containers and virtual machines: a study of firecracker and gVisor},
+  author={Anjali and Caraza-Harter, Tyler and Swift, Michael M},
+  booktitle={Proceedings of the 16th ACM SIGPLAN/SIGOPS International Conference on Virtual Execution Environments},
+  pages={101--113},
+  year={2020}
+}
+
+@online{k8s-controllers,
+  title={Controllers},
+  url={https://kubernetes.io/docs/concepts/architecture/controller/},
+  author={Kubernetes},
+  year={2024},
+  month={2},
+  note={Accessed 2024-02-29}
+}
+
+@online{kubevirt-architecture,
+  title={KubeVirt Architecture},
+  url={https://kubevirt.io/user-guide/architecture/},
+  author={KubeVirt},
+  year={2024},
+  month={2},
+  note={Accessed 2024-02-29}
+}
+
+@online{k8s-scheduler,
+  title={kube-scheduler},
+  url={https://kubernetes.io/docs/reference/command-line-tools-reference/kube-scheduler/},
+  author={Kubernetes},
+  year={2024},
+  month={2},
+  note={Accessed 2024-02-29}
+}
+
+@online{kubevirt-validation,
+  title={API Validation},
+  url={https://kubevirt.io/user-guide/operations/api_validation/},
+  author={KubeVirt},
+  year={2024},  
+  month={2},
+  note={Accessed 2024-02-29}
+}
+
+@online{kubevirt-tech-comparison,
+  title={Comparing KubeVirt to other technologies},
+  url={https://kubevirt.io/2017/technology-comparison.html},
+  author={KubeVirt},
+  year={2017},
+  month={18},
+  note={Accessed 2024-02-29}
+}
+
+@online{kubevirt-network-plugin,
+  title={Network Binding Plugins}, 
+  url={https://kubevirt.io/user-guide/virtual_machines/network_binding_plugins/},
+  author={KubeVirt},
+  year={2024},
+  month={2},
+  note={Accessed 2024-02-29}
+}
+
+@online{kubevirt-disks,
+  title={Disks and Volumes}, 
+  url={https://kubevirt.io/user-guide/virtual_machines/disks_and_volumes/},
+  author={KubeVirt},
+  year={2024},
+  month={2},
+  note={Accessed 2024-02-29}
+}
+
+@techreport{kubevirt-white-paper-platform9,
+     title={KubeVirt: How to Run VMs on Kubernetes},
+     author={Platform9},
+     url={https://platform9.com/wp-content/uploads/2020/05/KubeVirt-How-to-Run-VMs-on-Kubernetes.pdf},
+     year={2020},
+     month={4},
+}
+
+@online{kubevirt-virtctl,
+  title={virtctl}, 
+  url={https://kubevirt.io/user-guide/operations/virtctl_client_tool/},
+  author={KubeVirt},
+  year={2024},
+  month={2},
+  note={Accessed 2024-02-29}
+}
+
+@online{kubevirt-snapshot,
+  title={Snapshot Restore API},
+  url={https://kubevirt.io/user-guide/operations/snapshot_restore_api/},
+  author={KubeVirt},
+  year={2024},
+  month={2},
+  note={Accessed 2024-02-29}
+}
+
+@online{kubevirt-live-migration,
+  title={Live Migration}, 
+  url={https://kubevirt.io/user-guide/operations/live_migration/},
+  author={KubeVirt},
+  year={2024},
+  month={2},
+  note={Accessed 2024-02-29}
+}
+
+
+@online{k8s-persistent-volumes,
+  title={Persistent Volumes}, 
+  url={https://kubernetes.io/docs/concepts/storage/persistent-volumes/},
+  author={Kubernetes},
+  year={2024},
+  month={2},
+  note={Accessed 2024-02-29}
+}
+
+@article{gitops-evolution,
+  title={Gitops: The evolution of devops?},
+  author={Beetz, Florian and Harrer, Simon},
+  journal={IEEE Software},
+  volume={39},
+  number={4},
+  pages={70--75},
+  year={2021},
+  publisher={IEEE}
+}
+
+@online{gitops-kubevirt,
+  title={GitOps}, 
+  url={https://kubevirt.io/user-guide/operations/gitops/},
+  author={KubeVirt},
+  year={2024},
+  month={2},
+  note={Accessed 2024-02-29}
+}
+
+@article{vm-cloud,
+  author={Li, Guoqing and Takahashi, Keichi and Ichikawa, Kohei and Iida, Hajimu and Nakasan, Chawanat and Leelaprute, Pattara and Thiengburanathum, Pree and Phannachitta, Passakorn},
+  title={The Convergence of Container and Traditional Virtualization: Strengths and Limitations},
+  journal={SN Computer Science},
+  year={2023},
+  month={5},
+  day={11},
+  volume={4},
+  number={4},
+  pages={387},
+  issn={2661-8907},
+  doi={10.1007/s42979-023-01827-9},
+  note={https://doi.org/10.1007/s42979-023-01827-9}
 }
 
 @article{container-as-vm-comparison,
@@ -131,6 +949,17 @@ note={https://doi.org/10.1007/s42979-023-01827-9}
   publisher={Springer}
 }
 
+@article{virtualization-overview,
+  title={Virtualization: Issues, security threats, and solutions},
+  author={Pearce, Michael and Zeadally, Sherali and Hunt, Ray},
+  journal={ACM Computing Surveys (CSUR)},
+  volume={45},
+  number={2},
+  pages={1--39},
+  year={2013},
+  publisher={ACM New York, NY, USA}
+}
+
 @online{kubevirt-storware,
   title={what is Kubevirt},
   url={https://storware.eu/blog/what-is-kubevirt/},
@@ -139,14 +968,172 @@ note={https://doi.org/10.1007/s42979-023-01827-9}
   month={2},
 }
 
-@article{declarative-benefits,
-  title={Perceived benefits of declarative software deployment: an exploratory case study},
-  author={Sonninen, Oskar},
-  year={2020}
+@online{virtualization-ibm,
+  title={Virtualization}, 
+  url={https://www.ibm.com/topics/virtualization}, 
+  author={IBM}, 
+  year={2024}, 
+  month={2}
+}
+
+@techreport{k8s-cern-techreport,
+  title={Automation and improvement in CMSWEB Kubernetes clusters},
+  author={Badran, Rukaiah NJH}
+}
+
+@article{k8s-cern,
+  title={Migration of CMSWEB cluster at CERN to Kubernetes: a comprehensive study},
+  author={Imran, Muhammad and Kuznetsov, Valentin and Dziedziniewicz-Wojcik, Katarzyna Maria and Pfeiffer, Andreas and Paparrigopoulos, Panos and Trigazis, Spyridon and Tedeschi, Tommaso and Ciangottini, Diego},
+  journal={Cluster Computing},
+  volume={24},
+  number={4},
+  pages={3085--3099},
+  year={2021},
+  publisher={Springer}
 }
 
 
-@techreport{k8s-cern,
-  title={Automation and improvement in CMSWEB Kubernetes clusters},
-  author={Badran, Rukaiah NJH}
+@article{k8s-scheduler-algorithm,
+  title={A survey of Kubernetes scheduling algorithms},
+  author={Senjab, Khaldoun and Abbas, Sohail and Ahmed, Naveed and Khan, Atta ur Rehman},
+  journal={Journal of Cloud Computing},
+  volume={12},
+  number={1},
+  pages={87},
+  year={2023},
+  publisher={Springer}
+}
+
+@article{kubevirt-openstack-network,
+  title={Network Automation, Orchestration, Cloud: Tools and Technologies},
+  author={OTTAVIO, RISSO FULVIO GIOVANNI and Kolahdouzan, Alireza},
+  year={2019}
+}
+
+@inproceedings{openstack-ec2-comparison,
+  title={A comparison of system performance on a private openstack cloud and amazon ec2},
+  author={Kang, Mikyung and Kang, Dong-In and Walters, John Paul and Crago, Stephen P},
+  booktitle={2017 IEEE 10th International Conference on Cloud Computing (CLOUD)},
+  pages={310--317},
+  year={2017},
+  organization={IEEE}
+}
+
+@incollection{k8s-user-experience,
+  title={Real-World, Self-Hosted Kubernetes Experience},
+  author={Packard, Michael and Stubbs, Joe and Drake, Justin and Garcia, Christian},
+  booktitle={Practice and Experience in Advanced Research Computing},
+  pages={1--5},
+  year={2021}
+}
+
+@article{k8s-cloud-foundry,
+  title={Migrate Cloud Foundry Application to Kubernetes},
+  author={Gelley, Sravanthi},
+  year={2022}
+}
+
+
+@misc{k8s-migration-king,
+  title={Hybrid Cloud Migration Challenges. A case study at King},
+  author={Boronin, Mikhail},
+  year={2020}
+}
+
+@online{cloudstack-website,
+  title={Apache CloudStack}, 
+  url={https://cloudstack.apache.org/}, 
+  author={Apache CloudStack}, 
+  year={2024}, 
+  month={3},
+  note={Accessed 2024-03-06}
+}
+
+@online{openstack-website,
+  title={OpenStack}, 
+  url={https://www.openstack.org/}, 
+  author={OpenStack Foundation}, 
+  year={2024}, 
+  month={3},
+  note={Accessed 2024-03-06}
+}
+
+@online{opennebula-website,
+  title={OpenNebula}, 
+  url={https://opennebula.io/}, 
+  author={OpenNebula}, 
+  year={2024}, 
+  month={3},
+  note={Accessed 2024-03-06}
+}
+
+@online{k8s-website,
+  title={Kubernetes}, 
+  url={https://kubernetes.io/}, 
+  author={Kubernetes}, 
+  year={2024}, 
+  month={3},
+  note={Accessed 2024-03-06}
+}
+
+@online{nomad-website,
+  title={Nomad}, 
+  url={https://www.nomadproject.io/}, 
+  author={HashiCorp}, 
+  year={2024}, 
+  month={3},
+  note={Accessed 2024-03-06}
+}
+
+@online{docker-swarm-website,
+  title={Docker Swarm}, 
+  url={https://docs.docker.com/engine/swarm/}, 
+  author={Docker}, 
+  year={2024}, 
+  month={3},
+  note={Accessed 2024-03-06}
+}
+
+@online{azure-pricing,
+  title={Azure Pricing Calculator},
+  url={https://azure.microsoft.com/en-us/pricing/calculator/},
+  author={Microsoft},
+  year={2024},
+  month={2}
+}
+
+@inproceedings{linux-boot-time,
+  title={Comparing and evaluating application-specific boot times of virtualized instances},
+  author={Schmoll, Robert-Steve and Fischer, Tobias and Salah, Hani and Fitzek, Frank HP},
+  booktitle={2019 IEEE 2nd 5G World Forum (5GWF)},
+  pages={602--606},
+  year={2019},
+  organization={IEEE},
+}
+
+@online{kubevirt-docs-disks,
+  title={KubeVirt - Disks},
+  url={https://kubevirt.io/user-guide/virtual_machines/disks_and_volumes/},
+  author={CNCF, The KubeVirt.io website},
+  year={2024},
+  month={2},
+  note={Accessed 2024-02-29}
+}
+
+@online{kubevirt-docs-validation,
+  title={KubeVirt - Validation},
+  url={https://kubevirt.io/user-guide/operations/api_validation/},
+  author={CNCF, The KubeVirt.io website},
+  year={2024},
+  month={2},
+  note={Accessed 2024-02-29}
+}
+
+@online{kubevirt-docs-virtctl,
+  title={KubeVirt - Virtctl},
+  url={https://kubevirt.io/user-guide/operations/virtctl_client_tool/},
+  author={CNCF, The KubeVirt.io website},
+  year={2024},
+  month={2},
+  note={Accessed 2024-02-29}
 }

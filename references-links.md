@@ -71,7 +71,13 @@ microkernel-monolithic https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=
 
 
 ### VM Management
-
+iaas-overview https://www.sciencedirect.com/science/article/pii/S1084804513002099
+cloud-service-models-overview https://ideas.repec.org/a/aif/journl/v5y2021i2p17-30.html
+azure-availability-zones https://learn.microsoft.com/en-us/azure/reliability/availability-zones-overview?tabs=azure-cli
+google-hpc-overview https://cloud.google.com/discover/what-is-high-performance-computing
+oracle-hpc-overview https://www.oracle.com/se/cloud/hpc/what-is-hpc/
+scale-up-out-case-study https://ieeexplore.ieee.org/abstract/document/4228359
+scale-up-out-ibm https://www.ibm.com/blog/cloud-scalability-scale-up-vs-scale-out/
 cs-overview https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=Apache+CloudStack%3A+Open+Source+Infrastructure+as+a+Service+Cloud+Computing+Platform+&btnG=
 cs-os-benchmark https://ieeexplore.ieee.org/abstract/document/6899177
 openstack-opennebula-comparison https://ieeexplore.ieee.org/abstract/document/6234218
@@ -99,6 +105,11 @@ container-runtimes https://pdfs.semanticscholar.org/af89/2db0220dc3e48b953070a6f
 oci https://opencontainers.org/
 container-vm-overview https://sciendo.com/abstract/journals/acss/23/1/article-p21.xml
 k8s-overview https://dzone.com/storage/attachments/14131598-dzone-kubernetes-bundle.pdf
+k8s-docs-pods https://kubernetes.io/docs/concepts/workloads/pods/
+k8s-docs-services https://kubernetes.io/docs/concepts/services-networking/service/
+k8s-docs-deployments https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+k8s-docs-peristent-volumes https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+k8s-docs-statefulsets https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
 k8s-crds https://link.springer.com/chapter/10.1007/978-981-19-5292-0_29
 k8s-kubectl https://link.springer.com/chapter/10.1007/978-1-4842-5519-3_4
 container-docker-reproducibility https://ieeexplore.ieee.org/abstract/document/5739643

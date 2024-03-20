@@ -110,7 +110,11 @@ k8s-docs-services https://kubernetes.io/docs/concepts/services-networking/servic
 k8s-docs-deployments https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
 k8s-docs-peristent-volumes https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 k8s-docs-statefulsets https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
+k8s-docs-kubeproxy https://kubernetes.io/docs/reference/command-line-tools-reference/kube-proxy/
+k8s-docs-kubelet https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/
+k8s-docs-controllers https://kubernetes.io/docs/concepts/architecture/controller/
 k8s-crds https://link.springer.com/chapter/10.1007/978-981-19-5292-0_29
+k8s-it-administration https://link.springer.com/article/10.1007/s11227-021-03982-3
 k8s-kubectl https://link.springer.com/chapter/10.1007/978-1-4842-5519-3_4
 container-docker-reproducibility https://ieeexplore.ieee.org/abstract/document/5739643
 container-docker-layers https://docs.docker.com/build/guide/layers/
@@ -148,6 +152,7 @@ container-gvisor-firecracker https://dl.acm.org/doi/pdf/10.1145/3381052.3381315
 k8s-controllers https://kubernetes.io/docs/concepts/architecture/controller/
 k8s-scheduler https://kubernetes.io/docs/reference/command-line-tools-reference/kube-scheduler/
 k8s-persistent-volumes https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+k8s-docs-kubevirt https://kubernetes.io/blog/2018/05/22/getting-to-know-kubevirt/
 kubevirt-architecture https://kubevirt.io/user-guide/architecture/
 kubevirt-validation https://kubevirt.io/user-guide/operations/api_validation/
 kubevirt-tech-comparison https://kubevirt.io/2017/technology-comparison.html

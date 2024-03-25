@@ -5,6 +5,52 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{csquotes} % Recommended by biblatex
 \usepackage[style=numeric,sorting=none,backend=biber]{biblatex}
+\usepackage{listings}
+\lstset{
+basicstyle=\small\ttfamily,
+columns=flexible,
+breaklines=true
+}
+
+\newcommand\YAMLcolonstyle{\color{red}\mdseries}
+\newcommand\YAMLkeystyle{\color{black}\bfseries}
+\newcommand\YAMLvaluestyle{\color{blue}\mdseries}
+
+\makeatletter
+
+% here is a macro expanding to the name of the language
+% (handy if you decide to change it further down the road)
+\newcommand\language@yaml{yaml}
+
+\expandafter\expandafter\expandafter\lstdefinelanguage
+\expandafter{\language@yaml}
+{
+  keywords={true,false,null,y,n},
+  keywordstyle=\color{darkgray}\mdseries, % ensuring consistency
+  basicstyle=\ttfamily\mdseries,          % main change here for verbatim-like style
+  sensitive=false,
+  comment=[l]{\#},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,   % ensuring comment is also in monospaced font
+  stringstyle=\YAMLvaluestyle\ttfamily,   % same here
+  moredelim=[l][\color{orange}]{\&},
+  moredelim=[l][\color{magenta}]{*},
+  moredelim=**[il][\YAMLcolonstyle{:}\YAMLvaluestyle]{:},
+  morestring=[b]',
+  morestring=[b]",
+  literate =    {---}{{\ProcessThreeDashes}}3
+                {>}{{\textcolor{red}\textgreater}}1     
+                {|}{{\textcolor{red}\textbar}}1 
+                {\ -\ }{{\mdseries\ -\ }}3,
+}
+
+% switch to key style at EOL
+\lst@AddToHook{EveryLine}{\ifx\lst@language\language@yaml\YAMLkeystyle\fi}
+\makeatother
+
+\newcommand\ProcessThreeDashes{\llap{\color{cyan}\mdseries-{-}-}}
+
+
 \addbibresource{references.bib} % The file containing our references, in BibTeX format
 
 \title{Kubernetes as a Virtual Machine Management System}
@@ -542,7 +588,7 @@ Below is a summary of the metrics that will be used to evaluate the performance 
 
 \newpage
 \subsection{Usability Analysis}
-To accurately measure the usability of KubeVirt, a set of tasks has been crafted. These tasks have been designed in cooperation with a system administrator at Net Insight. The tasks are designed to be representative of the tasks that a system administrator would perform when managing VMs, including creation, deleting, and debugging. 
+To accurately measure the usability of KubeVirt, a set of tasks has been crafted. These tasks have been designed in cooperation with a system administrator at Net Insight. The tasks are designed to be representative of the tasks that a system administrator would perform when managing VMs, including creation, deleting and debugging. 
 \\~\\
 Below is a summary of the tasks that will be performed. The tasks will be performed by a group of system administrators at Net Insight using the tools \textit{kubectl} and \textit{virtctl}, and not a graphical user interface\ \cite{kubevirt-docs-virtctl}. This approach was chosen as the system administrators at Net Insight are familiar with using the command line interface (CLI). Moreover, the VM specifications will be configured uniformly across all tasks using 1 CPU and 512 MB RAM and will use the lightweight Alpine Linux image. This is to ensure that the VMs are fast to create and start, and to emphasize the usability of KubeVirt and not the performance of the VMs. 
 \begin{itemize}
@@ -608,7 +654,319 @@ Below is a summary of the tasks that will be performed. The tasks will be perfor
 
 \appendix
 
-\chapter{Something Extra}
+\chapter{Usability Tasks}
+
+These tasks were given to system administrators at Net Insight to evaluate the usability of KubeVirt. The tasks and questions were designed to evaluate how well KubeVirt supports tasks related to basic usage, maintenance and debugging. The following is a replicated version of what was given to the participants formatted for the appendix. The original version was provided as a separate PDF document.
+
+\section{Introduction}
+This is a usability analysis of KubeVirt that involves performing a set of tasks and then reflecting on the experience, where the goal is to evaluate how well KubeVirt works in practice. By participating in the usability analysis you provide valuable feedback and insight that can be used to improve KubeVirt. Your answers will be included as-is in the appendix of the project report. Upon request, the answers can be anonymized.
+
+\section{KubeVirt}
+The following is a brief introduction to KubeVirt, its most relevant features and how it compares to previous VM management systems. If you are already familiar with KubeVirt and its machinery, you can skip this section.
+\\~\\
+KubeVirt is an extension to Kubernetes that allows for the creation of virtual machines (VMs) and is designed to provide a similar experience to managing any other resource in Kubernetes, such as Pods or Deployments. This means that VMs are defined in YAML files and integrate with the command line tool \textit{kubectl}. KubeVirt defines its resources as a \textit{Custom Resource Definition} (CRD) in Kubernetes, where the most prominent resources are \textit{VirtualMachine} and \textit{VirtualMachineInstance}. The relationship between them is comparable to that of a Deployment and a Pod, where the Deployment defines a desired state and a Pod represents the running state. See References below for more information. 
+
+Certain VM operations are not possible using kubectl, such as accessing the VM using SSH or VNC. For this reason, KubeVirt provides a complementary CLI tool called \textit{virtctl}. Virtctl is thus required to complete the tasks, and you should have already been provided with a link to install it. 
+
+Being built on top of Kubernetes allows the VMs to integrate with other resources, including the Service and PersistentVolume resources. For instance, a VM can be exposed to the network using a LoadBalancer Service or manage storage dynamically using a persistent storage provisioner. However, since a VM requires a disk image (such as a QCOW2 image), it means that a PersistentVolume must point to a folder with a disk image in it. For this reason, manually creating a PersistentVolume for a VM can be tedious. Instead, KubeVirt primarily provides two alternatives for managing disks that are presented below. See the References section for more information.
+\begin{itemize}
+    \item \textbf{containerDisk}: A disk that is created at every boot. It is not persistent and is similar to a container.
+    \item \textbf{DataVolume}: A disk that is persistent and initialized when the VM is created. It uses PersistentVolumeClaim and a PersistentVolume under the hood where it injects a disk image. 
+\end{itemize}
+
+\section{Basic usage}
+The first task is about creating a VM using KubeVirt. You will need to create a VM and then access it using SSH or VNC. You can use a containerDisk for simplicity. 
+
+\subsection*{Manifests}
+Below is a minimal manifest for creating the VM using a containerDisk. The credentials for the Cirros image are user \textbf{cirros} and password \textbf{gocubsgo}.
+\begin{lstlisting}[language=yaml]
+    apiVersion: kubevirt.io/v1
+    kind: VirtualMachine
+    metadata:
+      name: my-vm
+    spec:
+      running: true  
+      template:
+        spec:
+          domain:
+          cpu:
+            cores: 1
+          devices:
+            disks:
+              - name: containerdisk
+                disk:
+                  bus: virtio
+          resources:
+            requests:
+            memory: 128M
+          volumes:
+          - name: containerdisk
+            containerDisk:
+              image: quay.io/kubevirt/cirros-container-disk-demo
+\end{lstlisting}
+
+\subsubsection*{Steps}
+\begin{enumerate}
+    \item Create a VM
+\begin{lstlisting}
+    kubectl apply -f my-vm.yaml
+\end{lstlisting}
+    \item Access the VM through SSH or VNC (credentials vary depending on the image since no CloudInit is used) 
+\begin{lstlisting}
+    virtctl ssh cirros@my-vm
+    virtctl vnc my-vm
+\end{lstlisting}
+    \item Stop, start and restart the VM
+\begin{lstlisting}
+    virtctl stop my-vm
+    virtctl start my-vm
+    virtctl restart my-vm
+\end{lstlisting}
+    \item Delete the VM
+\begin{lstlisting}
+    kubectl delete vm my-vm
+\end{lstlisting}
+\end{enumerate}
+
+\subsubsection*{Questions}
+After you have finished the task, reflect on the experience. You may use the following questions as a guide, but feel free to add comparisons with other VM management systems you have used.
+\begin{itemize}
+    \item How intuitive was the process of creating and deleting a VM?
+    \item How would you describe the process of starting, stopping, and restarting a VM?
+    \item How straightforward was it to access the VM using SSH and VNC?
+    \item Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?
+\end{itemize}
+
+\section{Maintenance}
+The second task is related to maintenance, where you will create a snapshot of a VM and then restore it. You will also perform a live migration on a VM to move it from one node to another without shutting it down. For this task, you can use a VM with a containerDisk since the task is not related to persistent storage.  
+
+Both snapshots and live migrations are treated as a resource by KubeVirt, meaning that the operation will take place in the background after a VirtualMachineSnapshot resource or a LiveMigration resource is created. See the References section for more information.
+
+A live migration resource in KubeVirt does not move resources itself and instead uses the Kubernetes scheduler to decide where to place the VM. This means that a LiveMigration resource only tells the scheduler that the VM can be moved but not where to move it. The simplest way to tell the scheduler to move a VM to a specific host is to edit \textit{spec.template.spec.nodeSelector} in the VM manifest. See the References section for more information. 
+
+\subsection*{Manifests}
+The following is a minimal manifest for creating a VM that runs on a node with label \textbf{name: worker-1}. The credentials for the Cirros image are user \textbf{cirros} and password \textbf{gocubsgo}.
+\begin{lstlisting}[language=yaml]
+  apiVersion: kubevirt.io/v1
+  kind: VirtualMachine
+  metadata:
+    name: my-vm
+  spec:
+    running: true
+    template:
+      spec:
+        nodeSelector:
+          name: worker1
+        domain:
+        cpu:
+          cores: 1
+        devices:
+          disks:
+          - name: containerdisk
+            disk:
+              bus: virtio
+        resources:
+          requests:
+          memory: 128M
+        volumes:
+        - name: containerdisk
+          containerDisk:
+            image: quay.io/kubevirt/cirros-container-disk-demo
+\end{lstlisting}
+
+\noindent The following is a minimal manifest for creating a VirtualMachineSnapshot resource.
+\begin{lstlisting}[language=yaml]
+    apiVersion: snapshot.kubevirt.io/v1alpha1
+    kind: VirtualMachineSnapshot
+    metadata:
+        name: my-vm-snapshot
+    spec:
+        source:
+        apiGroup: kubevirt.io
+        kind: VirtualMachine
+        name: my-vm
+\end{lstlisting}
+
+\noindent The following is a minimal manifest for creating a LiveMigration resource.
+\begin{lstlisting}[language=yaml]
+    apiVersion: kubevirt.io/v1
+    kind: VirtualMachineInstanceMigration
+    metadata:
+        name: my-vm-migration
+    spec:
+        vmiName: my-vm
+        targetNode: worker2
+\end{lstlisting}
+
+\noindent The following is a minimal manifest for restoring a VM from a snapshot.
+\begin{lstlisting}[language=yaml]
+    apiVersion: snapshot.kubevirt.io/v1alpha1
+    kind: VirtualMachineRestore
+    metadata:
+        name: my-vm-restore
+    spec:
+    target:
+        apiGroup: kubevirt.io
+        kind: VirtualMachine
+        name: my-vm
+    virtualMachineSnapshotName: my-vm-snapshot
+\end{lstlisting}
+
+\subsection*{Snapshot Steps}
+\begin{enumerate}
+    \item Create a VM
+\begin{lstlisting}
+    kubectl apply -f my-vm.yaml
+\end{lstlisting}
+    \item Create a snapshot of the VM
+\begin{lstlisting}
+    kubectl apply -f my-vm-snapshot.yaml
+\end{lstlisting}
+    \item Wait for the snapshot to be ready:
+\begin{lstlisting}
+    kubectl wait vmsnapshot my-vm-snapshot --for condition=Ready
+\end{lstlisting} 
+    \item Restore the VM from the snapshot
+\begin{lstlisting}
+    kubectl apply -f my-vm-restore.yaml
+\end{lstlisting}
+    \item Use the following kubectl command to wait for the restore to be ready:
+\begin{lstlisting}
+    kubectl wait vmrestore my-vm-restore --for condition=Ready
+\end{lstlisting}
+\end{enumerate}
+
+\subsection*{Live Migration Steps}
+\begin{enumerate}
+    \item Create a VM and wait for it to start
+\begin{lstlisting}
+    kubectl apply -f my-vm.yaml
+\end{lstlisting}
+    \item Edit the label under \textit{spec.template.spec.nodeSelector} in the VM manifest to \textbf{name: worker-2}:
+\begin{lstlisting}
+    kubectl edit vm my-vm
+\end{lstlisting}
+    \item Create a LiveMigration resource or virtctl:
+\begin{lstlisting}
+    kubectl apply -f my-vm-migration.yaml
+\end{lstlisting}
+\begin{lstlisting}
+    virtctl migrate my-vm
+\end{lstlisting}
+    \item Use the following kubectl command to wait for the migration to be ready:
+\end{enumerate}
+
+\subsection*{Questions}
+After you have finished the task, reflect on the experience. You may use the following questions as a guide, but feel free to add comparisons with other VM management systems you have used.
+\begin{itemize}
+    \item How straightforward was it to create and restore a snapshot of a VM?
+    \item How intuitive was the process of migrating a VM from one node to another?
+    \item Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?
+\end{itemize}
+
+\section{Debugging}
+The third task is about debugging a VM that is not accessible through SSH. You will be presented with a VM manifest which, if deployed, will result in a VM that is running but cannot be accessed through SSH. Since the VM is running, you can access it through VNC using virtctl. You can use a \textit{containerDisk} since the task is not related to persistent storage. 
+
+\subsection*{Manifests}
+The following is a manifest for creating a Ubuntu VM that is not accessible through SSH. Credentials for the Ubuntu image are user \textbf{cloud} and password \textbf{cloud}.
+\begin{lstlisting}[language=yaml]
+  apiVersion: kubevirt.io/v1
+  kind: VirtualMachine
+  metadata:
+    name: my-vm
+  spec:
+    running: true
+    template:
+      spec:
+        domain:
+          devices:
+            disks:
+            - name: containerdisk
+              disk:
+                bus: virtio
+            - name: cloudinit
+              disk:
+                bus: virtio
+            rng: {}
+          resources:
+            requests:
+              cpu: 2
+              memory: 2Gi
+        volumes:
+        - name: containerdisk
+          containerDisk:
+            image: quay.io/containerdisks/ubuntu:22.04
+        - name: cloudinit 
+          cloudInitNoCloud:
+            userData: |-
+            #cloud-config
+            users:
+            - name: cloud
+              passwd: $6$rounds=4096$abc
+              shell: /bin/bash
+              lock-passwd: false
+              ssh_pwauth: True
+              chpasswd: { expire: False }
+              sudo: ALL=(ALL) NOPASSWD:ALL
+              ssh_authorized_keys:
+              - ssh-ed25519 abc
+\end{lstlisting}
+
+\subsubsection*{Steps}
+\begin{enumerate}
+    \item Create a VM
+\begin{lstlisting}
+    kubectl apply -f my-vm.yaml
+\end{lstlisting}
+    \item Access the VM through VNC
+\begin{lstlisting}
+    virtctl vnc my-vm
+\end{lstlisting}
+    \item Debug the issue to fix the misconfiguration
+    \item Edit the VM manifest to fix the issue
+\begin{lstlisting}
+    kubectl edit vm my-vm
+\end{lstlisting}
+    \item Ensure the VM is accessible through SSH
+\begin{lstlisting}
+    virtctl ssh cirros@my-vm
+\end{lstlisting}
+    \item Delete the VM
+\begin{lstlisting}
+    kubectl delete vm my-vm
+\end{lstlisting}
+\end{enumerate}
+
+
+\subsubsection*{Questions}
+After you have finished the task, reflect on the experience. You may use the following questions as a guide, but feel free to add comparisons with other VM management systems you have used.
+\begin{itemize}
+    \item How easy was it to debug and find the issue?
+    \item How easy was it to fix the issue?
+    \item Does the debug process differ from debugging a traditional VM management system?
+    \item Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?
+\end{itemize}
+
+\section{Summary}
+After you have completed the tasks, reflect on the overall experience of using KubeVirt. You may use the following questions as a guide, but feel free to discuss and compare them with other VM management systems you have used. 
+
+\begin{itemize}
+    \item How would you compare the experience of using KubeVirt with other VM management systems you have used?
+    \item How intuitive is the workflow of KubeVirt? Can you use it without reading the documentation?
+    \item How would you describe the overall experience of using KubeVirt?
+\end{itemize}
+
+Thank you for participating in the usability analysis of KubeVirt!
+
+
+\section{References}
+\begin{itemize}
+    \item \textbf{VirtualMachineInstance}: \url{https://kubevirt.io/user-guide/virtual_machines/virtual_machine_instances/}
+    \item \textbf{Disks}: \url{https://kubevirt.io/user-guide/virtual_machines/disks_and_volumes}
+    \item \textbf{Snapshots}: \url{https://kubevirt.io/user-guide/operations/snapshot_restore_api/}
+    \item \textbf{Live Migration}: \url{https://kubevirt.io/user-guide/operations/live_migration/}
+\end{itemize}
+
 
 % Tailmatter inserts the back cover page (if enabled)
 \tailmatter%

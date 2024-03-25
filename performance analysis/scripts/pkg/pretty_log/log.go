@@ -25,11 +25,18 @@ func BeginTask(format string, a ...interface{}) {
 	fmt.Printf("[%s] %s%s%s %s...%s ", now, orange, taskName, reset, grey, reset)
 }
 
-// EndTask prints a green checkmark, then ends the line.
-func EndTask() {
+// CompleteTask prints a green checkmark, then ends the line.
+func CompleteTask() {
 	green := "\033[32m"
 	reset := "\033[0m"
 	fmt.Printf("%s✓%s\n", green, reset)
+}
+
+// FailTask prints a green checkmark, then ends the line.
+func FailTask() {
+	red := "\033[31m"
+	reset := "\033[0m"
+	fmt.Printf("%s✗%s\n", red, reset)
 }
 
 // TaskResult prints the result of a task in cyan color.
@@ -37,5 +44,5 @@ func TaskResult(format string, a ...interface{}) {
 	result := fmt.Sprintf(format, a...)
 	cyan := "\033[36m"
 	reset := "\033[0m"
-	fmt.Printf("  %s- %s%s\n", cyan, result, reset)
+	fmt.Printf("%s%s%s\n", cyan, result, reset)
 }

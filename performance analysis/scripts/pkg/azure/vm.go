@@ -6,7 +6,15 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute/v4"
 )
 
-func (c *Client) CreateVM(ctx context.Context, name, resourceGroup, nicID, diskName, username, password string) (*armcompute.VirtualMachine, error) {
+func (c *Client) CreateVM(ctx context.Context, name, resourceGroup, nicID, diskName, username, password string, authorizedKeys []string) (*armcompute.VirtualMachine, error) {
+	var publicKeys []*armcompute.SSHPublicKey
+	for _, key := range authorizedKeys {
+		publicKeys = append(publicKeys, &armcompute.SSHPublicKey{
+			KeyData: to.Ptr(key),
+			Path:    to.Ptr("/home/" + username + "/.ssh/authorized_keys"),
+		})
+	}
+
 	pResp, err := c.VirtualMachinesClient.BeginCreateOrUpdate(ctx, resourceGroup, name, armcompute.VirtualMachine{
 		Location: to.Ptr(c.Location),
 		Identity: &armcompute.VirtualMachineIdentity{
@@ -37,6 +45,10 @@ func (c *Client) CreateVM(ctx context.Context, name, resourceGroup, nicID, diskN
 				ComputerName:  to.Ptr(name),
 				AdminUsername: to.Ptr(username),
 				AdminPassword: to.Ptr(password),
+				LinuxConfiguration: &armcompute.LinuxConfiguration{
+					SSH:                           &armcompute.SSHConfiguration{PublicKeys: publicKeys},
+					DisablePasswordAuthentication: to.Ptr(false),
+				},
 			},
 			NetworkProfile: &armcompute.NetworkProfile{
 				NetworkInterfaces: []*armcompute.NetworkInterfaceReference{

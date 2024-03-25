@@ -11,6 +11,12 @@ type ConfigType struct {
 		AuthLocation          string `yaml:"authLocation"`
 		SubscriptionID        string `yaml:"subscriptionId"`
 		ResourceGroupBaseName string `yaml:"resourceGroupBaseName"`
+		// Username is the username for all the VMs created in Azure
+		Username string `yaml:"username"`
+		// Password is the password for all the VMs created in Azure
+		Password string `yaml:"password"`
+		// PublicKeys is a list of public keys that will be added to the VMs
+		PublicKeys []string `yaml:"publicKeys"`
 	} `yaml:"azure"`
 }
 

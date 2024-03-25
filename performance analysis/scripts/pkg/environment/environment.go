@@ -8,6 +8,7 @@ import (
 	"performance/pkg/config"
 	"performance/pkg/pretty_log"
 	"strconv"
+	"strings"
 )
 
 type ControlNode struct {
@@ -41,23 +42,107 @@ func Setup(opennebula, kubevirt bool, workers int) error {
 
 	if opennebula {
 		pretty_log.TaskGroup("Creating OpenNebula environment")
-		_, err = setupEnvironment(context.TODO(), client, "opennebula", workers)
+		opennebulaEnv, err := setupEnvironment(context.TODO(), client, "opennebula", 1)
 		if err != nil {
 			return err
 		}
 
-		_ = []string{
-			"wget -q -O- https://downloads.opennebula.org/repo/repo.key | apt-key add -",
-			"echo \"deb https://downloads.opennebula.org/repo/5.6/Ubuntu/18.04 stable opennebula\" | tee /etc/apt/sources.list.d/opennebula.list",
-			"apt-get update -y",
-			"apt-get install opennebula opennebula-sunstone opennebula-gate opennebula-flow -y",
-			"/usr/share/one/install_gems",
-			"systemctl start opennebula",
-			"systemctl enable opennebula",
-			"systemctl start opennebula-sunstone",
-			"systemctl enable opennebula-sunstone",
+		pretty_log.TaskGroup("Setting up OpenNebula control node")
+
+		// Commands to set up OpenNebula
+		// These will all be run with root privileges
+		controlCommandGroups := [][]string{
+			{"apt-get update"},
+			{"apt-get -y install gnupg wget apt-transport-https"},
+			{"curl -fsSL https://downloads.opennebula.io/repo/repo2.key | sudo gpg --batch --yes --dearmor -o /etc/apt/trusted.gpg.d/opennebula.gpg"},
+			{"echo \"deb https://downloads.opennebula.org/repo/6.8/Ubuntu/22.04 stable opennebula\" | sudo tee /etc/apt/sources.list.d/opennebula.list"},
+			{"apt-get update"},
+			{"apt-get install -y opennebula opennebula-sunstone opennebula-gate opennebula-flow"},
+			{"ufw disable"},
+			{"systemctl start opennebula opennebula-sunstone"},
+			{"systemctl enable opennebula opennebula-sunstone"},
 		}
 
+		for idx, cmdGroup := range controlCommandGroups {
+			pretty_log.BeginTask("- Command (%d/%d): %s", idx+1, len(controlCommandGroups), strings.Join(cmdGroup, " && "))
+
+			outputList, err := SshCommand(opennebulaEnv.ControlNode.PublicIP, cmdGroup)
+			if err != nil {
+				pretty_log.FailTask()
+				return err
+			}
+
+			pretty_log.CompleteTask()
+
+			if outputList != nil {
+				for _, output := range outputList {
+					pretty_log.TaskResult(output)
+				}
+			}
+		}
+
+		pretty_log.TaskGroup("Setting up OpenNebula worker nodes")
+
+		// Commands to set up OpenNebula on worker nodes
+		workerCommandGroups := [][]string{
+			{"curl -fsSL https://downloads.opennebula.io/repo/repo2.key | sudo gpg --batch --yes --dearmor -o /etc/apt/trusted.gpg.d/opennebula.gpg"},
+			{"echo \"deb https://downloads.opennebula.org/repo/6.8/Ubuntu/22.04 stable opennebula\" | sudo tee /etc/apt/sources.list.d/opennebula.list"},
+			{"apt-get update"},
+			{"apt-get install -y opennebula-node"},
+			{"systemctl restart libvirtd.service libvirt-bin.service"},
+			{"systemctl start opennebula"},
+			{"systemctl enable opennebula"},
+		}
+
+		for idx, cmdGroup := range workerCommandGroups {
+			pretty_log.BeginTask("- Command (%d/%d): %s", idx+1, len(workerCommandGroups), strings.Join(cmdGroup, " && "))
+
+			for _, worker := range opennebulaEnv.WorkerNodes {
+				outputList, err := SshCommand(worker.PublicIP, cmdGroup)
+				if err != nil {
+					pretty_log.FailTask()
+					return err
+				}
+
+				pretty_log.CompleteTask()
+
+				if outputList != nil {
+					for _, output := range outputList {
+						pretty_log.TaskResult(output)
+					}
+				}
+			}
+		}
+
+		// Setup nodes in management server
+		pretty_log.TaskGroup("Connect nodes to management server")
+
+		// Commands to connect nodes to management server
+		connectCommandGroups := [][]string{
+			// Copy OpenNebula SSH key to each worker OpenNebula authorized keys
+			{"cat ~/.ssh/id_rsa.pub | ssh " + opennebulaEnv.ControlNode.InternalIP + " 'cat >> /var/lib/one/.ssh/authorized_keys'"},
+			{"onehost create " + opennebulaEnv.ControlNode.InternalIP + " -i kvm -v kvm"},
+		}
+
+		for idx, cmdGroup := range connectCommandGroups {
+			pretty_log.BeginTask("- Command (%d/%d): %s", idx+1, len(connectCommandGroups), strings.Join(cmdGroup, " && "))
+
+			for _, worker := range opennebulaEnv.WorkerNodes {
+				outputList, err := SshCommand(worker.PublicIP, cmdGroup)
+				if err != nil {
+					pretty_log.FailTask()
+					return err
+				}
+
+				pretty_log.CompleteTask()
+
+				if outputList != nil {
+					for _, output := range outputList {
+						pretty_log.TaskResult(output)
+					}
+				}
+			}
+		}
 	}
 
 	if kubevirt {
@@ -66,6 +151,7 @@ func Setup(opennebula, kubevirt bool, workers int) error {
 		if err != nil {
 			return err
 		}
+
 	}
 
 	return nil
@@ -111,19 +197,25 @@ func Decrease(opennebula, kubevirt bool, decreaseTo int) error {
 	return nil
 }
 
-// SSH executes an SSH command on the given VM
-func SSH(vm *armcompute.VirtualMachine, command string) (string, error) {
-	client, err := goph.New("root", "192.1.1.3", goph.Password("you_password_here"))
+// SshCommand executes an SshCommand command on the given VM
+func SshCommand(ip string, commands []string) ([]string, error) {
+	client, err := goph.NewUnknown(config.Config.Azure.Username, ip, goph.Password(config.Config.Azure.Password))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	out, err := client.Run(command)
-	if err != nil {
-		return "", err
+	var outAll []string
+
+	for _, command := range commands {
+		out, err := client.Run("sudo " + command)
+		if err != nil {
+			return nil, err
+		}
+
+		outAll = append(outAll, string(out))
 	}
 
-	return string(out), nil
+	return outAll, nil
 }
 
 func setupEnvironment(ctx context.Context, client *azure.Client, namePrefix string, workers int) (*Environment, error) {
@@ -137,51 +229,72 @@ func setupEnvironment(ctx context.Context, client *azure.Client, namePrefix stri
 		return namePrefix + "-" + name
 	}
 
-	pretty_log.EndTask()
+	pretty_log.CompleteTask()
 
 	rg := *resourceGroup.Name
 
 	pretty_log.BeginTask("Creating virtual network")
 	_, err = client.CreateVirtualNetwork(ctx, prefixed("vnet"), rg, "10.0.0.0/8")
 	if err != nil {
+		pretty_log.FailTask()
 		return nil, err
 	}
-	pretty_log.EndTask()
+	pretty_log.CompleteTask()
 
 	pretty_log.BeginTask("Creating subnet")
 	subnet, err := client.CreateSubnet(ctx, prefixed("subnet"), rg, prefixed("vnet"), "10.1.0.0/16")
 	if err != nil {
+		pretty_log.FailTask()
 		return nil, err
 	}
-	pretty_log.EndTask()
+	pretty_log.CompleteTask()
 
 	_, err = client.CreateNetworkSecurityGroup(ctx, prefixed("nsg"), rg)
 	if err != nil {
+		pretty_log.FailTask()
 		return nil, err
 	}
 
 	pretty_log.BeginTask("Creating public IP")
 	controlPublicIP, err := client.CreatePublicIP(ctx, prefixed("ip"), rg)
 	if err != nil {
+		pretty_log.FailTask()
 		return nil, err
 	}
-	pretty_log.EndTask()
+	pretty_log.CompleteTask()
 	pretty_log.TaskResult("Public IP: %s", *controlPublicIP.Properties.IPAddress)
 
 	pretty_log.BeginTask("Creating control node NIC")
 	controlNIC, err := client.CreateNIC(ctx, prefixed("nic-1"), rg, *subnet.ID, controlPublicIP.ID)
 	if err != nil {
+		pretty_log.FailTask()
 		return nil, err
 	}
-	pretty_log.EndTask()
+	pretty_log.CompleteTask()
 	pretty_log.TaskResult("Internal IP: %s", *controlNIC.Properties.IPConfigurations[0].Properties.PrivateIPAddress)
 
 	pretty_log.BeginTask("Creating control node VM")
-	_, err = client.CreateVM(ctx, prefixed("control-1"), rg, *controlNIC.ID, prefixed("control-1"), "thesis", "Thesis1!")
+	_, err = client.CreateVM(ctx, prefixed("control-1"), rg, *controlNIC.ID, prefixed("control-1"), config.Config.Azure.Username, config.Config.Azure.Password, config.Config.Azure.PublicKeys)
 	if err != nil {
+		pretty_log.FailTask()
 		return nil, err
 	}
-	pretty_log.EndTask()
+	pretty_log.CompleteTask()
+
+	// Generate SSH key pair for control node non-interactively, 2048 bits, no passphrase, RSA
+	pretty_log.BeginTask("Generating SSH key pair")
+	_, err = SshCommand(*controlPublicIP.Properties.IPAddress, []string{"ssh-keygen -t rsa -b 2048 -N \"\" -f /home/" + config.Config.Azure.Username + "/.ssh/id_rsa <<< y"})
+	if err != nil {
+		pretty_log.FailTask()
+		return nil, err
+	}
+	publicKey, err := SshCommand(*controlPublicIP.Properties.IPAddress, []string{"cat /home/" + config.Config.Azure.Username + "/.ssh/id_rsa.pub"})
+	if err != nil {
+		pretty_log.FailTask()
+		return nil, err
+	}
+
+	pretty_log.CompleteTask()
 
 	workerNodes := make([]WorkerNode, workers)
 
@@ -189,25 +302,30 @@ func setupEnvironment(ctx context.Context, client *azure.Client, namePrefix stri
 		pretty_log.BeginTask("Creating worker node %d public IP", i+1)
 		workerPublicIP, err := client.CreatePublicIP(ctx, prefixed("worker-ip-"+strconv.Itoa(i+1)), rg)
 		if err != nil {
+			pretty_log.FailTask()
 			return nil, err
 		}
-		pretty_log.EndTask()
+		pretty_log.CompleteTask()
 		pretty_log.TaskResult("Public IP: %s", *workerPublicIP.Properties.IPAddress)
 
 		pretty_log.BeginTask("Creating worker node %d NIC", i+1)
 		workerNIC, err := client.CreateNIC(ctx, "worker-nic-"+strconv.Itoa(i+1), rg, *subnet.ID, workerPublicIP.ID)
 		if err != nil {
+			pretty_log.FailTask()
 			return nil, err
 		}
-		pretty_log.EndTask()
+		pretty_log.CompleteTask()
 		pretty_log.TaskResult("Internal IP: %s", *workerNIC.Properties.IPConfigurations[0].Properties.PrivateIPAddress)
 
 		pretty_log.BeginTask("Creating worker node %d VM", i+1)
-		vm, err := client.CreateVM(ctx, prefixed("worker-"+strconv.Itoa(i+1)), rg, *workerNIC.ID, prefixed("worker-"+strconv.Itoa(i+1)), "thesis", "Thesis1!")
+
+		vm, err := client.CreateVM(ctx, prefixed("worker-"+strconv.Itoa(i+1)), rg, *workerNIC.ID, prefixed("worker-"+strconv.Itoa(i+1)), config.Config.Azure.Username, config.Config.Azure.Password,
+			append(config.Config.Azure.PublicKeys, publicKey[0]))
 		if err != nil {
+			pretty_log.FailTask()
 			return nil, err
 		}
-		pretty_log.EndTask()
+		pretty_log.CompleteTask()
 
 		workerNodes[i] = WorkerNode{
 			VM:         *vm,
@@ -234,7 +352,7 @@ func deleteEnvironment(ctx context.Context, client *azure.Client, namePrefix str
 	if err != nil {
 		return err
 	}
-	pretty_log.EndTask()
+	pretty_log.CompleteTask()
 
 	return nil
 }

@@ -17,9 +17,19 @@ Being built on top of Kubernetes allows the VMs to integrate with other resource
 
 ## Prerequisites
 
+
+Install the following tools:
 - kubectl: The CLI tool for Kubernetes. You can download it [here](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 - virtctl: The CLI tool for KubeVirt. You can download it [here](https://kubevirt.io/user-guide/operations/virtctl_client_tool).
+
+Ensure you have access to:
 - kubeconfig file: The configuration file for accessing the Kubernetes cluster. You should have received this alongside this document.
+
+Ensure you have configured:
+- Your own namespace: Run `kubectl config set-context --current --namespace=<your given namespace>`
+
+And some conveniences:
+- In a separate terminal window, run `watch -n 1 kubectl get vmis` to monitor the state of the VMs.
 
 ## Basic usage (Task 1/3)
 
@@ -35,33 +45,40 @@ kind: VirtualMachine
 metadata:
   name: my-vm
 spec:
-  running: true  
+  running: true
   template:
     spec:
       domain:
-      cpu:
-        cores: 1
-      devices:
-        disks:
+        cpu:
+          cores: 1
+        devices:
+          disks:
           - name: containerdisk
             disk:
               bus: virtio
-      resources:
-        requests:
-        memory: 128M
+          interfaces:
+          - name: default
+            masquerade: {}
+        resources:
+          requests:
+            memory: 128M
+      networks:
+      - name: default
+        pod: {}
       volumes:
       - name: containerdisk
         containerDisk:
           image: quay.io/kubevirt/cirros-container-disk-demo
 ```
 
+
 ### Steps
 1. Create a VM using the manifest above.
 ```bash
-kubectl apply -f my-vm.yaml
+kubectl apply -f my-vm.yml
 ```
 
-2. Access the VM using SSH or VNC (credentials vary depending on the image since no CloudInit is used).
+2. Access the VM using SSH or VNC (credentials vary depending on the image since no CloudInit is used). You can use the *--local-ssh* flag if there is a problem with the SSH keys.  
 ```bash
 virtctl ssh cirros@my-vm
 virtctl vnc my-vm
@@ -84,9 +101,11 @@ The second task is related to maintenance, where you will create a snapshot of a
 
 Both snapshots and live migrations are treated as a resource by KubeVirt, meaning that the operation will take place in the background after a VirtualMachineSnapshot resource or a LiveMigration resource is created. See the References section for more information.
 
-A live migration resource in KubeVirt does not move resources itself and instead uses the Kubernetes scheduler to decide where to place the VM. This means that a LiveMigration resource only tells the scheduler that the VM can be moved but not where to move it. The simplest way to tell the scheduler to move a VM to a specific host is to edit `spec.template.spec.nodeSelector` in the VM manifest. See the References section for more information.
+A live migration resource in KubeVirt does not move resources itself and instead uses the Kubernetes scheduler to decide where to place the VM. This means that a LiveMigration resource only tells the scheduler that the VM can be moved but not where to move it. See the References section for more information. The Kubernetes scheduler is sophistiacted and support a wide range of scheduling strataegies, but for this task we can force a move between node by using the `spec.template.spec.nodeSelector` in the VM and editing the labels of the worker nodes in the cluster. To not interfere with other participants, you should create a unique label for you.  
 
-### Manifests
+A snapshot in KubeVirt works similarly to a snapshot in other VM management systems, where it captures the state of the VM at a specific point in time. However, the snapshot uses Kubernetes VolumeSnapshot, which is a Kubernetes API for taking snapshots of PersistentVolumes. This means that a VM with a containerDisk *cannot* be snapshotted. Instead, you should use a VM with a DataVolume. See the References section for more information.
+
+### Live Migration Manifests
 The following is a minimal manifest for creating a VM that runs on a node with label `name: worker-1`. The credentials for the Cirros image are user **cirros** and password **gocubsgo**.
 ```yaml
 apiVersion: kubevirt.io/v1
@@ -98,35 +117,29 @@ spec:
   template:
     spec:
       nodeSelector:
-        name: worker1
+        # Edit this to use a label of your choice
+        my-label: some-value
       domain:
-      cpu:
-        cores: 1
-      devices:
-        disks:
-        - name: containerdisk
-          disk:
-            bus: virtio
-      resources:
-        requests:
-        memory: 128M
+        cpu:
+          cores: 1
+        devices:
+          disks:
+          - name: containerdisk
+            disk:
+              bus: virtio
+          interfaces:
+          - name: default
+            masquerade: {}
+        resources:
+          requests:
+            memory: 128M
+      networks:
+      - name: default
+        pod: {}
       volumes:
       - name: containerdisk
         containerDisk:
           image: quay.io/kubevirt/cirros-container-disk-demo
-```
-
-The following is a minimal manifest for creating a VirtualMachineSnapshot resource.
-```yaml
-apiVersion: snapshot.kubevirt.io/v1alpha1
-kind: VirtualMachineSnapshot
-metadata:
-  name: my-vm-snapshot
-spec:
-  source:
-  apiGroup: kubevirt.io
-  kind: VirtualMachine
-  name: my-vm
 ```
 
 The following is a minimal manifest for creating a LiveMigration resource.
@@ -137,7 +150,109 @@ metadata:
   name: my-vm-migration
 spec:
   vmiName: my-vm
-  targetNode: worker2
+```
+
+
+
+### Live Migration Steps
+1. Ensure worker node 1 has your label (Make sure to replace `my-label` and `some-value` with your own values):
+```bash
+kubectl label node aks-user-21932338-vmss000002 my-label=some-value
+```
+
+2. Create a VM and wait for it to start. The VM should start on **aks-user-21932338-vmss000002**:
+```bash
+kubectl apply -f my-vm.yml
+```
+
+3. (Optional) Check if the VM is running on worker node 1:
+```bash
+kubectl get vmis
+```
+
+4. Create a LiveMigration resource or use virtctl:
+```bash
+kubectl apply -f my-vm-migration.yml
+```
+```bash
+virtctl migrate my-vm
+```
+
+5. Add the same label to worker node 2 and remove it from worker node 1 (Make sure to replace `my-label` and `some-value` with your own values):
+```bash
+kubectl label node aks-user-21932338-vmss000003 my-label=some-value
+kubectl label node aks-user-21932338-vmss000002 my-label-
+```
+
+6. (Optional) Check if the VM is now running on worker node 2:
+```bash
+kubectl get vmis
+```
+
+7. Unlabel worker node 2
+```bash
+kubectl label node aks-user-21932338-vmss000003 my-label-
+```
+
+### Snapshot Manifests
+The following is a minimal manifest for creating a VM that runs on a node with label `name: worker-1`. The credentials for the Alpine image are user **root** without password.
+
+```yaml
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: my-vm
+spec:
+  running: true
+  template:
+    spec:
+      domain:
+        devices:
+          rng: {}
+          disks:
+          - disk:
+              bus: virtio
+            name: datavolume-disk
+          interfaces:
+          - name: default
+            masquerade: {}
+        resources:
+          requests:
+            memory: 1Gi
+      networks:
+      - pod: {}
+        name: default
+      volumes:
+      - dataVolume:
+          name: datavolume
+        name: datavolume-disk
+  dataVolumeTemplates:
+  - metadata:
+      name: datavolume
+    spec:
+      pvc:
+        storageClassName: azurefile-csi-kubevirt
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+      source:
+        registry:
+          url: docker://quay.io/kubevirt/cirros-container-disk-demo
+```
+
+The following is a minimal manifest for creating a VirtualMachineSnapshot resource.
+```yaml
+apiVersion: snapshot.kubevirt.io/v1alpha1
+kind: VirtualMachineSnapshot
+metadata:
+  name: my-vm-snapshot
+spec:
+  source:
+    apiGroup: kubevirt.io
+    kind: VirtualMachine
+    name: my-vm
 ```
 
 The following is a minimal manifest for restoring a VM from a snapshot.
@@ -147,68 +262,52 @@ kind: VirtualMachineRestore
 metadata:
   name: my-vm-restore
 spec:
-target:
-  apiGroup: kubevirt.io
-  kind: VirtualMachine
-  name: my-vm
-virtualMachineSnapshotName: my-vm-snapshot
+  target:
+    apiGroup: kubevirt.io
+    kind: VirtualMachine
+    name: my-vm
+  virtualMachineSnapshotName: my-vm-snapshot
 ```
+
 
 ### Snapshot Steps
 1. Create a VM
 ```bash
-kubectl apply -f my-vm.yaml
+kubectl apply -f my-vm.yml
 ```
     
 2. Create a snapshot of the VM
 ```bash
-kubectl apply -f my-vm-snapshot.yaml
+kubectl apply -f my-vm-snapshot.yml
 ```
 
 3. Wait for the snapshot to be ready:
 ```bash
-kubectl wait vmsnapshot my-vm-snapshot --for condition=Ready
+kubectl get vmsnapshots
 ```
 
-4. Restore the VM from the snapshot
+4. Stop the VM
 ```bash
-kubectl apply -f my-vm-restore.yaml
+virtctl stop my-vm
 ```
 
-5. Use the following kubectl command to wait for the restore to be ready:
+5. Restore the VM from the snapshot
 ```bash
-kubectl wait vmrestore my-vm-restore --for condition=Ready
+kubectl apply -f my-vm-restore.yml
 ```
 
-### Live Migration Steps
-1. Create a VM and wait for it to start
+6. Wait for the VM to be restored
 ```bash
-kubectl apply -f my-vm.yaml
+kubectl get vmrestore
 ```
 
-2. Edit the label under `spec.template.spec.nodeSelector` in the VM manifest to `name: worker-2`:
-```bash
-kubectl edit vm my-vm
-```
-
-3. Create a LiveMigration resource or use virtctl:
-```bash
-kubectl apply -f my-vm-migration.yaml
-```
-```bash
-virtctl migrate my-vm
-```
-
-4. Use the following kubectl command to wait for the migration to be ready:
-```bash
-kubectl wait vmimigration my-vm-migration --for condition=MigrationSucceeded
-```
+If you tried to actually see if the snapshot worked you will see that the VM is not restored. This is because only snapshot creation, and on snapshot restoratios, is supported in Azure File CSI (the test environment used for this analysis). However, KubeVirt still snapshots VM specifications and can restore them. 
 
 ### Questions
 After you have finished the tasks, reflect on the experience. You may use the following questions as a guide, but feel free to add comparisons with other VM management systems you have used.
 
-1. How straightforward was it to create a VM and access it using SSH or VNC?
-2. How intuitive was the process of stopping, starting, and restarting the VM?
+1. How intuitive was the process of migrating a VM from one node to another?
+2. How straightforward was it to create and restore a snapshot of a VM?
 3. Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?
 
 ## Debugging (Task 3/3)
@@ -244,41 +343,47 @@ spec:
       - name: containerdisk
         containerDisk:
           image: quay.io/containerdisks/ubuntu:22.04
-      - name: cloudinit 
+      - name: cloudinit
         cloudInitNoCloud:
           userData: |-
-          #cloud-config
-          users:
-          - name: cloud
-            passwd: $6$rounds=4096$abc
-            shell: /bin/bash
-            lock-passwd: false
-            ssh_pwauth: True
-            chpasswd: { expire: False }
-            sudo: ALL=(ALL) NOPASSWD:ALL
-            ssh_authorized_keys:
-            - ssh-ed25519 abc
+            #cloud-config
+            users:
+            - name: cloud
+              passwd: $6$rounds=4096$abc
+              shell: /bin/bash
+              lock-passwd: false
+              ssh_pwauth: True
+              chpasswd: { expire: False }
+              sudo: ALL=(ALL) NOPASSWD:ALL
+              ssh_authorized_keys:
+              - ssh-ed25519 abc
 ```
 
 ### Steps
 1. Create a VM
 ```bash
-kubectl apply -f my-vm.yaml
+kubectl apply -f my-vm.yml
 ```
 2. Access the VM through VNC
 ```bash
 virtctl vnc my-vm
 ```
 3. Debug the issue to fix the misconfiguration
+
 4. Edit the VM manifest to fix the issue
 ```bash
 kubectl edit vm my-vm
 ```
-5. Ensure the VM is accessible through SSH
+5. (Optional) Restart the VM (some changes require a restart)
 ```bash
-virtctl ssh cirros@my-vm
+virtctl restart my-vm
 ```
-6. Delete the VM
+
+6. Ensure the VM is accessible through SSH. You can use the *--local-ssh* flag if there is a problem with the SSH keys.  
+```bash
+virtctl ssh cloud@my-vm 
+```
+7. Delete the VM
 ```bash
 kubectl delete vm my-vm
 ```

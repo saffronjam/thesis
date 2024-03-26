@@ -4,11 +4,13 @@ import (
 	"context"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute/v4"
 	"github.com/melbahja/goph"
+	"log"
 	"performance/pkg/azure"
 	"performance/pkg/config"
 	"performance/pkg/pretty_log"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type ControlNode struct {
@@ -23,14 +25,14 @@ type WorkerNode struct {
 	PublicIP   string
 }
 
-type Environment struct {
+type AzureEnvironment struct {
 	ResourceGroup string
 	ControlNode   ControlNode
 	WorkerNodes   []WorkerNode
 }
 
 // Setup initializes a base environment in Azure
-func Setup(opennebula, kubevirt bool, workers int) error {
+func Setup(usabilityAnalysis, opennebula, kubevirt bool) error {
 	client, err := azure.New(&azure.Opts{
 		AuthLocation:   config.Config.Azure.AuthLocation,
 		SubscriptionID: config.Config.Azure.SubscriptionID,
@@ -40,9 +42,16 @@ func Setup(opennebula, kubevirt bool, workers int) error {
 		return err
 	}
 
+	if usabilityAnalysis {
+		_, err = SetupAzureEnvironment(context.TODO(), client, "usability", config.Config.Clusters.UsabilityAnalysis.Workers)
+		if err != nil {
+			log.Fatalln(err.Error())
+		}
+	}
+
 	if opennebula {
 		pretty_log.TaskGroup("Creating OpenNebula environment")
-		opennebulaEnv, err := setupEnvironment(context.TODO(), client, "opennebula", 1)
+		opennebulaEnv, err := SetupAzureEnvironment(context.TODO(), client, "opennebula", config.Config.Clusters.OpenNebula.Workers)
 		if err != nil {
 			return err
 		}
@@ -50,17 +59,16 @@ func Setup(opennebula, kubevirt bool, workers int) error {
 		pretty_log.TaskGroup("Setting up OpenNebula control node")
 
 		// Commands to set up OpenNebula
-		// These will all be run with root privileges
 		controlCommandGroups := [][]string{
-			{"apt-get update"},
-			{"apt-get -y install gnupg wget apt-transport-https"},
+			{"sudo apt-get update"},
+			{"sudo apt-get -y install gnupg wget apt-transport-https"},
 			{"curl -fsSL https://downloads.opennebula.io/repo/repo2.key | sudo gpg --batch --yes --dearmor -o /etc/apt/trusted.gpg.d/opennebula.gpg"},
-			{"echo \"deb https://downloads.opennebula.org/repo/6.8/Ubuntu/22.04 stable opennebula\" | sudo tee /etc/apt/sources.list.d/opennebula.list"},
-			{"apt-get update"},
-			{"apt-get install -y opennebula opennebula-sunstone opennebula-gate opennebula-flow"},
-			{"ufw disable"},
-			{"systemctl start opennebula opennebula-sunstone"},
-			{"systemctl enable opennebula opennebula-sunstone"},
+			{"sudo echo \"deb https://downloads.opennebula.org/repo/6.8/Ubuntu/22.04 stable opennebula\" | sudo tee /etc/apt/sources.list.d/opennebula.list"},
+			{"sudo apt-get update"},
+			{"sudo apt-get install -y opennebula opennebula-sunstone opennebula-gate opennebula-flow"},
+			{"sudo ufw disable"},
+			{"sudo systemctl start opennebula opennebula-sunstone"},
+			{"sudo systemctl enable opennebula opennebula-sunstone"},
 		}
 
 		for idx, cmdGroup := range controlCommandGroups {
@@ -86,12 +94,10 @@ func Setup(opennebula, kubevirt bool, workers int) error {
 		// Commands to set up OpenNebula on worker nodes
 		workerCommandGroups := [][]string{
 			{"curl -fsSL https://downloads.opennebula.io/repo/repo2.key | sudo gpg --batch --yes --dearmor -o /etc/apt/trusted.gpg.d/opennebula.gpg"},
-			{"echo \"deb https://downloads.opennebula.org/repo/6.8/Ubuntu/22.04 stable opennebula\" | sudo tee /etc/apt/sources.list.d/opennebula.list"},
-			{"apt-get update"},
-			{"apt-get install -y opennebula-node"},
-			{"systemctl restart libvirtd.service libvirt-bin.service"},
-			{"systemctl start opennebula"},
-			{"systemctl enable opennebula"},
+			{"sudo echo \"deb https://downloads.opennebula.org/repo/6.8/Ubuntu/22.04 stable opennebula\" | sudo tee /etc/apt/sources.list.d/opennebula.list"},
+			{"sudo apt-get update"},
+			{"sudo apt-get install -y opennebula-node"},
+			{"sudo systemctl restart libvirtd.service"},
 		}
 
 		for idx, cmdGroup := range workerCommandGroups {
@@ -117,18 +123,89 @@ func Setup(opennebula, kubevirt bool, workers int) error {
 		// Setup nodes in management server
 		pretty_log.TaskGroup("Connect nodes to management server")
 
-		// Commands to connect nodes to management server
-		connectCommandGroups := [][]string{
-			// Copy OpenNebula SSH key to each worker OpenNebula authorized keys
-			{"cat ~/.ssh/id_rsa.pub | ssh " + opennebulaEnv.ControlNode.InternalIP + " 'cat >> /var/lib/one/.ssh/authorized_keys'"},
-			{"onehost create " + opennebulaEnv.ControlNode.InternalIP + " -i kvm -v kvm"},
+		// Commands to allows connections to workers
+		controlCommands := [][]string{}
+		for _, worker := range opennebulaEnv.WorkerNodes {
+			controlCommands = append(controlCommands, []string{"ssh-keyscan " + worker.InternalIP + " | sudo tee -a /var/lib/one/.ssh/known_hosts"})
+			controlCommands = append(controlCommands, []string{"ssh " + worker.InternalIP + " \"echo $(sudo cat /var/lib/one/.ssh/id_rsa.pub) | sudo tee -a /var/lib/one/.ssh/authorized_keys > /dev/null\""})
+			controlCommands = append(controlCommands, []string{"sudo onehost create " + opennebulaEnv.ControlNode.InternalIP + " -i kvm -v kvm"})
 		}
 
-		for idx, cmdGroup := range connectCommandGroups {
-			pretty_log.BeginTask("- Command (%d/%d): %s", idx+1, len(connectCommandGroups), strings.Join(cmdGroup, " && "))
+		for idx, cmdGroup := range controlCommands {
+			pretty_log.BeginTask("- Command (%d/%d): %s", idx+1, len(controlCommands), strings.Join(cmdGroup, " && "))
 
-			for _, worker := range opennebulaEnv.WorkerNodes {
-				outputList, err := SshCommand(worker.PublicIP, cmdGroup)
+			outputList, err := SshCommand(opennebulaEnv.ControlNode.PublicIP, cmdGroup)
+			if err != nil {
+				pretty_log.FailTask()
+				return err
+			}
+
+			pretty_log.CompleteTask()
+
+			if outputList != nil {
+				for _, output := range outputList {
+					pretty_log.TaskResult(output)
+				}
+			}
+		}
+	}
+
+	if kubevirt {
+		pretty_log.TaskGroup("Creating KubeVirt environment")
+		kubevirtEnv, err := SetupAzureEnvironment(context.TODO(), client, "kubevirt", config.Config.Clusters.KubeVirt.Workers)
+		if err != nil {
+			return err
+		}
+
+		pretty_log.TaskGroup("Setting up KubeVirt control node")
+
+		// Commands to set up KubeVirt with K3s on control node
+		controlCommandGroups := [][]string{
+			{"sudo apt-get update"},
+			{"curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.28.7+k3s1 INSTALL_K3S_EXEC=\"server --tls-san " + kubevirtEnv.ControlNode.InternalIP + " --advertise-address " + kubevirtEnv.ControlNode.InternalIP + " --write-kubeconfig-mode=644 --disable=traefik --disable=servicelb\" sh -"},
+		}
+
+		for idx, cmdGroup := range controlCommandGroups {
+			pretty_log.BeginTask("- Command (%d/%d): %s", idx+1, len(controlCommandGroups), strings.Join(cmdGroup, " && "))
+
+			outputList, err := SshCommand(kubevirtEnv.ControlNode.PublicIP, cmdGroup)
+			if err != nil {
+				pretty_log.FailTask()
+				return err
+			}
+
+			pretty_log.CompleteTask()
+
+			if outputList != nil {
+				for _, output := range outputList {
+					pretty_log.TaskResult(output)
+				}
+			}
+		}
+
+		// Fetch token from control node
+		pretty_log.BeginTask("Fetching token from control node")
+		outputList, err := SshCommand(kubevirtEnv.ControlNode.PublicIP, []string{"sudo cat /var/lib/rancher/k3s/server/node-token"})
+		if err != nil {
+			pretty_log.FailTask()
+			return err
+		}
+		token := strings.TrimSuffix(outputList[0], "\n")
+		pretty_log.CompleteTask()
+
+		pretty_log.TaskGroup("Setting up KubeVirt worker nodes")
+
+		// Commands to set up KubeVirt with K3s on worker nodes
+		workerCommandGroups := [][]string{
+			{"sudo apt-get update"},
+			{"curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.28.7+k3s1 K3S_URL=https://" + kubevirtEnv.ControlNode.InternalIP + ":6443 K3S_TOKEN=" + token + " sh -"},
+		}
+
+		for idx, cmdGroup := range workerCommandGroups {
+			pretty_log.BeginTask("- Command (%d/%d): %s", idx+1, len(workerCommandGroups), strings.Join(cmdGroup, " && "))
+
+			for _, worker := range kubevirtEnv.WorkerNodes {
+				outputList, err = SshCommand(worker.PublicIP, cmdGroup)
 				if err != nil {
 					pretty_log.FailTask()
 					return err
@@ -143,22 +220,51 @@ func Setup(opennebula, kubevirt bool, workers int) error {
 				}
 			}
 		}
-	}
 
-	if kubevirt {
-		pretty_log.TaskGroup("Creating KubeVirt environment")
-		_, err = setupEnvironment(context.TODO(), client, "kubevirt", workers)
-		if err != nil {
-			return err
+		// Install KubeVirt on control node
+		pretty_log.BeginTask("Installing KubeVirt on control node")
+		controlCommandGroups = [][]string{
+			{"kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/" + config.Config.KubeVirt.Version + "/kubevirt-operator.yaml"},
+			{"kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/" + config.Config.KubeVirt.Version + "/kubevirt-cr.yaml"},
 		}
 
+		for idx, cmdGroup := range controlCommandGroups {
+			pretty_log.BeginTask("- Command (%d/%d): %s", idx+1, len(controlCommandGroups), strings.Join(cmdGroup, " && "))
+
+			outputList, err = SshCommand(kubevirtEnv.ControlNode.PublicIP, cmdGroup)
+			if err != nil {
+				pretty_log.FailTask()
+				return err
+			}
+
+			pretty_log.CompleteTask()
+
+			if outputList != nil {
+				for _, output := range outputList {
+					pretty_log.TaskResult(output)
+				}
+			}
+		}
+
+		// Wait for KubeVirt to be deployed
+		pretty_log.BeginTask("Waiting for KubeVirt to be deployed (max 30 seconds)")
+		for i := 0; i < 30; i++ {
+			// kubectl get kubevirt.kubevirt.io/kubevirt -n kubevirt -o=jsonpath="{.status.phase}" == Deployed
+			res, _ := SshCommand(kubevirtEnv.ControlNode.PublicIP, []string{"kubectl get kubevirt.kubevirt.io/kubevirt -n kubevirt -o=jsonpath=\"{.status.phase}\""})
+			if res != nil && res[0] == "Deployed" {
+				break
+			}
+
+			time.Sleep(1 * time.Second)
+		}
+		pretty_log.CompleteTask()
 	}
 
 	return nil
 }
 
 // Shutdown cleans up the base environment in Azure and deletes all the resources
-func Shutdown(opennebula, kubevirt bool) error {
+func Shutdown(usabilityAnalysis, opennebula, kubevirt bool) error {
 	client, err := azure.New(&azure.Opts{
 		AuthLocation:   config.Config.Azure.AuthLocation,
 		SubscriptionID: config.Config.Azure.SubscriptionID,
@@ -168,20 +274,34 @@ func Shutdown(opennebula, kubevirt bool) error {
 		return err
 	}
 
+	if usabilityAnalysis {
+		pretty_log.TaskGroup("Shutting down Usability Analysis environment")
+		err = deleteEnvironment(context.TODO(), client, "usability")
+		if err != nil {
+			pretty_log.FailTask()
+			return err
+		}
+		pretty_log.CompleteTask()
+	}
+
 	if opennebula {
 		pretty_log.TaskGroup("Shutting down OpenNebula environment")
 		err = deleteEnvironment(context.TODO(), client, "opennebula")
 		if err != nil {
+			pretty_log.FailTask()
 			return err
 		}
+		pretty_log.CompleteTask()
 	}
 
 	if kubevirt {
 		pretty_log.TaskGroup("Shutting down KubeVirt environment")
 		err = deleteEnvironment(context.TODO(), client, "kubevirt")
 		if err != nil {
+			pretty_log.FailTask()
 			return err
 		}
+		pretty_log.CompleteTask()
 	}
 
 	return nil
@@ -207,7 +327,7 @@ func SshCommand(ip string, commands []string) ([]string, error) {
 	var outAll []string
 
 	for _, command := range commands {
-		out, err := client.Run("sudo " + command)
+		out, err := client.Run(command)
 		if err != nil {
 			return nil, err
 		}
@@ -218,7 +338,7 @@ func SshCommand(ip string, commands []string) ([]string, error) {
 	return outAll, nil
 }
 
-func setupEnvironment(ctx context.Context, client *azure.Client, namePrefix string, workers int) (*Environment, error) {
+func SetupAzureEnvironment(ctx context.Context, client *azure.Client, namePrefix string, workers int) (*AzureEnvironment, error) {
 	pretty_log.BeginTask("Creating resource group")
 	resourceGroup, err := client.CreateResourceGroup(ctx, config.Config.Azure.ResourceGroupBaseName+"-"+namePrefix)
 	if err != nil {
@@ -281,13 +401,26 @@ func setupEnvironment(ctx context.Context, client *azure.Client, namePrefix stri
 	}
 	pretty_log.CompleteTask()
 
-	// Generate SSH key pair for control node non-interactively, 2048 bits, no passphrase, RSA
-	pretty_log.BeginTask("Generating SSH key pair")
-	_, err = SshCommand(*controlPublicIP.Properties.IPAddress, []string{"ssh-keygen -t rsa -b 2048 -N \"\" -f /home/" + config.Config.Azure.Username + "/.ssh/id_rsa <<< y"})
-	if err != nil {
-		pretty_log.FailTask()
-		return nil, err
+	// Wait for VM to boot by sleeping
+	pretty_log.BeginTask("Waiting for VM to boot (max 30 seconds)")
+	for i := 0; i < 30; i++ {
+		res, _ := SshCommand(*controlPublicIP.Properties.IPAddress, []string{"echo \"\""})
+		if res != nil {
+			break
+		}
+
+		time.Sleep(1 * time.Second)
 	}
+	pretty_log.CompleteTask()
+
+	// Generate SSH key pair for control node non-interactively, 2048 bits, no passphrase, RSA. Don't overwrite
+	pretty_log.BeginTask("Generating SSH key pair")
+	_, _ = SshCommand(*controlPublicIP.Properties.IPAddress, []string{"ssh-keygen -t rsa -b 2048 -N \"\" -f /home/" + config.Config.Azure.Username + "/.ssh/id_rsa <<< n 1> /dev/null 2> /dev/null"})
+	// TODO: Fix me, always returns an error
+	//if err != nil {
+	//	pretty_log.FailTask()
+	//	return nil, err
+	//}
 	publicKey, err := SshCommand(*controlPublicIP.Properties.IPAddress, []string{"cat /home/" + config.Config.Azure.Username + "/.ssh/id_rsa.pub"})
 	if err != nil {
 		pretty_log.FailTask()
@@ -334,7 +467,7 @@ func setupEnvironment(ctx context.Context, client *azure.Client, namePrefix stri
 		}
 	}
 
-	return &Environment{
+	return &AzureEnvironment{
 		ResourceGroup: rg,
 		ControlNode: ControlNode{
 			InternalIP: *controlNIC.Properties.IPConfigurations[0].Properties.PrivateIPAddress,

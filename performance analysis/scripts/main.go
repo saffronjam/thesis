@@ -9,12 +9,12 @@ import (
 func main() {
 	config.LoadConfig(nil)
 
-	err := environment.Setup(true, false, 2)
+	err := environment.Setup(true, false, false)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
 
-	err = environment.Shutdown(true, false)
+	err = environment.Shutdown(false, false, false)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}

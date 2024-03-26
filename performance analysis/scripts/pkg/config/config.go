@@ -18,6 +18,22 @@ type ConfigType struct {
 		// PublicKeys is a list of public keys that will be added to the VMs
 		PublicKeys []string `yaml:"publicKeys"`
 	} `yaml:"azure"`
+
+	KubeVirt struct {
+		Version string `yaml:"version"`
+	} `yaml:"kubevirt"`
+
+	Clusters struct {
+		UsabilityAnalysis struct {
+			Workers int `yaml:"workers"`
+		} `yaml:"usabilityAnalysis"`
+		OpenNebula struct {
+			Workers int `yaml:"workers"`
+		} `yaml:"openNebula"`
+		KubeVirt struct {
+			Workers int `yaml:"workers"`
+		} `yaml:"kubeVirt"`
+	} `yaml:"clusters"`
 }
 
 var Config ConfigType

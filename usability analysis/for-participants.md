@@ -16,21 +16,23 @@ Being built on top of Kubernetes allows the VMs to integrate with other resource
 - **DataVolume**: A disk that is persistent and initialized when the VM is created. It uses PersistentVolumeClaim and a PersistentVolume under the hood where it injects a disk image.
 
 ## Prerequisites
+* Install the following tools:
+  * **kubectl**\
+    The CLI tool for Kubernetes. You can download it [here](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
+  * **virtctl**\
+    The CLI tool for KubeVirt. You can download it [here](https://kubevirt.io/user-guide/operations/virtctl_client_tool).
+  * **VNC viewer**\
+    A tool for viewing the VNC connection, such as [RealVNC](https://www.realvnc.com/en/).
+* **kubeconfig file**\
+  The configuration file for accessing the Kubernetes cluster. You should have received this alongside this document. Make sure that the kubeconfig file is in the default location (`~/.kube/config`) or set the `KUBECONFIG` environment variable to the path of the kubeconfig file.
+* **Your own namespace**\
+  You should have received a unique namespace alongside this document. Set the namespace using 
+  ```bash
+  kubectl config set-context --current --namespace=<your namespace>
+  ```
+* **Monitor resources**\
+    In a separate terminal window, run `watch -n 1 kubectl get vmis` to monitor the state of the VMIs, or any other resource you want to monitor.
 
-
-Install the following tools:
-- kubectl: The CLI tool for Kubernetes. You can download it [here](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
-- virtctl: The CLI tool for KubeVirt. You can download it [here](https://kubevirt.io/user-guide/operations/virtctl_client_tool).
-- A VNC viewer: A tool for viewing the VNC connection, such as [RealVNC](https://www.realvnc.com/en/).
-
-Ensure you have access to:
-- kubeconfig file: The configuration file for accessing the Kubernetes cluster. You should have received this alongside this document. Make sure that the kubeconfig file is in the default location (`~/.kube/config`) or set the `KUBECONFIG` environment variable to the path of the kubeconfig file.
-
-Ensure you have configured:
-- Your own namespace: Run `kubectl config set-context --current --namespace=<your given namespace>`
-
-And some conveniences:
-- In a separate terminal window, run `watch -n 1 kubectl get vmis` to monitor the state of the VMIs, or any other resource you want to monitor.
 
 ## Basic usage (Task 1/3)
 
@@ -100,7 +102,7 @@ kubectl delete vm my-vm
 ```
 
 ### Questions
-After you have finished the tasks, reflect on the experience. You may use the following questions as a guide, but feel free to add comparisons with other VM management systems you have used.
+After you have finished the tasks, reflect on the experience. You may use the following questions as a guide, but feel free to elaborate with your own thoughts.
 
 1. How intuitive was the process of creating and deleting a VM?
 2. How straightforward was it to access the VM using SSH and VNC?
@@ -332,7 +334,7 @@ kubectl delete vm my-vm
 If you tried to actually see if the snapshot worked you will see that the VM is not restored. This is because only snapshot creation, and not snapshot restorations, are supported in Azure File CSI (the test environment used for this analysis). However, KubeVirt still snapshots VM specifications.
 
 ### Questions
-After you have finished the tasks, reflect on the experience. You may use the following questions as a guide, but feel free to add comparisons with other VM management systems you have used.
+After you have finished the tasks, reflect on the experience. You may use the following questions as a guide, but feel free to elaborate with your own thoughts.
 
 1. How intuitive was the process of migrating a VM from one node to another?
 2. How straightforward was it to create and restore a snapshot of a VM?
@@ -379,7 +381,7 @@ spec:
             users:
             - name: cloud
               # Generated with `mkpasswd -m sha-512 --rounds 4096`
-              passwd: $6$rounds=4096$iH0a3ZNa.GtWm6AA$eDOGwkCkhOQH1npXrXQyCAqBWiBeyGE79ZUp2Zmbeuv8dsEORCUGpiPQ4T.0gQNbaeg564rSH0NmQta5VV20N.
+              passwd: $6$rounds=4096$abc
               shell: /bin/bash
               lock-passwd: false
               chpasswd: { expire: False }
@@ -398,7 +400,7 @@ kubectl apply -f my-vm.yml
 ```bash
 virtctl vnc my-vm
 ```
-3. Debug the issue to fix the misconfiguration
+3. Find out what the issue is
 
 4. Edit the VM manifest to fix the issue
 
@@ -417,7 +419,7 @@ kubectl delete vm my-vm
 ```
 
 ### Questions
-After you have finished the tasks, reflect on the experience. You may use the following questions as a guide, but feel free to add comparisons with other VM management systems you have used.
+After you have finished the tasks, reflect on the experience. You may use the following questions as a guide, but feel free to elaborate with your own thoughts.
 
 1. How easy was it to debug and find the issue?
 2. How easy was it to fix the issue?
@@ -425,7 +427,7 @@ After you have finished the tasks, reflect on the experience. You may use the fo
 4. Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?
 
 ## Summary
-After you have completed the tasks, reflect on the overall experience of using KubeVirt. You may use the following questions as a guide, but feel free to discuss and compare them with other VM management systems you have used.
+After you have completed the tasks, reflect on the overall experience of using KubeVirt. You may use the following questions as a guide, but feel free to elaborate with your own thoughts.
 
 1. How would you compare the experience of using KubeVirt with other VM management systems you have used?
 2. How intuitive is the workflow of KubeVirt? Can you use it without reading the documentation?

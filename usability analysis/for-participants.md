@@ -21,15 +21,16 @@ Being built on top of Kubernetes allows the VMs to integrate with other resource
 Install the following tools:
 - kubectl: The CLI tool for Kubernetes. You can download it [here](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 - virtctl: The CLI tool for KubeVirt. You can download it [here](https://kubevirt.io/user-guide/operations/virtctl_client_tool).
+- A VNC viewer: A tool for viewing the VNC connection, such as [RealVNC](https://www.realvnc.com/en/).
 
 Ensure you have access to:
-- kubeconfig file: The configuration file for accessing the Kubernetes cluster. You should have received this alongside this document.
+- kubeconfig file: The configuration file for accessing the Kubernetes cluster. You should have received this alongside this document. Make sure that the kubeconfig file is in the default location (`~/.kube/config`) or set the `KUBECONFIG` environment variable to the path of the kubeconfig file.
 
 Ensure you have configured:
 - Your own namespace: Run `kubectl config set-context --current --namespace=<your given namespace>`
 
 And some conveniences:
-- In a separate terminal window, run `watch -n 1 kubectl get vmis` to monitor the state of the VMs.
+- In a separate terminal window, run `watch -n 1 kubectl get vmis` to monitor the state of the VMIs, or any other resource you want to monitor.
 
 ## Basic usage (Task 1/3)
 
@@ -39,6 +40,8 @@ The first task is about creating a VM using KubeVirt. You will need to create a 
 
 Below is a minimal manifest for creating the VM using a containerDisk. The credentials for the Cirros image are user **cirros** and password **gocubsgo**.
 
+
+**my-vm.yml**
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
@@ -96,17 +99,26 @@ virtctl restart my-vm
 kubectl delete vm my-vm
 ```
 
+### Questions
+After you have finished the tasks, reflect on the experience. You may use the following questions as a guide, but feel free to add comparisons with other VM management systems you have used.
+
+1. How intuitive was the process of creating and deleting a VM?
+2. How straightforward was it to access the VM using SSH and VNC?
+3. Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?
+
 ## Maintenance (Task 2/3)
-The second task is related to maintenance, where you will create a snapshot of a VM and then restore it. You will also perform a live migration on a VM to move it from one node to another without shutting it down. For this task, you can use a VM with a containerDisk since the task is not related to persistent storage.
+The second task is related to maintenance, where you will create a snapshot of a VM and then restore it. You will also perform a live migration on a VM to move it from one node to another without shutting it down.
 
-Both snapshots and live migrations are treated as a resource by KubeVirt, meaning that the operation will take place in the background after a VirtualMachineSnapshot resource or a LiveMigration resource is created. See the References section for more information.
+Both snapshots and live migrations are treated as a resource by KubeVirt, meaning that the operation will take place in the background after a VirtualMachineSnapshot resource or a VirtalMachineInstanceMigration resource is created. See the References section for more information.
 
-A live migration resource in KubeVirt does not move resources itself and instead uses the Kubernetes scheduler to decide where to place the VM. This means that a LiveMigration resource only tells the scheduler that the VM can be moved but not where to move it. See the References section for more information. The Kubernetes scheduler is sophistiacted and support a wide range of scheduling strataegies, but for this task we can force a move between node by using the `spec.template.spec.nodeSelector` in the VM and editing the labels of the worker nodes in the cluster. To not interfere with other participants, you should create a unique label for you.  
+A live migration resource in KubeVirt does not move resources itself and instead uses the Kubernetes scheduler to decide where to place the VM. This means that a LiveMigration resource only tells the scheduler that the VM can be moved but not where to move it. See the References section for more information. The Kubernetes scheduler is sophistiacted and support a wide range of scheduling strataegies, but for this task we can force a move between two nodes by using the `spec.template.spec.nodeSelector` in the VM and editing the labels of the worker nodes in the cluster. To not interfere with other participants, you should create a unique label for you.  
 
 A snapshot in KubeVirt works similarly to a snapshot in other VM management systems, where it captures the state of the VM at a specific point in time. However, the snapshot uses Kubernetes VolumeSnapshot, which is a Kubernetes API for taking snapshots of PersistentVolumes. This means that a VM with a containerDisk *cannot* be snapshotted. Instead, you should use a VM with a DataVolume. See the References section for more information.
 
 ### Live Migration Manifests
 The following is a minimal manifest for creating a VM that runs on a node with label `name: worker-1`. The credentials for the Cirros image are user **cirros** and password **gocubsgo**.
+
+**my-vm.yml**
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
@@ -142,7 +154,9 @@ spec:
           image: quay.io/kubevirt/cirros-container-disk-demo
 ```
 
-The following is a minimal manifest for creating a LiveMigration resource.
+The following is a minimal manifest for creating a live migration resource.
+
+**my-vm-migration.yml**
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachineInstanceMigration
@@ -152,15 +166,13 @@ spec:
   vmiName: my-vm
 ```
 
-
-
 ### Live Migration Steps
 1. Ensure worker node 1 has your label (Make sure to replace `my-label` and `some-value` with your own values):
 ```bash
-kubectl label node aks-user-21932338-vmss000002 my-label=some-value
+kubectl label node aks-user-21932338-vmss000004 my-label=some-value
 ```
 
-2. Create a VM and wait for it to start. The VM should start on **aks-user-21932338-vmss000002**:
+2. Create a VM and wait for it to start. The VM should start on **aks-user-21932338-vmss000004**:
 ```bash
 kubectl apply -f my-vm.yml
 ```
@@ -180,8 +192,8 @@ virtctl migrate my-vm
 
 5. Add the same label to worker node 2 and remove it from worker node 1 (Make sure to replace `my-label` and `some-value` with your own values):
 ```bash
-kubectl label node aks-user-21932338-vmss000003 my-label=some-value
-kubectl label node aks-user-21932338-vmss000002 my-label-
+kubectl label node aks-user-21932338-vmss000005 my-label=some-value
+kubectl label node aks-user-21932338-vmss000004 my-label-
 ```
 
 6. (Optional) Check if the VM is now running on worker node 2:
@@ -191,12 +203,18 @@ kubectl get vmis
 
 7. Unlabel worker node 2
 ```bash
-kubectl label node aks-user-21932338-vmss000003 my-label-
+kubectl label node aks-user-21932338-vmss000005 my-label-
+```
+
+8. Delete the VM
+```bash
+kubectl delete vm my-vm
 ```
 
 ### Snapshot Manifests
-The following is a minimal manifest for creating a VM that runs on a node with label `name: worker-1`. The credentials for the Alpine image are user **root** without password.
+The following is a minimal manifest for creating a VM with a DataVolume. The credentials for the Alpine image are user **root** without password.
 
+**my-vm.yml**
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
@@ -243,6 +261,8 @@ spec:
 ```
 
 The following is a minimal manifest for creating a VirtualMachineSnapshot resource.
+
+**my-vm-snapshot.yml**
 ```yaml
 apiVersion: snapshot.kubevirt.io/v1alpha1
 kind: VirtualMachineSnapshot
@@ -256,6 +276,8 @@ spec:
 ```
 
 The following is a minimal manifest for restoring a VM from a snapshot.
+
+**my-vm-restore.yml**
 ```yaml
 apiVersion: snapshot.kubevirt.io/v1alpha1
 kind: VirtualMachineRestore
@@ -301,7 +323,13 @@ kubectl apply -f my-vm-restore.yml
 kubectl get vmrestore
 ```
 
-If you tried to actually see if the snapshot worked you will see that the VM is not restored. This is because only snapshot creation, and on snapshot restoratios, is supported in Azure File CSI (the test environment used for this analysis). However, KubeVirt still snapshots VM specifications and can restore them. 
+7. Delete the resources
+```bash
+kubectl delete vmsnapshot my-vm-snapshot
+kubectl delete vm my-vm
+```
+
+If you tried to actually see if the snapshot worked you will see that the VM is not restored. This is because only snapshot creation, and not snapshot restorations, are supported in Azure File CSI (the test environment used for this analysis). However, KubeVirt still snapshots VM specifications.
 
 ### Questions
 After you have finished the tasks, reflect on the experience. You may use the following questions as a guide, but feel free to add comparisons with other VM management systems you have used.
@@ -316,6 +344,7 @@ The third task is about debugging a VM that is not accessible through SSH. You w
 ### Manifests
 The following is a manifest for creating a Ubuntu VM that is not accessible through SSH. Credentials for the Ubuntu image should be user **cloud** and password **cloud**.
 
+**my-vm.yml**
 ```yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
@@ -349,14 +378,15 @@ spec:
             #cloud-config
             users:
             - name: cloud
-              passwd: $6$rounds=4096$abc
+              # Generated with `mkpasswd -m sha-512 --rounds 4096`
+              passwd: $6$rounds=4096$iH0a3ZNa.GtWm6AA$eDOGwkCkhOQH1npXrXQyCAqBWiBeyGE79ZUp2Zmbeuv8dsEORCUGpiPQ4T.0gQNbaeg564rSH0NmQta5VV20N.
               shell: /bin/bash
               lock-passwd: false
-              ssh_pwauth: True
               chpasswd: { expire: False }
               sudo: ALL=(ALL) NOPASSWD:ALL
               ssh_authorized_keys:
               - ssh-ed25519 abc
+            ssh_pwauth: True
 ```
 
 ### Steps
@@ -371,9 +401,7 @@ virtctl vnc my-vm
 3. Debug the issue to fix the misconfiguration
 
 4. Edit the VM manifest to fix the issue
-```bash
-kubectl edit vm my-vm
-```
+
 5. (Optional) Restart the VM (some changes require a restart)
 ```bash
 virtctl restart my-vm
@@ -404,3 +432,9 @@ After you have completed the tasks, reflect on the overall experience of using K
 3. How would you describe the overall experience of using KubeVirt?
 
 Thank you for participating in the usability analysis!
+
+## References
+1. **VirtualMachineInstance**: [https://kubevirt.io/user-guide/virtual_machines/virtual_machine_instances](https://kubevirt.io/user-guide/virtual_machines/virtual_machine_instances)
+2. **Disks**: [https://kubevirt.io/user-guide/virtual_machines/disks_and_volumes](https://kubevirt.io/user-guide/virtual_machines/disks_and_volumes)
+3. **Snapshots**: [https://kubevirt.io/user-guide/operations/snapshot_restore_api](https://kubevirt.io/user-guide/operations/snapshot_restore_api)
+4. **Live Migration**: [https://kubevirt.io/user-guide/operations/live_migration](https://kubevirt.io/user-guide/operations/live_migration)

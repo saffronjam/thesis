@@ -1,0 +1,11 @@
+participants:
+  - name: "Robert"
+    namespace: "user-1"
+  - name: "Karl"
+    namespace: "user-2"
+  - name: "Oswald"
+    namespace: "user-3"
+  - name: "Linus"
+    namespace: "user-4"
+  - name: "Sai"
+    namespace: "user-5"

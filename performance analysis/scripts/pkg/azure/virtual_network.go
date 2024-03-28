@@ -7,6 +7,15 @@ import (
 	"strings"
 )
 
+func (c *Client) GetVirtualNetwork(ctx context.Context, name string, resourceGroupName string) (*armnetwork.VirtualNetwork, error) {
+	resp, err := c.VirtualNetworksClient.Get(ctx, resourceGroupName, name, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp.VirtualNetwork, nil
+}
+
 func (c *Client) CreateVirtualNetwork(ctx context.Context, name string, resourceGroupName string, addressSpace string) (*armnetwork.VirtualNetwork, error) {
 	pResp, err := c.VirtualNetworksClient.BeginCreateOrUpdate(ctx, resourceGroupName, name, armnetwork.VirtualNetwork{
 		Location: to.Ptr(c.Location),

@@ -6,6 +6,15 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources"
 )
 
+func (c *Client) GetResourceGroup(ctx context.Context, name string) (*armresources.ResourceGroup, error) {
+	resp, err := c.ResourceGroupsClient.Get(ctx, name, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp.ResourceGroup, nil
+}
+
 func (c *Client) CreateResourceGroup(ctx context.Context, name string) (*armresources.ResourceGroup, error) {
 	resp, err := c.ResourceGroupsClient.CreateOrUpdate(ctx, name, armresources.ResourceGroup{
 		Location: to.Ptr(c.Location),

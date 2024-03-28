@@ -6,6 +6,16 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/network/armnetwork/v2"
 )
 
+func (c *Client) GetNIC(ctx context.Context, name, resourceGroup string) (*armnetwork.Interface, error) {
+	resp, err := c.InterfacesClient.Get(ctx, resourceGroup, name, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp.Interface, nil
+}
+
 func (c *Client) CreateNIC(ctx context.Context, name, resourceGroup, subnetID string, publicIpID *string) (*armnetwork.Interface, error) {
 	var publicIP *armnetwork.PublicIPAddress
 	if publicIpID != nil {

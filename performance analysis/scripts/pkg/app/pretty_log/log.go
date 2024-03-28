@@ -2,6 +2,7 @@ package pretty_log
 
 import (
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -45,4 +46,20 @@ func TaskResult(format string, a ...interface{}) {
 	cyan := "\033[36m"
 	reset := "\033[0m"
 	fmt.Printf("%s%s%s\n", cyan, result, reset)
+}
+
+// TaskResultList prints the result that is a string list
+func TaskResultList(list []string) {
+	cyan := "\033[36m"
+	reset := "\033[0m"
+
+	for _, item := range list {
+		if item == "" {
+			continue
+		}
+
+		item = strings.TrimSuffix(item, "\n")
+
+		fmt.Printf("%s - %s%s\n", cyan, item, reset)
+	}
 }

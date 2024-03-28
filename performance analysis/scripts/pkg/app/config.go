@@ -1,4 +1,4 @@
-package config
+package app
 
 import (
 	"gopkg.in/yaml.v3"
@@ -21,19 +21,22 @@ type ConfigType struct {
 
 	KubeVirt struct {
 		Version string `yaml:"version"`
+		Workers int    `yaml:"workers"`
+		CDI     struct {
+			Version string `yaml:"version"`
+		} `yaml:"cdi"`
 	} `yaml:"kubevirt"`
 
-	Clusters struct {
-		UsabilityAnalysis struct {
-			Workers int `yaml:"workers"`
-		} `yaml:"usabilityAnalysis"`
-		OpenNebula struct {
-			Workers int `yaml:"workers"`
-		} `yaml:"openNebula"`
-		KubeVirt struct {
-			Workers int `yaml:"workers"`
-		} `yaml:"kubeVirt"`
-	} `yaml:"clusters"`
+	OpenNebula struct {
+		Workers int `yaml:"workers"`
+		Image   struct {
+			Name string `yaml:"name"`
+			URL  string `yaml:"url"`
+		} `yaml:"image"`
+		Template struct {
+			Name string `yaml:"name"`
+		} `yaml:"template"`
+	} `yaml:"opennebula"`
 }
 
 var Config ConfigType

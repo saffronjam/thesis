@@ -6,6 +6,16 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute/v4"
 )
 
+func (c *Client) GetVM(ctx context.Context, name, resourceGroup string) (*armcompute.VirtualMachine, error) {
+	resp, err := c.VirtualMachinesClient.Get(ctx, resourceGroup, name, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp.VirtualMachine, nil
+}
+
 func (c *Client) CreateVM(ctx context.Context, name, resourceGroup, nicID, diskName, username, password string, authorizedKeys []string) (*armcompute.VirtualMachine, error) {
 	var publicKeys []*armcompute.SSHPublicKey
 	for _, key := range authorizedKeys {

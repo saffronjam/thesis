@@ -6,6 +6,16 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/network/armnetwork/v2"
 )
 
+func (c *Client) GetSubnet(ctx context.Context, name string, resourceGroupName string, vnetName string) (*armnetwork.Subnet, error) {
+	resp, err := c.SubnetsClient.Get(ctx, resourceGroupName, vnetName, name, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp.Subnet, nil
+}
+
 func (c *Client) CreateSubnet(ctx context.Context, name string, resourceGroupName string, vnetName string, addressPrefix string) (*armnetwork.Subnet, error) {
 	pResp, err := c.SubnetsClient.BeginCreateOrUpdate(ctx, resourceGroupName, vnetName, name, armnetwork.Subnet{
 		Properties: &armnetwork.SubnetPropertiesFormat{

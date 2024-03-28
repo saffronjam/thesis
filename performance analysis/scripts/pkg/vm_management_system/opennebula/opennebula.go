@@ -5,14 +5,17 @@ import (
 	"performance/models"
 	"performance/pkg/app"
 	"performance/pkg/app/pretty_log"
-	"performance/pkg/app/utils"
 	"performance/pkg/vm_management_system"
+	"performance/utils"
+	"strconv"
 )
 
 type OpenNebula struct {
 	Environment *models.AzureEnvironment
 
 	vm_management_system.VmManagementSystem
+
+	DefaultTemplateID int
 }
 
 func New(environment *models.AzureEnvironment) *OpenNebula {
@@ -25,20 +28,7 @@ func (o OpenNebula) Setup() error {
 	pretty_log.TaskGroup("Setting up OpenNebula")
 	// Download image
 	pretty_log.BeginTask("Setting up image if not present")
-
-	//installIfNotPresent := "if sudo oneimage list --list NAME | grep -w " + app.Config.OpenNebula.Image.Name + " | wc -l | grep -q ^0$; then\n  sudo oneimage create --name " + app.Config.OpenNebula.Image.Name + " --path \"" + app.Config.OpenNebula.Image.URL + "\" --datastore 1 --format qcow2\nelse\n  echo 'Image already exists.'\nfi\nexit 0"
-	//installIfNotPresent := "sudo oneimage list --list NAME | grep -w " + app.Config.OpenNebula.Image.Name + " | wc -l | grep -q ^0$ && sudo oneimage create --name " + app.Config.OpenNebula.Image.Name + " --path \"" + app.Config.OpenNebula.Image.URL + "\" --datastore 1 --format qcow2 || true"
-	//installIfNotPresent := "sudo oneimage create --name cirros --path http://download.cirros-cloud.net/0.6.2/cirros-0.6.2-x86_64-disk.img --datastore 1 --format qcow2 &"
-
-	/*
-		EOF
-		NAME="cirros"
-		PATH="http://download.cirros-cloud.net/0.6.2/cirros-0.6.2-x86_64-disk.img"
-		DATASTORE=1
-		EOF
-	*/
 	installIfNotPresent := "if sudo oneimage list --list NAME | grep -w " + app.Config.OpenNebula.Image.Name + " | wc -l | grep -q ^0$; then\n  sudo oneimage create -d 1 <<EOF\nNAME=\"" + app.Config.OpenNebula.Image.Name + "\"\nPATH=\"" + app.Config.OpenNebula.Image.URL + "\"\nEOF\nelse\n  echo 'Image already exists.'\nfi\nexit 0"
-
 	res, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{installIfNotPresent})
 	if err != nil {
 		pretty_log.FailTask()
@@ -58,6 +48,16 @@ func (o OpenNebula) Setup() error {
 	}
 	pretty_log.CompleteTask()
 	pretty_log.TaskResultList(res)
+
+	// Get template ID
+	pretty_log.BeginTask("Getting template ID")
+	getTemplateID := "onetemplate list --list ID --json | jq '.VMTEMPLATE_POOL.VMTEMPLATE[] | select(.NAME==\"" + app.Config.OpenNebula.Template.Name + "\") | .ID'"
+	res, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{getTemplateID})
+	if err != nil {
+		pretty_log.FailTask()
+		return err
+	}
+	pretty_log.CompleteTask()
 
 	return nil
 }
@@ -104,14 +104,14 @@ func (o OpenNebula) ListVMs() []models.VM {
 	return vms
 }
 
-func (o OpenNebula) CreateVM(name string) *models.VM {
-	createCmd := "onetemplate instantiate 2 --name my-vm3 <<EOF\nCPU=\"2\"\nMEMORY=\"2048\"\nDISK=[IMAGE=\"cirros\"]\nEOF"
+func (o OpenNebula) CreateVM(vm *models.VM) *models.VM {
+	createCmd := "onetemplate instantiate " + strconv.Itoa(o.DefaultTemplateID) + " --name  <<EOF\nCPU=\"2\"\nMEMORY=\"2048\"\nDISK=[IMAGE=\"cirros\"]\nEOF"
 	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{createCmd})
 	if err != nil {
 		return nil
 	}
 
-	return o.GetVM(name)
+	return o.GetVM(vm.Name)
 }
 
 func (o OpenNebula) DeleteVM(name string) {
@@ -128,4 +128,10 @@ func (o OpenNebula) DeleteAllVMs() {
 	if err != nil {
 		return
 	}
+}
+
+func (o OpenNebula) WaitForRunningVM(name string) {
+}
+
+func (o OpenNebula) WaitForDeletedVM(name string) {
 }

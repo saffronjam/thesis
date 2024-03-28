@@ -10,6 +10,18 @@ import (
 	"time"
 )
 
+type Benchmark struct {
+	Environment models.BenchmarkEnvironment
+	VMMS        vm_management_system.VmManagementSystem
+}
+
+func NewBenchmark(environment models.BenchmarkEnvironment, vmms vm_management_system.VmManagementSystem) *Benchmark {
+	return &Benchmark{
+		Environment: environment,
+		VMMS:        vmms,
+	}
+}
+
 func Run(environments []models.BenchmarkEnvironment) *models.BenchmarkResult {
 	for _, environment := range environments {
 		pretty_log.TaskGroup("Benchmarking " + environment.Name)
@@ -23,29 +35,29 @@ func Run(environments []models.BenchmarkEnvironment) *models.BenchmarkResult {
 		pretty_log.TaskGroup("Setting up VM management system (Not benchmarked)")
 		err := vmms.Setup()
 		if err != nil {
-			pretty_log.FailTask()
 			log.Fatalln(err.Error())
 		}
 
 		timeStart := time.Now()
 
-		time.Sleep(1 * time.Second)
-
 		// Run benchmark
 		pretty_log.TaskGroup("[%s] Running benchmark", environment.Name)
-		time.Sleep(1 * time.Second)
 
-		// TODO: Add a list of benchmarks to run
+		results := RunTests(NewBenchmark(environment, vmms).AllTests())
+		for _, result := range results {
+			pretty_log.BeginTask("[%s] %s", environment.Name, result.Name)
+			if result.Result != nil {
+				pretty_log.FailTask()
+			} else {
+				pretty_log.CompleteTask()
+			}
+		}
 
 		timeEnd := time.Now()
 		pretty_log.TaskResult("[%s] Benchmark complete (%s)", environment.Name, timeEnd.Sub(timeStart).String())
 
 		// Save benchmark results
 		pretty_log.TaskGroup("[%s] Saving benchmark results", environment.Name)
-		time.Sleep(1 * time.Second)
-
-		// Teardown benchmark
-		pretty_log.TaskGroup("[%s] Tearing down benchmark", environment.Name)
 		time.Sleep(1 * time.Second)
 	}
 

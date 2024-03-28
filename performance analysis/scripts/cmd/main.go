@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"performance/models"
 	"performance/pkg/app"
 	"performance/pkg/benchmark"
 	"performance/pkg/environment"
@@ -14,6 +15,9 @@ func main() {
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
+
+	// Only KubeVirt right now, index 1
+	environments = []models.BenchmarkEnvironment{environments[1]}
 
 	// Run benchmark
 	benchmark.Run(environments)

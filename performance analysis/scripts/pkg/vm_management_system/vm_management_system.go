@@ -14,8 +14,13 @@ type VmManagementSystem interface {
 
 	GetVM(name string) *models.VM
 	ListVMs() []models.VM
-	CreateVM(name string) *models.VM
+	CreateVM(vm *models.VM) *models.VM
 	DeleteVM(name string)
+
+	// WaitForRunningVM waits for the VM to be accessible via SSH
+	WaitForRunningVM(name string) error
+	// WaitForDeletedVM waits for the VM to be deleted
+	WaitForDeletedVM(name string) error
 
 	// DeleteAllVMs deletes all VMs in the environment
 	// It should be treated as a cleanup operation, and not be included in any benchmarking

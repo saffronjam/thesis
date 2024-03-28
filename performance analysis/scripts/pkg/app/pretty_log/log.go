@@ -27,10 +27,20 @@ func BeginTask(format string, a ...interface{}) {
 }
 
 // CompleteTask prints a green checkmark, then ends the line.
-func CompleteTask() {
+func CompleteTask(suffix ...string) {
+	s := ""
+	if len(suffix) > 0 {
+		s = suffix[0]
+	}
+
 	green := "\033[32m"
+	suffixColor := "\033[38;5;208m"
 	reset := "\033[0m"
-	fmt.Printf("%s✓%s\n", green, reset)
+	if s == "" {
+		fmt.Printf("%s✓%s\n", green, reset)
+	} else {
+		fmt.Printf("%s✓%s [%s%s%s]\n", green, reset, suffixColor, s, reset)
+	}
 }
 
 // FailTask prints a green checkmark, then ends the line.

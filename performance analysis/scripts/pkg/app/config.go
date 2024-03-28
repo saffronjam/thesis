@@ -25,6 +25,9 @@ type ConfigType struct {
 		CDI     struct {
 			Version string `yaml:"version"`
 		} `yaml:"cdi"`
+		Image struct {
+			URL string `yaml:"url"`
+		} `yaml:"image"`
 	} `yaml:"kubevirt"`
 
 	OpenNebula struct {

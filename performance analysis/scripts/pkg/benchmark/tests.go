@@ -9,11 +9,9 @@ import (
 )
 
 const (
-	TimerStarted  = "started"
-	TimerFinished = "finished"
-
-	TimerVmRunning    = "vm-running"
-	TimerVmAccessible = "vm-accessible"
+	TimerStarted   = "started"
+	TimerFinished  = "finished"
+	TimerVmRunning = "vm-running"
 )
 
 type TestDefinition struct {
@@ -36,10 +34,10 @@ type TestResult struct {
 
 func (b *Benchmark) AllTests() []TestDefinition {
 	return []TestDefinition{
-		//{
-		//	Name: "CreateEachType",
-		//	Func: b.CreateEachType,
-		//},
+		{
+			Name: "CreateEachType",
+			Func: b.CreateEachType,
+		},
 		{
 			Name: "CreateManyTinyVMs",
 			Func: b.CreateManyTinyVMs,
@@ -121,16 +119,6 @@ func (b *Benchmark) CreateEachType() []TestResult {
 		}
 		running := time.Now()
 
-		pretty_log.TaskGroup("[%s] Waiting for %s VM to be accessible", b.Environment.Name, name)
-		err = b.VMMS.WaitForAccessibleVM(vm.Name)
-		if err != nil {
-			pretty_log.TaskResult("[%s] Failed to wait for %s VM to be accessible: %s", b.Environment.Name, name, err.Error())
-			testRes.Err = err
-			res = append(res, testRes)
-			continue
-		}
-		accessible := time.Now()
-
 		pretty_log.TaskGroup("[%s] Deleting %s VM", b.Environment.Name, name)
 		err = b.VMMS.DeleteVM(vm.Name)
 		if err != nil {
@@ -142,10 +130,9 @@ func (b *Benchmark) CreateEachType() []TestResult {
 		end := time.Now()
 
 		testRes.Timers = map[string]time.Time{
-			TimerStarted:      start,
-			TimerFinished:     end,
-			TimerVmRunning:    running,
-			TimerVmAccessible: accessible,
+			TimerStarted:   start,
+			TimerFinished:  end,
+			TimerVmRunning: running,
 		}
 		testRes.CpuUsage = []float64{0.0}
 		testRes.MemoryUsage = []float64{0.0}

@@ -137,7 +137,7 @@ func Setup(createOpennebula, createKubevirt bool) ([]models.BenchmarkEnvironment
 			Name:        "OpenNebula",
 			Environment: opennebulaEnv,
 		})
-	} else if false {
+	} else if true {
 		pretty_log.TaskResult("Fetching OpenNebula environment")
 		opennebulaEnv, err := FetchAzureEnvironment(context.TODO(), client, "opennebula")
 		if err != nil {
@@ -360,7 +360,7 @@ parameters:
 			Name:        "KubeVirt",
 			Environment: kubevirtEnv,
 		})
-	} else {
+	} else if true {
 		pretty_log.TaskResult("Fetching KubeVirt environment")
 		kubevirtEnv, err := FetchAzureEnvironment(context.TODO(), client, "kubevirt")
 		if err != nil {

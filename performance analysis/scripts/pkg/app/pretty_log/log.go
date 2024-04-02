@@ -52,6 +52,8 @@ func FailTask() {
 
 // TaskResult prints the result of a task in cyan color.
 func TaskResult(format string, a ...interface{}) {
+	// Remove newline from the end of the format string
+	format = strings.TrimSuffix(format, "\n")
 	result := fmt.Sprintf(format, a...)
 	cyan := "\033[36m"
 	reset := "\033[0m"

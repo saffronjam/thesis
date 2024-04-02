@@ -2,12 +2,15 @@ package opennebula
 
 import (
 	"encoding/json"
+	"fmt"
 	"performance/models"
 	"performance/pkg/app"
 	"performance/pkg/app/pretty_log"
 	"performance/pkg/vm_management_system"
 	"performance/utils"
 	"strconv"
+	"strings"
+	"time"
 )
 
 type OpenNebula struct {
@@ -24,7 +27,7 @@ func New(environment *models.AzureEnvironment) *OpenNebula {
 	}
 }
 
-func (o OpenNebula) Setup() error {
+func (o *OpenNebula) Setup() error {
 	pretty_log.TaskGroup("Setting up OpenNebula")
 	// Download image
 	pretty_log.BeginTask("Setting up image if not present")
@@ -51,19 +54,29 @@ func (o OpenNebula) Setup() error {
 
 	// Get template ID
 	pretty_log.BeginTask("Getting template ID")
-	getTemplateID := "onetemplate list --list ID --json | jq '.VMTEMPLATE_POOL.VMTEMPLATE[] | select(.NAME==\"" + app.Config.OpenNebula.Template.Name + "\") | .ID'"
+	// Parse as int
+	getTemplateID := "sudo onetemplate list --json | jq '.VMTEMPLATE_POOL.VMTEMPLATE | select(.NAME==\"" + app.Config.OpenNebula.Template.Name + "\") | .ID' | tr -d '\"'"
 	res, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{getTemplateID})
 	if err != nil {
 		pretty_log.FailTask()
 		return err
 	}
+
+	id, err := strconv.ParseInt(strings.TrimSuffix(res[0], "\n"), 10, 64)
+	if err != nil {
+		pretty_log.FailTask()
+		return err
+	}
+	o.DefaultTemplateID = int(id)
 	pretty_log.CompleteTask()
+
+	pretty_log.TaskResult(" - Template ID: %d", o.DefaultTemplateID)
 
 	return nil
 }
 
-func (o OpenNebula) GetVM(name string) *models.VM {
-	getCmd := "onevm list --list NAME --json | jq '.VM_POOL.VM[] | select(.NAME==\"" + name + "\") | {name: .NAME, specs: {cpu: (.TEMPLATE.CPU | tonumber), ram: (.TEMPLATE.MEMORY | tonumber), diskSize: (.TEMPLATE.DISK[0].SIZE | tonumber)}}"
+func (o *OpenNebula) GetVM(name string) *models.VM {
+	getCmd := "sudo onevm list --list NAME --json | jq '.VM_POOL.VM[] | select(.NAME==\"" + name + "\") | {name: .NAME, specs: {cpu: (.TEMPLATE.CPU | tonumber), ram: (.TEMPLATE.MEMORY | tonumber), diskSize: (.TEMPLATE.DISK[0].SIZE | tonumber)}}"
 	outputList, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{getCmd})
 	if err != nil {
 		return nil
@@ -82,8 +95,8 @@ func (o OpenNebula) GetVM(name string) *models.VM {
 	return &vm
 }
 
-func (o OpenNebula) ListVMs() []models.VM {
-	listCmd := "onevm list --list NAME --json | jq '[.VM_POOL.VM[] | {name: .NAME, specs: {cpu: (.TEMPLATE.CPU | tonumber), ram: (.TEMPLATE.MEMORY | tonumber), diskSize: (.TEMPLATE.DISK[0]?.SIZE | tonumber // 0)}}]'"
+func (o *OpenNebula) ListVMs() []models.VM {
+	listCmd := "sudo onevm list --list NAME --json | jq '[.VM_POOL.VM[] | {name: .NAME, specs: {cpu: (.TEMPLATE.CPU | tonumber), ram: (.TEMPLATE.MEMORY | tonumber), diskSize: (.TEMPLATE.DISK[0]?.SIZE | tonumber // 0)}}]'"
 	outputList, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{listCmd})
 	if err != nil {
 		return nil
@@ -104,32 +117,109 @@ func (o OpenNebula) ListVMs() []models.VM {
 	return vms
 }
 
-func (o OpenNebula) CreateVM(vm *models.VM) error {
-	createCmd := "onetemplate instantiate " + strconv.Itoa(o.DefaultTemplateID) + " --name  <<EOF\nCPU=\"2\"\nMEMORY=\"2048\"\nDISK=[IMAGE=\"cirros\"]\nEOF"
-	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{createCmd})
-	return err
+func (o *OpenNebula) CreateVM(vm *models.VM) error {
+	createCmd := fmt.Sprintf("sudo onetemplate instantiate %d --name %s <<EOF\nCPU=\"0.1\"\nVCPU=\"%d\"\nMEMORY=\"%d\"\nDISK=[SIZE=\"%d\",\nIMAGE=\"cirros\"]\nEOF", o.DefaultTemplateID, vm.Name, vm.Specs.CPU, vm.Specs.RAM, vm.Specs.DiskSize*1024)
+
+	// Sometimes the command fails with "connection reset by peer" or "EOF" since we create too many too quickly.
+	// If that is the case, we simply try again.
+	var err error
+	for {
+		_, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{createCmd})
+		if err != nil {
+			if strings.Contains(err.Error(), "connection reset by peer") || strings.Contains(err.Error(), "EOF") || strings.Contains(err.Error(), "Process exited with status 255") {
+				continue
+			}
+
+			return err
+		}
+
+		return nil
+	}
 }
 
-func (o OpenNebula) DeleteVM(name string) error {
-	deleteCmd := "onevm delete " + name
-	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{deleteCmd})
-	return err
+func (o *OpenNebula) DeleteVM(name string) error {
+	deleteCmd := "sudo onevm terminate --hard " + name
+
+	// Sometimes the command fails with "connection reset by peer" or "EOF" since we create too many too quickly.
+	// Also, hen adding the "--hard" flag, this command occasionally fails with exit status 255.
+	// If that is the case, we simply try again.
+	var err error
+	for {
+		_, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{deleteCmd})
+		if err != nil {
+			if strings.Contains(err.Error(), "connection reset by peer") || strings.Contains(err.Error(), "EOF") || strings.Contains(err.Error(), "Process exited with status 255") {
+				continue
+			}
+
+			return err
+		}
+
+		return o.WaitForDeletedVM(name)
+	}
 }
 
-func (o OpenNebula) DeleteAllVMs() error {
-	listCmd := "onevm list --list NAME --json | jq '.VM_POOL.VM[].NAME' | xargs -I {} onevm delete {}"
-	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{listCmd})
-	return err
+func (o *OpenNebula) DeleteAllVMs() error {
+	listAndDeleteCmd := "sudo onevm list --list NAME --json | jq '.VM_POOL.VM[].ID' | xargs -I {} sudo onevm terminate --hard {}"
+
+	// Sometimes the command fails with "connection reset by peer" or "EOF" since we create too many too quickly.
+	// Also, hen adding the "--hard" flag, this command occasionally fails with exit status 255.
+	// If that is the case, we simply try again.
+	var err error
+	for {
+		_, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{listAndDeleteCmd})
+		if err != nil {
+			if strings.Contains(err.Error(), "connection reset by peer") || strings.Contains(err.Error(), "EOF") || strings.Contains(err.Error(), "Process exited with status 255") {
+				continue
+			}
+
+			return err
+		}
+
+		return nil
+	}
 }
 
-func (o OpenNebula) WaitForRunningVM(name string) error {
-	return nil
+func (o *OpenNebula) WaitForRunningVM(name string) error {
+	runningCmd := "sudo onevm list --list NAME --json | jq '.VM_POOL.VM[] | select(.NAME == \"" + name + "\") | .STATE' | tr -d '\"'"
+
+	attemptsLeft := 1000
+	for {
+		time.Sleep(100 * time.Millisecond)
+		attemptsLeft--
+		res, _ := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{runningCmd})
+		if len(res) == 0 {
+			continue
+		}
+
+		runningState := "3"
+		if strings.Contains(res[0], runningState) {
+			return nil
+		}
+
+		if attemptsLeft <= 0 {
+			return fmt.Errorf("timeout waiting for VM %s to be running", name)
+		}
+	}
 }
 
-func (o OpenNebula) WaitForAccessibleVM(name string) error {
-	return nil
-}
+func (o *OpenNebula) WaitForDeletedVM(name string) error {
+	deletedCmd := "sudo onevm list --list NAME --json | jq '.VM_POOL.VM[] | select(.NAME == \"" + name + "\")'"
 
-func (o OpenNebula) WaitForDeletedVM(name string) error {
-	return nil
+	attemptsLeft := 1000
+	for {
+		time.Sleep(100 * time.Millisecond)
+		attemptsLeft--
+		res, _ := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{deletedCmd})
+		if len(res) == 0 {
+			continue
+		}
+
+		if len(strings.TrimSuffix(res[0], "\n")) == 0 || strings.Contains(res[0], "Cannot iterate over null") {
+			return nil
+		}
+
+		if attemptsLeft <= 0 {
+			return fmt.Errorf("timeout waiting for VM %s to be deleted", name)
+		}
+	}
 }

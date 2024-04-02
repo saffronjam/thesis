@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/melbahja/goph"
 	"log"
 	"math/rand"
@@ -14,24 +15,29 @@ func SshCommand(ip string, commands []string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var outAll []string
-
-	for _, command := range commands {
-		out, err := client.Run(command)
-		if err != nil {
-			return nil, err
-		}
-
-		outAll = append(outAll, string(out))
-	}
-
 	defer func(client *goph.Client) {
 		err := client.Close()
 		if err != nil {
 			log.Println(err)
 		}
 	}(client)
+
+	var outAll []string
+
+	for _, command := range commands {
+		out, err := client.Run(command)
+		if out != nil {
+			outAll = append(outAll, string(out))
+		}
+
+		if err != nil {
+			if len(outAll) > 0 {
+				return outAll, fmt.Errorf("ssh err %w. details: %s", err, outAll[len(outAll)-1])
+			} else {
+				return outAll, fmt.Errorf("ssh err %w", err)
+			}
+		}
+	}
 
 	return outAll, nil
 }

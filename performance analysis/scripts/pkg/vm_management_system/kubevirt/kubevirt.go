@@ -86,6 +86,10 @@ spec:
             masquerade: {}
         resources:
           requests:
+            cpu: 100m
+            memory: %dMi
+          limits:
+            cpu: %d
             memory: %dMi
       networks:
       - pod: {}
@@ -97,7 +101,7 @@ spec:
       - name: containerdisk
         containerDisk:
           image: %s
-`, vm.Name, vm.Specs.RAM, vm.Specs.DiskSize, app.Config.KubeVirt.Image.URL)
+`, vm.Name, vm.Specs.RAM, vm.Specs.CPU, vm.Specs.RAM, vm.Specs.DiskSize, app.Config.KubeVirt.Image.URL)
 
 	createVmCommand := "kubectl apply -f - <<EOF\n" + manifest + "\nEOF"
 

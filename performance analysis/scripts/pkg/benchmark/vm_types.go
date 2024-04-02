@@ -22,7 +22,7 @@ func SmallVM() *models.VM {
 		Specs: models.VmSpecs{
 			CPU:      1,
 			RAM:      1024,
-			DiskSize: 1,
+			DiskSize: 5,
 		},
 	}
 }
@@ -44,7 +44,7 @@ func LargeVM() *models.VM {
 		Specs: models.VmSpecs{
 			CPU:      4,
 			RAM:      4096,
-			DiskSize: 100,
+			DiskSize: 20,
 		},
 	}
 }

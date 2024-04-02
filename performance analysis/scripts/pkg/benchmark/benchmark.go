@@ -1,6 +1,7 @@
 package benchmark
 
 import (
+	"fmt"
 	"log"
 	"performance/models"
 	"performance/pkg/app/pretty_log"
@@ -38,23 +39,30 @@ func Run(environments []models.BenchmarkEnvironment) *models.BenchmarkResult {
 			log.Fatalln(err.Error())
 		}
 
+		pretty_log.TaskGroup("[%s] Cleaning up before test", environment.Name)
+		err = vmms.DeleteAllVMs()
+		if err != nil {
+			log.Fatalln(fmt.Errorf("failed to clean up. details: %s", err.Error()))
+		}
+
 		timeStart := time.Now()
 
 		// Run benchmark
 		pretty_log.TaskGroup("[%s] Running benchmark", environment.Name)
 
-		results := RunTests(NewBenchmark(environment, vmms).AllTests())
-		for _, result := range results {
-			pretty_log.BeginTask("[%s] %s", environment.Name, result.Name)
-			if result.Result != nil {
-				pretty_log.FailTask()
-			} else {
-				pretty_log.CompleteTask()
-			}
-		}
+		_ = RunTests(environment.Name, NewBenchmark(environment, vmms).AllTests())
+		//for group, taskResults := range results {
+		//
+		//}
 
 		timeEnd := time.Now()
 		pretty_log.TaskResult("[%s] Benchmark complete (%s)", environment.Name, timeEnd.Sub(timeStart).String())
+
+		pretty_log.TaskGroup("[%s] Cleaning up after test", environment.Name)
+		err = vmms.DeleteAllVMs()
+		if err != nil {
+			log.Fatalln(fmt.Errorf("failed to clean up. details: %s", err.Error()))
+		}
 
 		// Save benchmark results
 		pretty_log.TaskGroup("[%s] Saving benchmark results", environment.Name)

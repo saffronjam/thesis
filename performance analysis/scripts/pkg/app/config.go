@@ -28,6 +28,9 @@ type ConfigType struct {
 		Image struct {
 			URL string `yaml:"url"`
 		} `yaml:"image"`
+		Virtctl struct {
+			Version string `yaml:"version"`
+		} `yaml:"virtctl"`
 	} `yaml:"kubevirt"`
 
 	OpenNebula struct {

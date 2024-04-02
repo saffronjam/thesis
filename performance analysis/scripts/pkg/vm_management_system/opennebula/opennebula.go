@@ -104,34 +104,32 @@ func (o OpenNebula) ListVMs() []models.VM {
 	return vms
 }
 
-func (o OpenNebula) CreateVM(vm *models.VM) *models.VM {
+func (o OpenNebula) CreateVM(vm *models.VM) error {
 	createCmd := "onetemplate instantiate " + strconv.Itoa(o.DefaultTemplateID) + " --name  <<EOF\nCPU=\"2\"\nMEMORY=\"2048\"\nDISK=[IMAGE=\"cirros\"]\nEOF"
 	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{createCmd})
-	if err != nil {
-		return nil
-	}
-
-	return o.GetVM(vm.Name)
+	return err
 }
 
-func (o OpenNebula) DeleteVM(name string) {
+func (o OpenNebula) DeleteVM(name string) error {
 	deleteCmd := "onevm delete " + name
 	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{deleteCmd})
-	if err != nil {
-		return
-	}
+	return err
 }
 
-func (o OpenNebula) DeleteAllVMs() {
+func (o OpenNebula) DeleteAllVMs() error {
 	listCmd := "onevm list --list NAME --json | jq '.VM_POOL.VM[].NAME' | xargs -I {} onevm delete {}"
 	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{listCmd})
-	if err != nil {
-		return
-	}
+	return err
 }
 
-func (o OpenNebula) WaitForRunningVM(name string) {
+func (o OpenNebula) WaitForRunningVM(name string) error {
+	return nil
 }
 
-func (o OpenNebula) WaitForDeletedVM(name string) {
+func (o OpenNebula) WaitForAccessibleVM(name string) error {
+	return nil
+}
+
+func (o OpenNebula) WaitForDeletedVM(name string) error {
+	return nil
 }

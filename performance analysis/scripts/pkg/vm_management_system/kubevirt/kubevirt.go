@@ -8,6 +8,7 @@ import (
 	"performance/pkg/vm_management_system"
 	"performance/utils"
 	"strings"
+	"time"
 )
 
 func New(environment *models.AzureEnvironment) *KubeVirt {
@@ -24,114 +25,7 @@ type KubeVirt struct {
 
 func (o *KubeVirt) Setup() error {
 	pretty_log.TaskGroup("Setting up KubeVirt")
-
-	pretty_log.BeginTask("Set up NFS mounts on control node")
-	nfsCommands := [][]string{
-		{"sudo apt-get update -y"},
-		{"sudo apt-get install nfs-kernel-server -y"},
-		{"sudo mkdir -p /mnt/nfs /mnt/nfs/disks /mnt/nfs/snapshots"},
-		{"echo \"/mnt/nfs *(rw,sync,no_subtree_check)\" | sudo tee /etc/exports > /dev/null"},
-		{"sudo exportfs -a"},
-	}
-
-	for _, command := range nfsCommands {
-		_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, command)
-		if err != nil {
-			pretty_log.FailTask()
-			return err
-		}
-	}
-	pretty_log.CompleteTask()
-
-	pretty_log.BeginTask("Install NFS CSI driver")
-	csiDriverCommands := [][]string{
-		{"curl -skSL https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/v4.6.0/deploy/install-driver.sh | bash -s v4.6.0 --"},
-	}
-
-	for _, command := range csiDriverCommands {
-		_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, command)
-		if err != nil {
-			pretty_log.FailTask()
-			return err
-		}
-	}
-	pretty_log.CompleteTask()
-
-	nfsServerIP := o.Environment.ControlNode.InternalIP
-	nfsPaths := map[string]string{
-		"disks":     "/mnt/nfs/disks",
-		"snapshots": "/mnt/nfs/snapshots",
-	}
-
-	pretty_log.BeginTask("Create storage classes")
-
-	volumeSnapshotClassCRDs := `
-apiVersion: helm.cattle.io/v1
-kind: HelmChart
-metadata:
-  name: snapshot-controller
-  namespace: kube-system
-spec:
-  repo: https://rke2-charts.rancher.io
-  chart: rke2-snapshot-controller
----
-apiVersion: helm.cattle.io/v1
-kind: HelmChart
-metadata:
-  name: snapshot-controller-crd
-  namespace: kube-system
-spec:
-  repo: https://rke2-charts.rancher.io
-  chart: rke2-snapshot-controller-crd
----
-apiVersion: helm.cattle.io/v1
-kind: HelmChart
-metadata:
-  name: snapshot-validation-webhook
-  namespace: kube-system
-spec:
-  repo: https://rke2-charts.rancher.io
-  chart: rke2-snapshot-validation-webhook
-`
-
-	storageClass := fmt.Sprintf(`
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: vm-disks
-provisioner: nfs.csi.k8s.io
-parameters:
-  server: %s
-  share: %s
-`, nfsServerIP, nfsPaths["disks"])
-
-	volumeSnapshotClass := fmt.Sprintf(`
-apiVersion: snapshot.storage.k8s.io/v1
-kind: VolumeSnapshotClass
-metadata:
-  name: vm-snapshots
-driver: nfs.csi.k8s.io
-deletionPolicy: Delete
-parameters:
-  server: %s
-  share: %s
-`, nfsServerIP, nfsPaths["snapshots"])
-
-	storageClasses := [][]string{
-		{"kubectl apply -f - <<EOF" + volumeSnapshotClassCRDs + "EOF"},
-		{"kubectl get storageclass vm-disks &> /dev/null || kubectl apply -f - <<EOF " + storageClass + "EOF"},
-		{"kubectl get volumesnapshotclass vm-snapshots &> /dev/null || kubectl apply -f - <<EOF" + volumeSnapshotClass + "EOF"},
-	}
-
-	for _, command := range storageClasses {
-		_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, command)
-		if err != nil {
-			pretty_log.FailTask()
-			return err
-		}
-	}
-	pretty_log.CompleteTask()
-
+	pretty_log.TaskResult("Nothing to do")
 	return nil
 }
 
@@ -167,7 +61,7 @@ func (o *KubeVirt) ListVMs() []models.VM {
 	return *vms
 }
 
-func (o *KubeVirt) CreateVM(vm *models.VM) *models.VM {
+func (o *KubeVirt) CreateVM(vm *models.VM) error {
 	manifest := fmt.Sprintf(`
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
@@ -183,7 +77,10 @@ spec:
           disks:
           - disk:
               bus: virtio
-            name: datavolume-disk
+            name: containerdisk
+          - disk:
+              bus: virtio
+            name: emptydisk
           interfaces:
           - name: default
             masquerade: {}
@@ -194,63 +91,118 @@ spec:
       - pod: {}
         name: default
       volumes:
-      - dataVolume:
-          name: %s-dv
-        name: datavolume-disk
-  dataVolumeTemplates:
-  - metadata:
-      name: %s-dv
-    spec:
-      pvc:
-        storageClassName: vm-disks
-        accessModes:
-        - ReadWriteOnce
-        resources:
-          requests:
-            storage: %dGi
-      source:
-        registry:
-          url: %s
-`, vm.Name, vm.Specs.RAM, vm.Name, vm.Name, vm.Specs.DiskSize, app.Config.KubeVirt.Image.URL)
+      - name: emptydisk
+        emptyDisk:
+          capacity: %dGi
+      - name: containerdisk
+        containerDisk:
+          image: %s
+`, vm.Name, vm.Specs.RAM, vm.Specs.DiskSize, app.Config.KubeVirt.Image.URL)
 
 	createVmCommand := "kubectl apply -f - <<EOF\n" + manifest + "\nEOF"
-	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{createVmCommand})
-	if err != nil {
-		return nil
-	}
 
-	return o.GetVM(vm.Name)
-}
-
-func (o *KubeVirt) DeleteVM(name string) {
-	deleteVmCommand := "kubectl delete vm " + name
-	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{deleteVmCommand})
-	if err != nil {
-		return
-	}
-}
-
-func (o *KubeVirt) DeleteAllVMs() {
-	deleteAllVmsCommand := "kubectl delete vms --all"
-	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{deleteAllVmsCommand})
-	if err != nil {
-		return
-	}
-}
-
-func (o *KubeVirt) WaitForRunningVM(name string) {
-}
-
-func (o *KubeVirt) WaitForDeletedVM(name string) {
-	existsCommand := "kubectl get vm " + name
+	// Sometimes the command fails with "connection reset by peer" or "EOF" since we create too many too quickly.
+	// If that is the case, we simply try again.
+	var err error
 	for {
-		res, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{existsCommand})
+		_, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{createVmCommand})
 		if err != nil {
-			return
+			if strings.Contains(err.Error(), "connection reset by peer") || strings.Contains(err.Error(), "EOF") {
+				continue
+			}
+
+			return err
 		}
 
-		if err != nil && res[0] == "" && strings.Contains(res[0], "NotFound") {
-			return
+		return nil
+	}
+}
+
+func (o *KubeVirt) DeleteVM(name string) error {
+	deleteVmCommand := "kubectl delete vm " + name
+
+	// Sometimes the command fails with "connection reset by peer" or "EOF" since we create too many too quickly.
+	// If that is the case, we simply try again.
+	var err error
+	for {
+		_, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{deleteVmCommand})
+		if err != nil {
+			if strings.Contains(err.Error(), "connection reset by peer") || strings.Contains(err.Error(), "EOF") {
+				continue
+			}
+
+			return err
+		}
+
+		return nil
+	}
+}
+
+func (o *KubeVirt) DeleteAllVMs() error {
+	deleteAllVmsCommand := "kubectl delete vms --all"
+	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{deleteAllVmsCommand})
+	return err
+}
+
+func (o *KubeVirt) WaitForRunningVM(name string) error {
+	runningCommand := "kubectl get vm " + name + " -o jsonpath='{.status.printableStatus}'"
+	attemptsLeft := 1000
+	for {
+		time.Sleep(100 * time.Millisecond)
+		attemptsLeft--
+		res, _ := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{runningCommand})
+		if len(res) == 0 {
+			continue
+		}
+
+		if res[0] == "Running" {
+			return nil
+		}
+
+		if attemptsLeft <= 0 {
+			return fmt.Errorf("timeout waiting for VM %s to be running", name)
+		}
+	}
+}
+
+func (o *KubeVirt) WaitForAccessibleVM(name string) error {
+	runningCommand := "ssh -o PasswordAuthentication=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o 'ProxyCommand=virtctl port-forward --stdio=true vmi/" + name + " 22' cirros@vmi/" + name + " 'sudo echo hello' 2>&1 | grep 'Permission denied (publickey,password)' && exit 0 || exit 1"
+	attemptsLeft := 1000
+	for {
+		time.Sleep(100 * time.Millisecond)
+		attemptsLeft--
+		res, _ := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{runningCommand})
+		if len(res) == 0 {
+			continue
+		}
+
+		if strings.Contains(res[0], "Permission denied (publickey,password)") {
+			return nil
+		}
+
+		if attemptsLeft <= 0 {
+			return fmt.Errorf("timeout waiting for VM %s to be running", name)
+		}
+	}
+}
+
+func (o *KubeVirt) WaitForDeletedVM(name string) error {
+	existsCommand := "kubectl get vm " + name
+	attemptsLeft := 1000
+	for {
+		time.Sleep(100 * time.Millisecond)
+		attemptsLeft--
+		res, _ := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{existsCommand})
+		if len(res) == 0 {
+			continue
+		}
+
+		if res[0] == "" && strings.Contains(res[0], "NotFound") {
+			return nil
+		}
+
+		if attemptsLeft <= 0 {
+			return fmt.Errorf("timeout waiting for VM %s to be running", name)
 		}
 	}
 }

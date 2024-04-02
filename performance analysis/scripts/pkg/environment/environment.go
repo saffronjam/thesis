@@ -2,6 +2,7 @@ package environment
 
 import (
 	"context"
+	"fmt"
 	"performance/models"
 	"performance/pkg/app"
 	"performance/pkg/app/pretty_log"
@@ -136,7 +137,7 @@ func Setup(createOpennebula, createKubevirt bool) ([]models.BenchmarkEnvironment
 			Name:        "OpenNebula",
 			Environment: opennebulaEnv,
 		})
-	} else {
+	} else if false {
 		pretty_log.TaskResult("Fetching OpenNebula environment")
 		opennebulaEnv, err := FetchAzureEnvironment(context.TODO(), client, "opennebula")
 		if err != nil {
@@ -163,6 +164,7 @@ func Setup(createOpennebula, createKubevirt bool) ([]models.BenchmarkEnvironment
 			{"sudo apt-get update"},
 			{"sudo apt-get install jq nfs-common -y"},
 			{"curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.28.7+k3s1 INSTALL_K3S_EXEC=\"server --tls-san " + kubevirtEnv.ControlNode.InternalIP + " --advertise-address " + kubevirtEnv.ControlNode.InternalIP + " --write-kubeconfig-mode=644 --disable=traefik --disable=servicelb\" sh -"},
+			{"sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config && sudo chown /home/" + app.Config.Azure.Username + "/.kube/config && sudo chmod 600 /home/" + app.Config.Azure.Username + "/.kube/config"},
 		}
 
 		for idx, cmdGroup := range controlCommandGroups {
@@ -227,12 +229,13 @@ func Setup(createOpennebula, createKubevirt bool) ([]models.BenchmarkEnvironment
 		}
 
 		// Install KubeVirt on control node
-		pretty_log.BeginTask("Installing KubeVirt on control node")
+		pretty_log.TaskGroup("Installing KubeVirt and virtctl on control node")
 		controlCommandGroups = [][]string{
 			{"kubectl apply -f https://github.com/kubevirt/kubevirt/releases/download/" + app.Config.KubeVirt.Version + "/kubevirt-operator.yaml > /dev/null"},
 			{"kubectl apply -f https://github.com/kubevirt/kubevirt/releases/download/" + app.Config.KubeVirt.Version + "/kubevirt-cr.yaml > /dev/null"},
 			{"kubectl apply -f https://github.com/kubevirt/containerized-data-importer/releases/download/" + app.Config.KubeVirt.CDI.Version + "/cdi-operator.yaml > /dev/null"},
 			{"kubectl apply -f https://github.com/kubevirt/containerized-data-importer/releases/download/" + app.Config.KubeVirt.CDI.Version + "/cdi-cr.yaml > /dev/null"},
+			{"wget https://github.com/kubevirt/kubevirt/releases/download/" + app.Config.KubeVirt.Virtctl.Version + "/virtctl-" + app.Config.KubeVirt.Virtctl.Version + "-linux-amd64 -O virtctl && sudo install virtctl /usr/local/bin/virtctl && rm virtctl"},
 		}
 
 		for idx, cmdGroup := range controlCommandGroups {
@@ -265,6 +268,93 @@ func Setup(createOpennebula, createKubevirt bool) ([]models.BenchmarkEnvironment
 			time.Sleep(1 * time.Second)
 		}
 		pretty_log.CompleteTask()
+
+		pretty_log.TaskGroup("Set up NFS, mounts and CSI Driver on control node")
+		nfsServerIP := kubevirtEnv.ControlNode.InternalIP
+		nfsPaths := map[string]string{
+			"disks":     "/mnt/nfs/disks",
+			"snapshots": "/mnt/nfs/snapshots",
+		}
+
+		volumeSnapshotClassCRDs := `
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: snapshot-controller
+  namespace: kube-system
+spec:
+  repo: https://rke2-charts.rancher.io
+  chart: rke2-snapshot-controller
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: snapshot-controller-crd
+  namespace: kube-system
+spec:
+  repo: https://rke2-charts.rancher.io
+  chart: rke2-snapshot-controller-crd
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: snapshot-validation-webhook
+  namespace: kube-system
+spec:
+  repo: https://rke2-charts.rancher.io
+  chart: rke2-snapshot-validation-webhook
+`
+
+		storageClass := fmt.Sprintf(`
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: vm-disks
+provisioner: nfs.csi.k8s.io
+parameters:
+  server: %s
+  share: %s
+`, nfsServerIP, nfsPaths["disks"])
+
+		volumeSnapshotClass := fmt.Sprintf(`
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotClass
+metadata:
+  name: vm-snapshots
+driver: nfs.csi.k8s.io
+deletionPolicy: Delete
+parameters:
+  server: %s
+  share: %s
+`, nfsServerIP, nfsPaths["snapshots"])
+
+		nfsCommands := [][]string{
+			// NFS and mounts
+			{"sudo apt-get update -y"},
+			{"sudo apt-get install nfs-kernel-server -y"},
+			{"sudo mkdir -p /mnt/nfs /mnt/nfs/disks /mnt/nfs/snapshots"},
+			{"echo \"/mnt/nfs *(rw,sync,no_subtree_check,no_root_squash)\" | sudo tee /etc/exports > /dev/null"},
+			{"sudo exportfs -a"},
+
+			// CSI driver
+			{"curl -skSL https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/v4.6.0/deploy/install-driver.sh | bash -s v4.6.0 --"},
+
+			// Storage classes
+			{"kubectl apply -f - <<EOF" + volumeSnapshotClassCRDs + "EOF"},
+			{"kubectl get storageclass vm-disks &> /dev/null || kubectl apply -f - <<EOF " + storageClass + "EOF"},
+			{"kubectl get volumesnapshotclass vm-snapshots &> /dev/null || kubectl apply -f - <<EOF" + volumeSnapshotClass + "EOF"},
+		}
+
+		for idx, cmdGroup := range nfsCommands {
+			pretty_log.BeginTask("- Command (%d/%d): %s", idx+1, len(controlCommandGroups), strings.Join(cmdGroup, " && "))
+			_, err := utils.SshCommand(kubevirtEnv.ControlNode.PublicIP, cmdGroup)
+			if err != nil {
+				pretty_log.FailTask()
+				return nil, err
+			}
+
+			pretty_log.CompleteTask()
+		}
 
 		setupResult = append(setupResult, models.BenchmarkEnvironment{
 			Name:        "KubeVirt",

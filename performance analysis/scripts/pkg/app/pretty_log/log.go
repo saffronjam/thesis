@@ -57,7 +57,19 @@ func TaskResult(format string, a ...interface{}) {
 	result := fmt.Sprintf(format, a...)
 	cyan := "\033[36m"
 	reset := "\033[0m"
-	fmt.Printf("%s%s%s\n", cyan, result, reset)
+	now := time.Now().Format("2006/01/02 15:04:05")
+	fmt.Printf("[%s] %s%s%s\n", now, cyan, result, reset)
+}
+
+// TaskResultBad prints the result of a task in red color.
+func TaskResultBad(format string, a ...interface{}) {
+	// Remove newline from the end of the format string
+	format = strings.TrimSuffix(format, "\n")
+	result := fmt.Sprintf(format, a...)
+	red := "\033[31m"
+	reset := "\033[0m"
+	now := time.Now().Format("2006/01/02 15:04:05")
+	fmt.Printf("[%s] %s%s%s\n", now, red, result, reset)
 }
 
 // TaskResultList prints the result that is a string list

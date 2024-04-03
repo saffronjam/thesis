@@ -42,6 +42,48 @@ func SshCommand(ip string, commands []string) ([]string, error) {
 	return outAll, nil
 }
 
+// SshUpload copies a file from the local machine to the remote machine
+func SshUpload(ip string, localPath string, remotePath string) error {
+	client, err := goph.NewUnknown(app.Config.Azure.Username, ip, goph.Password(app.Config.Azure.Password))
+	if err != nil {
+		return err
+	}
+	defer func(client *goph.Client) {
+		err := client.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(client)
+
+	err = client.Upload(localPath, remotePath)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SshDownload copies a file from the remote machine to the local machine
+func SshDownload(ip string, remotePath string, localPath string) error {
+	client, err := goph.NewUnknown(app.Config.Azure.Username, ip, goph.Password(app.Config.Azure.Password))
+	if err != nil {
+		return err
+	}
+	defer func(client *goph.Client) {
+		err := client.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(client)
+
+	err = client.Download(remotePath, localPath)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // ParseSshOutput parses the string list's first string returned by SshCommand to a struct
 func ParseSshOutput[T any](output []string) (*T, error) {
 	if len(output) == 0 {

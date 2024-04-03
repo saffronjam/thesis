@@ -23,6 +23,6 @@ type AzureEnvironment struct {
 }
 
 type BenchmarkEnvironment struct {
-	Name        string
-	Environment *AzureEnvironment
+	Name             string
+	AzureEnvironment *AzureEnvironment
 }

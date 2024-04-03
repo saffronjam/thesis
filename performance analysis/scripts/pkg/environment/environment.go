@@ -134,8 +134,8 @@ func Setup(createOpennebula, createKubevirt bool) ([]models.BenchmarkEnvironment
 		}
 
 		setupResult = append(setupResult, models.BenchmarkEnvironment{
-			Name:        "OpenNebula",
-			Environment: opennebulaEnv,
+			Name:             "OpenNebula",
+			AzureEnvironment: opennebulaEnv,
 		})
 	} else if true {
 		pretty_log.TaskResult("Fetching OpenNebula environment")
@@ -145,8 +145,8 @@ func Setup(createOpennebula, createKubevirt bool) ([]models.BenchmarkEnvironment
 		}
 
 		setupResult = append(setupResult, models.BenchmarkEnvironment{
-			Name:        "OpenNebula",
-			Environment: opennebulaEnv,
+			Name:             "OpenNebula",
+			AzureEnvironment: opennebulaEnv,
 		})
 	}
 
@@ -162,9 +162,9 @@ func Setup(createOpennebula, createKubevirt bool) ([]models.BenchmarkEnvironment
 		// Commands to set up KubeVirt with K3s on control node
 		controlCommandGroups := [][]string{
 			{"sudo apt-get update"},
-			{"sudo apt-get install jq nfs-common -y"},
+			{"sudo apt-get install nfs-common -y"},
 			{"curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.28.7+k3s1 INSTALL_K3S_EXEC=\"server --tls-san " + kubevirtEnv.ControlNode.InternalIP + " --advertise-address " + kubevirtEnv.ControlNode.InternalIP + " --write-kubeconfig-mode=644 --disable=traefik --disable=servicelb\" sh -"},
-			{"sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config && sudo chown /home/" + app.Config.Azure.Username + "/.kube/config && sudo chmod 600 /home/" + app.Config.Azure.Username + "/.kube/config"},
+			{"sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config && sudo chown " + app.Config.Azure.Username + " /home/" + app.Config.Azure.Username + "/.kube/config && sudo chmod 600 /home/" + app.Config.Azure.Username + "/.kube/config"},
 		}
 
 		for idx, cmdGroup := range controlCommandGroups {
@@ -200,7 +200,7 @@ func Setup(createOpennebula, createKubevirt bool) ([]models.BenchmarkEnvironment
 		// Commands to set up KubeVirt with K3s on worker nodes
 		workerCommandGroups := [][]string{
 			{"sudo apt-get update"},
-			{"sudo apt-get install jq nfs-common -y"},
+			{"sudo apt-get install nfs-common -y"},
 			{"curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.28.7+k3s1 K3S_URL=https://" + kubevirtEnv.ControlNode.InternalIP + ":6443 K3S_TOKEN=" + token + " sh -"},
 		}
 
@@ -357,8 +357,8 @@ parameters:
 		}
 
 		setupResult = append(setupResult, models.BenchmarkEnvironment{
-			Name:        "KubeVirt",
-			Environment: kubevirtEnv,
+			Name:             "KubeVirt",
+			AzureEnvironment: kubevirtEnv,
 		})
 	} else if true {
 		pretty_log.TaskResult("Fetching KubeVirt environment")
@@ -368,8 +368,8 @@ parameters:
 		}
 
 		setupResult = append(setupResult, models.BenchmarkEnvironment{
-			Name:        "KubeVirt",
-			Environment: kubevirtEnv,
+			Name:             "KubeVirt",
+			AzureEnvironment: kubevirtEnv,
 		})
 	}
 
@@ -587,7 +587,6 @@ func SetupAzureEnvironment(ctx context.Context, client *azure.Client, namePrefix
 	pretty_log.CompleteTask()
 
 	workerNodes := make([]models.WorkerNode, workers)
-
 	for i := 0; i < workers; i++ {
 		pretty_log.BeginTask("Creating worker node %d public IP", i+1)
 		workerPublicIP, err := client.CreatePublicIP(ctx, prefixed("worker-ip-"+strconv.Itoa(i+1)), rg)
@@ -608,7 +607,6 @@ func SetupAzureEnvironment(ctx context.Context, client *azure.Client, namePrefix
 		pretty_log.TaskResult("Internal IP: %s", *workerNIC.Properties.IPConfigurations[0].Properties.PrivateIPAddress)
 
 		pretty_log.BeginTask("Creating worker node %d VM", i+1)
-
 		vm, err := client.CreateVM(ctx, prefixed("worker-"+strconv.Itoa(i+1)), rg, *workerNIC.ID, prefixed("worker-"+strconv.Itoa(i+1)), app.Config.Azure.Username, app.Config.Azure.Password,
 			append(app.Config.Azure.PublicKeys, publicKey[0]))
 		if err != nil {
@@ -623,6 +621,75 @@ func SetupAzureEnvironment(ctx context.Context, client *azure.Client, namePrefix
 			PublicIP:   *workerPublicIP.Properties.IPAddress,
 		}
 	}
+
+	// Collect all IPs
+	ips := []string{*controlPublicIP.Properties.IPAddress}
+	for _, worker := range workerNodes {
+		ips = append(ips, worker.PublicIP)
+	}
+
+	// Install base packages on all nodes
+	controlCommandGroups := []string{
+		"sudo apt-get update",
+		"sudo apt-get install jq sysstat -y",
+	}
+
+	for idx, ip := range ips {
+		pretty_log.BeginTask("Setting up base packages (node %d/%d)", idx+1, len(ips))
+		for _, cmd := range controlCommandGroups {
+			outputList, err := utils.SshCommand(ip, []string{cmd})
+			if err != nil {
+				pretty_log.FailTask()
+				return nil, err
+			}
+
+			pretty_log.CompleteTask()
+
+			if outputList != nil {
+				for _, output := range outputList {
+					pretty_log.TaskResult(output)
+				}
+			}
+		}
+	}
+
+	// Setup metrics scraping
+	systemdService := `[Unit]
+Description=Metrics scraping
+[Service]
+WorkingDirectory=/home/` + app.Config.Azure.Username + `
+ExecStart=/bin/bash /home/` + app.Config.Azure.Username + `/metrics.sh
+Restart=always
+[Install]
+WantedBy=multi-user.target`
+
+	commands := []string{
+		"echo \"" + systemdService + "\" | sudo tee /etc/systemd/system/metrics.service > /dev/null",
+		"sudo systemctl daemon-reload",
+		"sudo systemctl enable metrics.service",
+		"sudo systemctl restart metrics.service",
+	}
+
+	// Load file from script and cat into each node. Then set up a systemd service to run the script indefinitely
+	for idx, ip := range ips {
+		pretty_log.BeginTask("Setting up metrics scraping (node %d/%d)", idx+1, len(ips))
+		err = utils.SshUpload(ip, "scripts/metrics.sh", "/home/"+app.Config.Azure.Username+"/metrics.sh")
+		if err != nil {
+			pretty_log.FailTask()
+			return nil, err
+		}
+
+		for _, cmd := range commands {
+			_, err = utils.SshCommand(ip, []string{cmd})
+			if err != nil {
+				pretty_log.FailTask()
+				return nil, err
+			}
+		}
+
+		pretty_log.CompleteTask()
+	}
+	pretty_log.CompleteTask()
 
 	return &models.AzureEnvironment{
 		ResourceGroup: rg,

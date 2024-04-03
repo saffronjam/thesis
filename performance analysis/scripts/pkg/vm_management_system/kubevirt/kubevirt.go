@@ -24,8 +24,7 @@ type KubeVirt struct {
 }
 
 func (o *KubeVirt) Setup() error {
-	pretty_log.TaskGroup("Setting up KubeVirt")
-	pretty_log.TaskResult("Nothing to do")
+	pretty_log.TaskResult("[KubeVirt] Nothing to do")
 	return nil
 }
 

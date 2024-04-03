@@ -28,9 +28,8 @@ func New(environment *models.AzureEnvironment) *OpenNebula {
 }
 
 func (o *OpenNebula) Setup() error {
-	pretty_log.TaskGroup("Setting up OpenNebula")
 	// Download image
-	pretty_log.BeginTask("Setting up image if not present")
+	pretty_log.BeginTask("[OpenNebula] Setting up image if not present")
 	installIfNotPresent := "if sudo oneimage list --list NAME | grep -w " + app.Config.OpenNebula.Image.Name + " | wc -l | grep -q ^0$; then\n  sudo oneimage create -d 1 <<EOF\nNAME=\"" + app.Config.OpenNebula.Image.Name + "\"\nPATH=\"" + app.Config.OpenNebula.Image.URL + "\"\nEOF\nelse\n  echo 'Image already exists.'\nfi\nexit 0"
 	res, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{installIfNotPresent})
 	if err != nil {
@@ -41,7 +40,7 @@ func (o *OpenNebula) Setup() error {
 	pretty_log.TaskResultList(res)
 
 	// Create template
-	pretty_log.BeginTask("Setting up template if not present")
+	pretty_log.BeginTask("[OpenNebula] Setting up template if not present")
 
 	installIfNotPresent = "if sudo onetemplate list --list NAME | grep -w " + app.Config.OpenNebula.Template.Name + " | wc -l | grep -q ^0$; then\n  sudo onetemplate create <<EOF\nNAME=\"" + app.Config.OpenNebula.Template.Name + "\"\nDISK=[\n  IMAGE=\"" + app.Config.OpenNebula.Image.Name + "\"\n]\nGRAPHICS=[\n  TYPE=\"VNC\",\n  LISTEN=\"0.0.0.0\"\n]\nEOF\nelse\n  echo 'Template already exists.'\nfi\nexit 0"
 	res, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{installIfNotPresent})
@@ -53,7 +52,7 @@ func (o *OpenNebula) Setup() error {
 	pretty_log.TaskResultList(res)
 
 	// Get template ID
-	pretty_log.BeginTask("Getting template ID")
+	pretty_log.BeginTask("[OpenNebula] Getting template ID")
 	// Parse as int
 	getTemplateID := "sudo onetemplate list --json | jq '.VMTEMPLATE_POOL.VMTEMPLATE | select(.NAME==\"" + app.Config.OpenNebula.Template.Name + "\") | .ID' | tr -d '\"'"
 	res, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{getTemplateID})

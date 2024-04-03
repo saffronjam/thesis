@@ -1,13 +1,17 @@
 package benchmark
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 	"performance/models"
 	"performance/pkg/app/pretty_log"
 	"performance/pkg/vm_management_system"
 	"performance/pkg/vm_management_system/kubevirt"
 	"performance/pkg/vm_management_system/opennebula"
+	"strings"
 	"sync"
 	"time"
 )
@@ -25,6 +29,9 @@ func NewBenchmark(environment models.BenchmarkEnvironment, vmms vm_management_sy
 }
 
 func Run(environments []models.BenchmarkEnvironment) *models.BenchmarkResult {
+
+	pretty_log.TaskGroup(" === Running benchmark ===")
+
 	vmmsMap := make(map[string]vm_management_system.VmManagementSystem)
 	for _, environment := range environments {
 		vmmsMap[environment.Name] = getVmManagementSystem(&environment)
@@ -35,11 +42,8 @@ func Run(environments []models.BenchmarkEnvironment) *models.BenchmarkResult {
 
 	// 1. Setup VM management systems synchronously
 	for _, environment := range environments {
-		pretty_log.TaskGroup("Benchmarking " + environment.Name)
-
 		vmms := vmmsMap[environment.Name]
-
-		pretty_log.TaskGroup("Setting up VM management system (Not benchmarked)")
+		pretty_log.TaskGroup("[%s] Setting up VM management system (Not benchmarked)", environment.Name)
 		err := vmms.Setup()
 		if err != nil {
 			log.Fatalln(err.Error())
@@ -61,26 +65,29 @@ func Run(environments []models.BenchmarkEnvironment) *models.BenchmarkResult {
 
 			vmms := vmmsMap[environment.Name]
 
-			timeStart := time.Now()
 			pretty_log.TaskGroup("[%s] Running benchmark", environment.Name)
-
-			_ = RunTests(environment.Name, NewBenchmark(environment, vmms).AllTests())
-			//for group, taskResults := range results {
-			// TODO: Do something with the results
-			//}
+			timeStart := time.Now()
+			results := RunTests(environment.Name, NewBenchmark(environment, vmms).AllTests())
 			timeEnd := time.Now()
 			pretty_log.TaskGroup("[%s] Benchmark complete (%s)", environment.Name, timeEnd.Sub(timeStart).String())
 
-			pretty_log.TaskGroup("[%s] Cleaning up after test", environment.Name)
+			pretty_log.TaskGroup("[%s] Saving results", environment.Name)
+			for _, taskResults := range results {
+				for _, result := range taskResults {
+					err := SaveResult(environment.Name, result)
+					if err != nil {
+						log.Fatalln(fmt.Errorf("failed to save results. details: %s", err.Error()))
+					}
+				}
+			}
 
+			pretty_log.TaskGroup("[%s] Cleaning up after test", environment.Name)
 			err := vmms.DeleteAllVMs()
 			if err != nil {
 				log.Fatalln(fmt.Errorf("failed to clean up. details: %s", err.Error()))
 			}
 
-			// Save benchmark results
-			pretty_log.TaskGroup("[%s] Saving benchmark results", environment.Name)
-			time.Sleep(1 * time.Second)
+			pretty_log.TaskGroup("[%s] Completed", environment.Name)
 		}(environment)
 	}
 	wg.Wait()
@@ -88,12 +95,29 @@ func Run(environments []models.BenchmarkEnvironment) *models.BenchmarkResult {
 	return &models.BenchmarkResult{}
 }
 
+// SaveResult saves the result of a test to a file.
+// It saves the result to results/{vmm}-{group}-{name}-{date}.json
+func SaveResult(vmm string, result models.TestResult) error {
+	dir := "results"
+	err := os.MkdirAll(dir, os.ModePerm)
+	if err != nil {
+		return err
+	}
+
+	bytes, err := json.Marshal(result)
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(filepath.Join(dir, fmt.Sprintf("%s_%s_%s_%s.json", strings.ToLower(vmm), strings.ToLower(result.Group), strings.ToLower(result.Name), time.Now().Format("2006-01-02-15-04-05"))), bytes, os.ModePerm)
+}
+
 func getVmManagementSystem(environment *models.BenchmarkEnvironment) vm_management_system.VmManagementSystem {
 	switch environment.Name {
 	case "OpenNebula":
-		return opennebula.New(environment.Environment)
+		return opennebula.New(environment.AzureEnvironment)
 	case "KubeVirt":
-		return kubevirt.New(environment.Environment)
+		return kubevirt.New(environment.AzureEnvironment)
 	default:
 		return nil
 	}

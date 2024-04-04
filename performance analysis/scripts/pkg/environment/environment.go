@@ -229,13 +229,14 @@ func Setup(createOpennebula, createKubevirt bool) ([]models.BenchmarkEnvironment
 		}
 
 		// Install KubeVirt on control node
-		pretty_log.TaskGroup("Installing KubeVirt and virtctl on control node")
+		pretty_log.TaskGroup("Installing KubeVirt and virtctl on control node (and tainting it)")
 		controlCommandGroups = [][]string{
 			{"kubectl apply -f https://github.com/kubevirt/kubevirt/releases/download/" + app.Config.KubeVirt.Version + "/kubevirt-operator.yaml > /dev/null"},
 			{"kubectl apply -f https://github.com/kubevirt/kubevirt/releases/download/" + app.Config.KubeVirt.Version + "/kubevirt-cr.yaml > /dev/null"},
 			{"kubectl apply -f https://github.com/kubevirt/containerized-data-importer/releases/download/" + app.Config.KubeVirt.CDI.Version + "/cdi-operator.yaml > /dev/null"},
 			{"kubectl apply -f https://github.com/kubevirt/containerized-data-importer/releases/download/" + app.Config.KubeVirt.CDI.Version + "/cdi-cr.yaml > /dev/null"},
 			{"wget https://github.com/kubevirt/kubevirt/releases/download/" + app.Config.KubeVirt.Virtctl.Version + "/virtctl-" + app.Config.KubeVirt.Virtctl.Version + "-linux-amd64 -O virtctl && sudo install virtctl /usr/local/bin/virtctl && rm virtctl"},
+			{"kubectl taint node kubevirt-control-1 any=any:NoSchedule"},
 		}
 
 		for idx, cmdGroup := range controlCommandGroups {

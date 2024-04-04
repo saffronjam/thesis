@@ -9,7 +9,12 @@ cpu_tmp_file=$(mktemp)
 ram_tmp_file=$(mktemp)
 disk_tmp_file=$(mktemp)
 
-disk=$(lsblk -lnbdo NAME,SIZE | sort -k2 -nr | awk 'NR==1{print "/dev/" $1}')
+# Disk is either /dev/root if its available, or the largest disk
+if [ -b /dev/root ]; then
+  disk="/dev/root"
+else
+  disk=$(lsblk -lnbdo NAME,SIZE | sort -k2 -nr | awk 'NR==1{print "/dev/" $1}')
+fi
 
 # Check if jq is installed
 if ! command -v jq &> /dev/null; then
@@ -47,7 +52,6 @@ while true; do
 
     (free | awk '/Mem:/ {print $3/$2}' | sed 's/,/./' > "$ram_tmp_file") &
 
-    # divide by 100 to get the percentage
     (iostat -dx "$disk" 1 2 | awk '/Device/{flag=1; next} flag && /^[^ ]/ {util=$NF} END{print util/100}' | sed 's/,/./' > "$disk_tmp_file") &
     timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 

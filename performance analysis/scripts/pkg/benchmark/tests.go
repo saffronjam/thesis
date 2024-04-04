@@ -31,24 +31,16 @@ func (b *Benchmark) AllTests() []models.TestDefinition {
 			Func: b.CreateManyTinyVMs,
 		},
 		{
-			Name: "CreateSnapshot",
-			Func: b.CreateSnapshot,
-		},
-		{
 			Name: "LiveMigrate",
 			Func: b.LiveMigrate,
 		},
 		{
-			Name: "ScaleUpCluster",
-			Func: b.ScaleUpCluster,
+			Name: "ScaleCluster",
+			Func: b.ScaleCluster,
 		},
 		{
-			Name: "ScaleDownCluster",
-			Func: b.ScaleDownCluster,
-		},
-		{
-			Name: "ScaleDownClusterWithVMs",
-			Func: b.ScaleDownClusterWithVMs,
+			Name: "ScaleClusterWithVMs",
+			Func: b.ScaleClusterWithVMs,
 		},
 	}
 }
@@ -246,6 +238,9 @@ func (b *Benchmark) CreateEachType() []models.TestResult {
 			continue
 		}
 
+		// Collect 10 for 10 seconds before starting
+		time.Sleep(10 * time.Second)
+
 		pretty_log.TaskGroup("[%s] Creating %s VM", b.Environment.Name, name)
 		start := time.Now()
 		err = b.VMMS.CreateVM(vm)
@@ -276,6 +271,9 @@ func (b *Benchmark) CreateEachType() []models.TestResult {
 		}
 		end := time.Now()
 
+		// Collect 10 for 10 seconds after stopping
+		time.Sleep(10 * time.Second)
+
 		pretty_log.TaskGroup("[%s] Getting metrics for %s VM", b.Environment.Name, name)
 		metrics, err := b.StopMetricScrapers()
 		if err != nil {
@@ -305,6 +303,9 @@ func (b *Benchmark) CreateManyTinyVMs() []models.TestResult {
 	for i := 0; i < len(vms); i++ {
 		vms[i] = TinyVM()
 	}
+
+	// Collect 10 for 10 seconds before starting
+	time.Sleep(10 * time.Second)
 
 	pretty_log.TaskGroup("[%s] Setting up metrics for %d tiny VMs", b.Environment.Name, n)
 	err := b.StartMetricScrapers()
@@ -407,6 +408,9 @@ func (b *Benchmark) CreateManyTinyVMs() []models.TestResult {
 		}
 	}
 
+	// Collect 10 for 10 seconds after stopping
+	time.Sleep(10 * time.Second)
+
 	pretty_log.TaskGroup("[%s] Getting metrics for %d tiny VMs", b.Environment.Name, n)
 	metrics, err := b.StopMetricScrapers()
 	if err != nil {
@@ -430,22 +434,14 @@ func (b *Benchmark) CreateManyTinyVMs() []models.TestResult {
 	}
 }
 
-func (b *Benchmark) CreateSnapshot() []models.TestResult {
-	return nil
-}
-
 func (b *Benchmark) LiveMigrate() []models.TestResult {
 	return nil
 }
 
-func (b *Benchmark) ScaleUpCluster() []models.TestResult {
+func (b *Benchmark) ScaleCluster() []models.TestResult {
 	return nil
 }
 
-func (b *Benchmark) ScaleDownCluster() []models.TestResult {
-	return nil
-}
-
-func (b *Benchmark) ScaleDownClusterWithVMs() []models.TestResult {
+func (b *Benchmark) ScaleClusterWithVMs() []models.TestResult {
 	return nil
 }

@@ -29,7 +29,6 @@ func NewBenchmark(environment models.BenchmarkEnvironment, vmms vm_management_sy
 }
 
 func Run(environments []models.BenchmarkEnvironment) *models.BenchmarkResult {
-
 	pretty_log.TaskGroup(" === Running benchmark ===")
 
 	vmmsMap := make(map[string]vm_management_system.VmManagementSystem)

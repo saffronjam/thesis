@@ -116,7 +116,7 @@ func (o *OpenNebula) ListVMs() []models.VM {
 	return vms
 }
 
-func (o *OpenNebula) CreateVM(vm *models.VM) error {
+func (o *OpenNebula) CreateVM(vm *models.VM, hostIdx ...int) error {
 	createCmd := fmt.Sprintf("sudo onetemplate instantiate %d --name %s <<EOF\nCPU=\"0.1\"\nVCPU=\"%d\"\nMEMORY=\"%d\"\nDISK=[SIZE=\"%d\",\nIMAGE=\"cirros\"]\nEOF", o.DefaultTemplateID, vm.Name, vm.Specs.CPU, vm.Specs.RAM, vm.Specs.DiskSize*1024)
 
 	// Sometimes the command fails with "connection reset by peer" or "EOF" since we create too many too quickly.
@@ -176,6 +176,10 @@ func (o *OpenNebula) DeleteAllVMs() error {
 
 		return nil
 	}
+}
+
+func (o *OpenNebula) MigrateVM(name string, hostIdx int) error {
+	return nil
 }
 
 func (o *OpenNebula) WaitForRunningVM(name string) error {

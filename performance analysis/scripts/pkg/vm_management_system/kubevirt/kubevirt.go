@@ -60,7 +60,7 @@ func (o *KubeVirt) ListVMs() []models.VM {
 	return *vms
 }
 
-func (o *KubeVirt) CreateVM(vm *models.VM) error {
+func (o *KubeVirt) CreateVM(vm *models.VM, hostIdx ...int) error {
 	manifest := fmt.Sprintf(`
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
@@ -145,6 +145,10 @@ func (o *KubeVirt) DeleteAllVMs() error {
 	deleteAllVmsCommand := "kubectl delete vms --all"
 	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{deleteAllVmsCommand})
 	return err
+}
+
+func (o *KubeVirt) MigrateVM(name string, hostIdx int) error {
+	return nil
 }
 
 func (o *KubeVirt) WaitForRunningVM(name string) error {

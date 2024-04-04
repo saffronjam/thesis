@@ -18,10 +18,12 @@ type VmManagementSystem interface {
 	ListVMs() []models.VM
 	// CreateVM creates a VM with the given specs
 	// It does not need to wait for the VM to be running
-	CreateVM(vm *models.VM) error
+	CreateVM(vm *models.VM, hostIdx ...int) error
 	// DeleteVM deletes the VM with the given name
 	// It should be synchronous and wait for the VM to be deleted
 	DeleteVM(name string) error
+	// MigrateVM migrates a VM to the given host
+	MigrateVM(name string, hostIdx int) error
 
 	// WaitForRunningVM waits for the VM to be running
 	WaitForRunningVM(name string) error

@@ -17,23 +17,24 @@ import (
 const (
 	TimerStarted   = "started"
 	TimerFinished  = "finished"
+	TimerScaledUp  = "scaled-up"
 	TimerVmRunning = "vm-running"
 )
 
 func (b *Benchmark) AllTests() []models.TestDefinition {
 	return []models.TestDefinition{
-		{
-			Name: "CreateEachType",
-			Func: b.CreateEachType,
-		},
-		{
-			Name: "CreateManyTinyVMs",
-			Func: b.CreateManyTinyVMs,
-		},
-		{
-			Name: "LiveMigrate",
-			Func: b.LiveMigrate,
-		},
+		//{
+		//	Name: "CreateEachType",
+		//	Func: b.CreateEachType,
+		//},
+		//{
+		//	Name: "CreateManyTinyVMs",
+		//	Func: b.CreateManyTinyVMs,
+		//},
+		//{
+		//	Name: "LiveMigrate",
+		//	Func: b.LiveMigrate,
+		//},
 		{
 			Name: "ScaleCluster",
 			Func: b.ScaleCluster,
@@ -241,8 +242,9 @@ func (b *Benchmark) CreateEachType() []models.TestResult {
 		// Collect 10 for 10 seconds before starting
 		time.Sleep(10 * time.Second)
 
-		pretty_log.TaskGroup("[%s] Creating %s VM", b.Environment.Name, name)
 		start := time.Now()
+
+		pretty_log.TaskGroup("[%s] Creating %s VM", b.Environment.Name, name)
 		err = b.VMMS.CreateVM(vm)
 		if err != nil {
 			pretty_log.TaskResultBad("[%s] Failed to create %s VM: %s", b.Environment.Name, name, err.Error())
@@ -269,6 +271,7 @@ func (b *Benchmark) CreateEachType() []models.TestResult {
 			res = append(res, testRes)
 			continue
 		}
+
 		end := time.Now()
 
 		// Collect 10 for 10 seconds after stopping
@@ -304,9 +307,6 @@ func (b *Benchmark) CreateManyTinyVMs() []models.TestResult {
 		vms[i] = TinyVM()
 	}
 
-	// Collect 10 for 10 seconds before starting
-	time.Sleep(10 * time.Second)
-
 	pretty_log.TaskGroup("[%s] Setting up metrics for %d tiny VMs", b.Environment.Name, n)
 	err := b.StartMetricScrapers()
 	if err != nil {
@@ -318,6 +318,9 @@ func (b *Benchmark) CreateManyTinyVMs() []models.TestResult {
 			},
 		}
 	}
+
+	// Collect 10 for 10 seconds before starting
+	time.Sleep(10 * time.Second)
 
 	pretty_log.TaskGroup("[%s] Creating %d tiny VMs", b.Environment.Name, n)
 	wg := sync.WaitGroup{}
@@ -439,7 +442,115 @@ func (b *Benchmark) LiveMigrate() []models.TestResult {
 }
 
 func (b *Benchmark) ScaleCluster() []models.TestResult {
-	return nil
+	scaleDownTo := 2
+	scaleUpTo := len(b.Environment.AzureEnvironment.WorkerNodes)
+
+	pretty_log.TaskGroup("[%s] Setting up metrics for scaling cluster", b.Environment.Name)
+	err := b.StartMetricScrapers()
+	if err != nil {
+		return []models.TestResult{
+			{
+				Name:  "scale-cluster",
+				Group: "scale-cluster",
+				Err:   err,
+			},
+		}
+	}
+
+	// Collect 10 for 10 seconds before starting
+	time.Sleep(10 * time.Second)
+
+	wg := sync.WaitGroup{}
+	mut := sync.RWMutex{}
+	var anyErr error
+
+	start := time.Now()
+
+	pretty_log.TaskGroup("[%s] Scaling cluster up to %d nodes", b.Environment.Name, scaleUpTo)
+	for i := scaleDownTo; i < scaleUpTo; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			err = b.VMMS.ConnectWorker(i)
+			if err != nil {
+				pretty_log.TaskResult("[%s] Failed to connect worker %d: %s", b.Environment.Name, i, err.Error())
+				mut.Lock()
+				anyErr = err
+				mut.Unlock()
+				return
+			}
+		}(i)
+	}
+	wg.Wait()
+
+	if anyErr != nil {
+		return []models.TestResult{
+			{
+				Name:  "scale-cluster",
+				Group: "scale-cluster",
+				Err:   anyErr,
+			},
+		}
+	}
+
+	mid := time.Now()
+
+	pretty_log.TaskGroup("[%s] Scaling cluster down to %d nodes", b.Environment.Name, scaleDownTo)
+	for i := scaleUpTo - 1; i >= scaleDownTo; i-- {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			err = b.VMMS.DisconnectWorker(i)
+			if err != nil {
+				pretty_log.TaskResult("[%s] Failed to disconnect worker %d: %s", b.Environment.Name, i, err.Error())
+				mut.Lock()
+				anyErr = err
+				mut.Unlock()
+				return
+			}
+		}(i)
+	}
+	wg.Wait()
+
+	if anyErr != nil {
+		return []models.TestResult{
+			{
+				Name:  "scale-cluster",
+				Group: "scale-cluster",
+				Err:   anyErr,
+			},
+		}
+	}
+
+	end := time.Now()
+
+	// Collect 10 for 10 seconds before stopping
+	time.Sleep(10 * time.Second)
+
+	pretty_log.TaskGroup("[%s] Getting metrics for scaling cluster", b.Environment.Name)
+	metrics, err := b.StopMetricScrapers()
+	if err != nil {
+		return []models.TestResult{
+			{
+				Name:  "scale-cluster",
+				Group: "scale-cluster",
+				Err:   err,
+			},
+		}
+	}
+
+	return []models.TestResult{
+		{
+			Name:    "scale-cluster",
+			Group:   "scale-cluster",
+			Metrics: metrics,
+			Timers: map[string]time.Time{
+				TimerStarted:  start,
+				TimerScaledUp: mid,
+				TimerFinished: end,
+			},
+		},
+	}
 }
 
 func (b *Benchmark) ScaleClusterWithVMs() []models.TestResult {

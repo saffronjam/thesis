@@ -10,6 +10,7 @@ import (
 	"performance/utils"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -65,18 +66,36 @@ func (o *OpenNebula) Install() error {
 		{"sudo systemctl restart libvirtd.service"},
 	}
 
-	if app.Config.OpenNebula.Workers > 0 {
-		for idx, cmdGroup := range workerCommandGroups {
-			for jdx, worker := range o.Environment.WorkerNodes {
-				id := pretty_log.BeginTask("[OpenNebula] - Command (%d/%d) [Worker: %d]: %s", idx+1, len(workerCommandGroups), jdx+1, strings.Join(cmdGroup, " && "))
-				_, err := utils.SshCommand(worker.PublicIP, cmdGroup)
-				if err != nil {
-					pretty_log.FailTask(id)
-					return err
-				}
+	if app.Config.Cluster.MaxNodes > 0 {
+		var anyErr error
+		mut := sync.RWMutex{}
+		wg := sync.WaitGroup{}
 
-				pretty_log.CompleteTask(id)
-			}
+		for idx, worker := range o.Environment.WorkerNodes {
+			workerIdx := idx
+			ip := worker.PublicIP
+
+			wg.Add(1)
+			go func(workerIdx int, ip string) {
+				defer wg.Done()
+				for jdx, cmdGroup := range workerCommandGroups {
+					id := pretty_log.BeginTask("[OpenNebula] - Command (%d/%d) [Worker: %d]: %s", jdx+1, len(workerCommandGroups), workerIdx, strings.Join(cmdGroup, " && "))
+					_, err := utils.SshCommand(ip, cmdGroup)
+					if err != nil {
+						pretty_log.FailTask(id)
+						mut.Lock()
+						anyErr = err
+						mut.Unlock()
+						return
+					}
+					pretty_log.CompleteTask(id)
+				}
+			}(workerIdx, ip)
+		}
+		wg.Wait()
+
+		if anyErr != nil {
+			return anyErr
 		}
 	} else {
 		pretty_log.TaskResult("[OpenNebula] No worker nodes to setup")

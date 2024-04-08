@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"performance/models"
+	"performance/pkg/app"
 	"performance/pkg/app/pretty_log"
 	"performance/pkg/vm_management_system"
 	"performance/pkg/vm_management_system/kubevirt"
@@ -105,7 +106,7 @@ func Run(environments []models.BenchmarkEnvironment) (*models.BenchmarkResult, e
 
 			// Ensure hosts are set up to default configuration (1 control node, 2 worker nodes)
 			id = pretty_log.BeginTask("[%s] Ensuring default number of worker nodes are connected to VM management system", environment.Name)
-			for i := 0; i < 2; i++ {
+			for i := 0; i < app.Config.Cluster.MinNodes; i++ {
 				err = vmms.ConnectWorker(i)
 				if err != nil {
 					pretty_log.FailTask(id)
@@ -117,7 +118,7 @@ func Run(environments []models.BenchmarkEnvironment) (*models.BenchmarkResult, e
 			}
 
 			// Disconnect all other worker nodes
-			for i := 2; i < len(environment.AzureEnvironment.WorkerNodes); i++ {
+			for i := app.Config.Cluster.MinNodes; i < len(environment.AzureEnvironment.WorkerNodes); i++ {
 				err = vmms.DisconnectWorker(i)
 				if err != nil {
 					pretty_log.FailTask(id)

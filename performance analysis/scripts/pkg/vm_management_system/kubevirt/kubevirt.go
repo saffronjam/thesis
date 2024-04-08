@@ -8,6 +8,7 @@ import (
 	"performance/pkg/vm_management_system"
 	"performance/utils"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -33,7 +34,7 @@ func (o *KubeVirt) Install() error {
 		{"sudo apt-get update"},
 		{"sudo apt-get install nfs-common -y"},
 		{"curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.28.7+k3s1 INSTALL_K3S_EXEC=\"server --tls-san " + o.Environment.ControlNode.InternalIP + " --advertise-address " + o.Environment.ControlNode.InternalIP + " --write-kubeconfig-mode=644 --disable=traefik --disable=servicelb\" sh -"},
-		{"sleep 10"},
+		{"sleep 3"},
 		{"mkdir -p /home/" + app.Config.Azure.Username + "/.kube && sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config && sudo chown " + app.Config.Azure.Username + " /home/" + app.Config.Azure.Username + "/.kube/config && sudo chmod 600 /home/" + app.Config.Azure.Username + "/.kube/config"},
 	}
 
@@ -66,18 +67,35 @@ func (o *KubeVirt) Install() error {
 		{"curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC=\"--node-label kubevirt=kubevirt \" INSTALL_K3S_SKIP_START=true INSTALL_K3S_VERSION=v1.28.7+k3s1 K3S_URL=https://" + o.Environment.ControlNode.InternalIP + ":6443 K3S_TOKEN=" + o.token + " sh -"},
 	}
 
-	if app.Config.KubeVirt.Workers > 0 {
-		for idx, cmdGroup := range workerCommandGroups {
-			id = pretty_log.BeginTask("[KubeVirt] - Command (%d/%d): %s", idx+1, len(workerCommandGroups), strings.Join(cmdGroup, " && "))
-			for _, worker := range o.Environment.WorkerNodes {
-				_, err = utils.SshCommand(worker.PublicIP, cmdGroup)
-				if err != nil {
-					pretty_log.FailTask(id)
-					return err
-				}
+	if app.Config.Cluster.MaxNodes > 0 {
+		var anyErr error
+		mut := sync.RWMutex{}
+		wg := sync.WaitGroup{}
 
-				pretty_log.CompleteTask(id)
-			}
+		for idx, worker := range o.Environment.WorkerNodes {
+			workerIdx := idx
+			ip := worker.PublicIP
+			wg.Add(1)
+			go func(workerIdx int, ip string) {
+				defer wg.Done()
+				for jdx, cmdGroup := range workerCommandGroups {
+					id := pretty_log.BeginTask("[KubeVirt] - Command (%d/%d) for [Worker %d]: %s", jdx+1, len(workerCommandGroups), workerIdx, strings.Join(cmdGroup, " && "))
+					_, err = utils.SshCommand(ip, cmdGroup)
+					if err != nil {
+						pretty_log.FailTask(id)
+						mut.Lock()
+						anyErr = err
+						mut.Unlock()
+						return
+					}
+					pretty_log.CompleteTask(id)
+				}
+			}(workerIdx, ip)
+		}
+		wg.Wait()
+
+		if anyErr != nil {
+			return anyErr
 		}
 	} else {
 		pretty_log.TaskResult("[KubeVirt] No worker nodes to setup")

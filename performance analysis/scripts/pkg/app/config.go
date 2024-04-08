@@ -21,7 +21,6 @@ type ConfigType struct {
 
 	KubeVirt struct {
 		Version string `yaml:"version"`
-		Workers int    `yaml:"workers"`
 		CDI     struct {
 			Version string `yaml:"version"`
 		} `yaml:"cdi"`
@@ -39,8 +38,7 @@ type ConfigType struct {
 	} `yaml:"kubevirt"`
 
 	OpenNebula struct {
-		Workers int `yaml:"workers"`
-		Image   struct {
+		Image struct {
 			Name string `yaml:"name"`
 			URL  string `yaml:"url"`
 		} `yaml:"image"`
@@ -53,6 +51,11 @@ type ConfigType struct {
 		SkipInstallation bool `yaml:"skipInstallation"`
 		SkipDeletion     bool `yaml:"skipDeletion"`
 	} `yaml:"opennebula"`
+
+	Cluster struct {
+		MinNodes int `yaml:"minNodes"`
+		MaxNodes int `yaml:"maxNodes"`
+	} `yaml:"cluster"`
 }
 
 var Config ConfigType

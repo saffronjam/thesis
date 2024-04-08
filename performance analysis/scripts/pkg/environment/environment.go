@@ -53,7 +53,7 @@ func Setup() ([]models.BenchmarkEnvironment, error) {
 				})
 			} else {
 				id := pretty_log.BeginTask("[%s] Creating environment", prettyName)
-				opennebulaEnv, err := SetupAzureEnvironment(context.TODO(), client, prettyName, "opennebula", app.Config.OpenNebula.Workers)
+				opennebulaEnv, err := SetupAzureEnvironment(context.TODO(), client, prettyName, "opennebula", app.Config.Cluster.MaxNodes)
 				if err != nil {
 					pretty_log.FailTask(id)
 					mut.Lock()
@@ -96,7 +96,7 @@ func Setup() ([]models.BenchmarkEnvironment, error) {
 				})
 			} else {
 				id := pretty_log.BeginTask("[%s] Creating environment", prettyName)
-				kubevirtEnv, err := SetupAzureEnvironment(context.TODO(), client, prettyName, "kubevirt", app.Config.KubeVirt.Workers)
+				kubevirtEnv, err := SetupAzureEnvironment(context.TODO(), client, prettyName, "kubevirt", app.Config.Cluster.MaxNodes)
 				if err != nil {
 					pretty_log.FailTask(id)
 					mut.Lock()
@@ -191,7 +191,7 @@ func FetchAzureEnvironment(ctx context.Context, client *azure.Client, prettyName
 
 	workerNodes := make([]models.WorkerNode, 0)
 
-	for i := 0; i < app.Config.OpenNebula.Workers; i++ {
+	for i := 0; i < app.Config.Cluster.MaxNodes; i++ {
 		id = pretty_log.BeginTask("[%s] Fetching worker node %d public IP", prettyName, i+1)
 		workerPublicIP, err := client.GetPublicIP(ctx, prefixed("worker-ip-"+strconv.Itoa(i+1)), rg)
 		if err != nil {
@@ -325,39 +325,63 @@ func SetupAzureEnvironment(ctx context.Context, client *azure.Client, prettyName
 	pretty_log.CompleteTask(id)
 
 	workerNodes := make([]models.WorkerNode, workers)
-	for i := 0; i < workers; i++ {
-		id := pretty_log.BeginTask("[%s] Creating worker node %d public IP", prettyName, i+1)
-		workerPublicIP, err := client.CreatePublicIP(ctx, prefixed("worker-ip-"+strconv.Itoa(i+1)), rg)
-		if err != nil {
-			pretty_log.FailTask(id)
-			return nil, err
-		}
-		pretty_log.CompleteTask(id)
-		pretty_log.TaskResult("[%s] Public IP: %s", prettyName, *workerPublicIP.Properties.IPAddress)
+	wg := sync.WaitGroup{}
+	mut := sync.Mutex{}
+	var anyErr error
 
-		id = pretty_log.BeginTask("[%s] Creating worker node %d NIC", prettyName, i+1)
-		workerNIC, err := client.CreateNIC(ctx, "worker-nic-"+strconv.Itoa(i+1), rg, *subnet.ID, workerPublicIP.ID)
-		if err != nil {
-			pretty_log.FailTask(id)
-			return nil, err
-		}
-		pretty_log.CompleteTask(id)
-		pretty_log.TaskResult("[%s] Internal IP: %s", prettyName, *workerNIC.Properties.IPConfigurations[0].Properties.PrivateIPAddress)
+	for idx := 0; idx < workers; idx++ {
+		i := idx
+		wg.Add(1)
+		go func(idx int) {
+			defer wg.Done()
 
-		id = pretty_log.BeginTask("[%s] Creating worker node %d VM", prettyName, i+1)
-		vm, err := client.CreateVM(ctx, prefixed("worker-"+strconv.Itoa(i+1)), rg, *workerNIC.ID, prefixed("worker-"+strconv.Itoa(i+1)), app.Config.Azure.Username, app.Config.Azure.Password,
-			append(app.Config.Azure.PublicKeys, publicKey[0]))
-		if err != nil {
-			pretty_log.FailTask(id)
-			return nil, err
-		}
-		pretty_log.CompleteTask(id)
+			id := pretty_log.BeginTask("[%s] Creating worker node %d public IP", prettyName, idx+1)
+			workerPublicIP, err := client.CreatePublicIP(ctx, prefixed("worker-ip-"+strconv.Itoa(idx+1)), rg)
+			if err != nil {
+				pretty_log.FailTask(id)
+				mut.Lock()
+				anyErr = err
+				mut.Unlock()
+				return
+			}
+			pretty_log.CompleteTask(id)
+			pretty_log.TaskResult("[%s] Public IP: %s", prettyName, *workerPublicIP.Properties.IPAddress)
 
-		workerNodes[i] = models.WorkerNode{
-			VM:         *vm,
-			InternalIP: *workerNIC.Properties.IPConfigurations[0].Properties.PrivateIPAddress,
-			PublicIP:   *workerPublicIP.Properties.IPAddress,
-		}
+			id = pretty_log.BeginTask("[%s] Creating worker node %d NIC", prettyName, idx+1)
+			workerNIC, err := client.CreateNIC(ctx, "worker-nic-"+strconv.Itoa(idx+1), rg, *subnet.ID, workerPublicIP.ID)
+			if err != nil {
+				pretty_log.FailTask(id)
+				mut.Lock()
+				anyErr = err
+				mut.Unlock()
+				return
+			}
+			pretty_log.CompleteTask(id)
+			pretty_log.TaskResult("[%s] Internal IP: %s", prettyName, *workerNIC.Properties.IPConfigurations[0].Properties.PrivateIPAddress)
+
+			id = pretty_log.BeginTask("[%s] Creating worker node %d VM", prettyName, idx+1)
+			vm, err := client.CreateVM(ctx, prefixed("worker-"+strconv.Itoa(idx+1)), rg, *workerNIC.ID, prefixed("worker-"+strconv.Itoa(idx+1)), app.Config.Azure.Username, app.Config.Azure.Password,
+				append(app.Config.Azure.PublicKeys, publicKey[0]))
+			if err != nil {
+				pretty_log.FailTask(id)
+				mut.Lock()
+				anyErr = err
+				mut.Unlock()
+				return
+			}
+			pretty_log.CompleteTask(id)
+
+			workerNodes[idx] = models.WorkerNode{
+				VM:         *vm,
+				InternalIP: *workerNIC.Properties.IPConfigurations[0].Properties.PrivateIPAddress,
+				PublicIP:   *workerPublicIP.Properties.IPAddress,
+			}
+		}(i)
+	}
+	wg.Wait()
+
+	if anyErr != nil {
+		return nil, anyErr
 	}
 
 	// Collect all IPs
@@ -373,16 +397,26 @@ func SetupAzureEnvironment(ctx context.Context, client *azure.Client, prettyName
 	}
 
 	for idx, ip := range ips {
-		id = pretty_log.BeginTask("[%s] Setting up base packages (node %d/%d)", prettyName, idx+1, len(ips))
-		for _, cmd := range controlCommandGroups {
-			_, err = utils.SshCommand(ip, []string{cmd})
-			if err != nil {
-				pretty_log.FailTask(id)
-				return nil, err
+		idx2 := idx
+		ip2 := ip
+		wg.Add(1)
+		go func(idx int, ip string) {
+			defer wg.Done()
+
+			id := pretty_log.BeginTask("[%s] Setting up base packages (node %d/%d)", prettyName, idx+1, len(ips))
+			for _, cmd := range controlCommandGroups {
+				_, err = utils.SshCommand(ip, []string{cmd})
+				if err != nil {
+					pretty_log.FailTask(id)
+					mut.Lock()
+					anyErr = err
+					mut.Unlock()
+				}
 			}
-		}
-		pretty_log.CompleteTask(id)
+			pretty_log.CompleteTask(id)
+		}(idx2, ip2)
 	}
+	wg.Wait()
 
 	// Setup metrics scraping
 	systemdService := `[Unit]
@@ -403,24 +437,36 @@ WantedBy=multi-user.target`
 
 	// Load file from script and cat into each node. Then set up a systemd service to run the script indefinitely
 	for idx, ip := range ips {
-		id = pretty_log.BeginTask("[%s] Setting up metrics scraping (node %d/%d)", prettyName, idx+1, len(ips))
-		err = utils.SshUpload(ip, "scripts/metrics.sh", "/home/"+app.Config.Azure.Username+"/metrics.sh")
-		if err != nil {
-			pretty_log.FailTask(id)
-			return nil, err
-		}
+		idx2 := idx
+		ip2 := ip
 
-		for _, cmd := range commands {
-			_, err = utils.SshCommand(ip, []string{cmd})
+		wg.Add(1)
+		go func(idx int, ip string) {
+			defer wg.Done()
+
+			id := pretty_log.BeginTask("[%s] Setting up metrics scraping (node %d/%d)", prettyName, idx+1, len(ips))
+			err = utils.SshUpload(ip, "scripts/metrics.sh", "/home/"+app.Config.Azure.Username+"/metrics.sh")
 			if err != nil {
 				pretty_log.FailTask(id)
-				return nil, err
+				mut.Lock()
+				anyErr = err
+				mut.Unlock()
 			}
-		}
 
-		pretty_log.CompleteTask(id)
+			for _, cmd := range commands {
+				_, err = utils.SshCommand(ip, []string{cmd})
+				if err != nil {
+					pretty_log.FailTask(id)
+					mut.Lock()
+					anyErr = err
+					mut.Unlock()
+				}
+			}
+
+			pretty_log.CompleteTask(id)
+		}(idx2, ip2)
 	}
-	pretty_log.CompleteTask(id)
+	wg.Wait()
 
 	return &models.AzureEnvironment{
 		ResourceGroup: rg,

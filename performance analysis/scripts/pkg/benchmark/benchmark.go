@@ -3,7 +3,6 @@ package benchmark
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"performance/models"
@@ -28,36 +27,118 @@ func NewBenchmark(environment models.BenchmarkEnvironment, vmms vm_management_sy
 	}
 }
 
-func Run(environments []models.BenchmarkEnvironment) *models.BenchmarkResult {
-	pretty_log.TaskGroup(" === Running benchmark ===")
+func Run(environments []models.BenchmarkEnvironment) (*models.BenchmarkResult, error) {
+	pretty_log.TaskGroup("=== Running benchmark ===")
 
 	vmmsMap := make(map[string]vm_management_system.VmManagementSystem)
 	for _, environment := range environments {
 		vmmsMap[environment.Name] = getVmManagementSystem(&environment)
 		if vmmsMap[environment.Name] == nil {
-			log.Fatalln("Unknown VM management system: " + environment.Name)
+			return nil, fmt.Errorf("unknown VM management system: %s", environment.Name)
+		}
+
+		// Ensure each environment has at least 2 worker nodes
+		if len(environment.AzureEnvironment.WorkerNodes) < 2 {
+			return nil, fmt.Errorf("every environment must have at least 2 worker nodes. %s has %d", environment.Name, len(environment.AzureEnvironment.WorkerNodes))
 		}
 	}
 
-	// 1. Setup VM management systems synchronously
-	for _, environment := range environments {
-		vmms := vmmsMap[environment.Name]
-		pretty_log.TaskGroup("[%s] Setting up VM management system (Not benchmarked)", environment.Name)
-		err := vmms.Setup()
-		if err != nil {
-			log.Fatalln(err.Error())
-		}
+	var anyError error
+	mut := sync.RWMutex{}
 
-		pretty_log.TaskGroup("[%s] Cleaning up before test", environment.Name)
-		err = vmms.DeleteAllVMs()
-		if err != nil {
-			log.Fatalln(fmt.Errorf("failed to clean up. details: %s", err.Error()))
-		}
-	}
-
-	// 2. Run tests asynchronously
+	// Install VM management systems if needed
 	wg := sync.WaitGroup{}
 	for _, environment := range environments {
+		if !environment.SkipInstallation {
+			e := environment
+			wg.Add(1)
+			go func(environment models.BenchmarkEnvironment) {
+				defer wg.Done()
+
+				vmms := vmmsMap[environment.Name]
+				pretty_log.TaskGroup("[%s] Installing VM management system (Not benchmarked)", environment.Name)
+				err := vmms.Install()
+				if err != nil {
+					mut.Lock()
+					anyError = fmt.Errorf("failed to install VM management system for %s. details: %s", environment.Name, err.Error())
+					mut.Unlock()
+					return
+				}
+			}(e)
+		}
+	}
+	wg.Wait()
+
+	if anyError != nil {
+		return nil, anyError
+	}
+
+	// Setup VM management systems
+	for _, environment := range environments {
+		e := environment
+		wg.Add(1)
+		go func(environment models.BenchmarkEnvironment) {
+			defer wg.Done()
+			vmms := vmmsMap[environment.Name]
+
+			id := pretty_log.BeginTask("[%s] Cleaning up before test", environment.Name)
+			err := vmms.DeleteAllVMs()
+			if err != nil {
+				pretty_log.FailTask(id)
+				mut.Lock()
+				anyError = err
+				mut.Unlock()
+				return
+			}
+			pretty_log.CompleteTask(id)
+
+			id = pretty_log.BeginTask("[%s] Setting up VM management system", environment.Name)
+			err = vmms.Setup()
+			if err != nil {
+				pretty_log.FailTask(id)
+				mut.Lock()
+				anyError = err
+				mut.Unlock()
+				return
+			}
+			pretty_log.CompleteTask(id)
+
+			// Ensure hosts are set up to default configuration (1 control node, 2 worker nodes)
+			id = pretty_log.BeginTask("[%s] Ensuring default number of worker nodes are connected to VM management system", environment.Name)
+			for i := 0; i < 2; i++ {
+				err = vmms.ConnectWorker(i)
+				if err != nil {
+					pretty_log.FailTask(id)
+					mut.Lock()
+					anyError = err
+					mut.Unlock()
+					return
+				}
+			}
+
+			// Disconnect all other worker nodes
+			for i := 2; i < len(environment.AzureEnvironment.WorkerNodes); i++ {
+				err = vmms.DisconnectWorker(i)
+				if err != nil {
+					pretty_log.FailTask(id)
+					mut.Lock()
+					anyError = err
+					mut.Unlock()
+					return
+				}
+			}
+			pretty_log.CompleteTask(id)
+		}(e)
+	}
+	wg.Wait()
+
+	if anyError != nil {
+		return nil, anyError
+	}
+
+	// Run tests asynchronously
+	for _, environment := range environments {
+		e := environment
 		wg.Add(1)
 		go func(environment models.BenchmarkEnvironment) {
 			defer wg.Done()
@@ -75,7 +156,10 @@ func Run(environments []models.BenchmarkEnvironment) *models.BenchmarkResult {
 				for _, result := range taskResults {
 					err := SaveResult(environment.Name, result)
 					if err != nil {
-						log.Fatalln(fmt.Errorf("failed to save results. details: %s", err.Error()))
+						mut.Lock()
+						anyError = err
+						mut.Unlock()
+						return
 					}
 				}
 			}
@@ -83,15 +167,24 @@ func Run(environments []models.BenchmarkEnvironment) *models.BenchmarkResult {
 			pretty_log.TaskGroup("[%s] Cleaning up after test", environment.Name)
 			err := vmms.DeleteAllVMs()
 			if err != nil {
-				log.Fatalln(fmt.Errorf("failed to clean up. details: %s", err.Error()))
+				mut.Lock()
+				anyError = err
+				mut.Unlock()
+				return
 			}
 
 			pretty_log.TaskGroup("[%s] Completed", environment.Name)
-		}(environment)
+		}(e)
 	}
 	wg.Wait()
 
-	return &models.BenchmarkResult{}
+	if anyError != nil {
+		return nil, anyError
+	}
+
+	pretty_log.TaskGroup("=== Benchmark complete ===")
+
+	return nil, nil
 }
 
 // SaveResult saves the result of a test to a file.

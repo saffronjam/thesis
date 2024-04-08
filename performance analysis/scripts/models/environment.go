@@ -25,4 +25,6 @@ type AzureEnvironment struct {
 type BenchmarkEnvironment struct {
 	Name             string
 	AzureEnvironment *AzureEnvironment
+
+	SkipInstallation bool
 }

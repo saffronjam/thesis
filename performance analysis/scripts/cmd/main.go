@@ -10,18 +10,17 @@ import (
 func main() {
 	app.LoadConfig(nil)
 
-	environments, err := environment.Setup(false, false)
+	environments, err := environment.Setup()
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
 
-	// Only KubeVirt right now, index 1
-	//environments = []models.BenchmarkEnvironment{environments[1]}
+	_, err = benchmark.Run(environments)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
 
-	// Run benchmark
-	benchmark.Run(environments)
-
-	err = environment.Shutdown(false, false)
+	err = environment.Shutdown()
 	if err != nil {
 		log.Fatalln(err.Error())
 	}

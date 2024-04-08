@@ -2,8 +2,15 @@ package pretty_log
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"strings"
+	"sync"
 	"time"
+)
+
+var (
+	mut   sync.Mutex
+	tasks = make(map[string]string)
 )
 
 // TaskGroup prints the title of a group of tasks in bright blue color.
@@ -17,37 +24,49 @@ func TaskGroup(format string, a ...interface{}) {
 }
 
 // BeginTask prints the beginning of a task with its name in orange and "..." in grey, without a newline at the end.
-func BeginTask(format string, a ...interface{}) {
+func BeginTask(format string, a ...interface{}) string {
 	taskName := fmt.Sprintf(format, a...)
 	orange := "\033[38;5;208m"
 	grey := "\033[90m"
 	reset := "\033[0m"
+
+	mut.Lock()
+	id := uuid.NewString()
+	tasks[id] = taskName
+	mut.Unlock()
+
 	now := time.Now().Format("2006/01/02 15:04:05")
-	fmt.Printf("[%s] %s%s%s %s...%s ", now, orange, taskName, reset, grey, reset)
+	fmt.Printf("[%s] %s%s%s %s%s\n", now, orange, taskName, reset, grey, reset)
+
+	return id
 }
 
 // CompleteTask prints a green checkmark, then ends the line.
-func CompleteTask(suffix ...string) {
-	s := ""
-	if len(suffix) > 0 {
-		s = suffix[0]
-	}
-
+func CompleteTask(id string) {
 	green := "\033[32m"
-	suffixColor := "\033[38;5;208m"
 	reset := "\033[0m"
-	if s == "" {
-		fmt.Printf("%s✓%s\n", green, reset)
-	} else {
-		fmt.Printf("%s✓%s [%s%s%s]\n", green, reset, suffixColor, s, reset)
-	}
+
+	mut.Lock()
+	beginTask := tasks[id]
+	delete(tasks, id)
+	mut.Unlock()
+
+	now := time.Now().Format("2006/01/02 15:04:05")
+	fmt.Printf("[%s] %s%s%s%s%s\n", now, green, beginTask, reset, green, reset)
 }
 
 // FailTask prints a green checkmark, then ends the line.
-func FailTask() {
+func FailTask(id string) {
 	red := "\033[31m"
 	reset := "\033[0m"
-	fmt.Printf("%s✗%s\n", red, reset)
+
+	mut.Lock()
+	beginTask := tasks[id]
+	delete(tasks, id)
+	mut.Unlock()
+
+	now := time.Now().Format("2006/01/02 15:04:05")
+	fmt.Printf("[%s] %s%s%s%s%s\n", now, red, beginTask, reset, red, reset)
 }
 
 // TaskResult prints the result of a task in cyan color.
@@ -76,6 +95,7 @@ func TaskResultBad(format string, a ...interface{}) {
 func TaskResultList(list []string) {
 	cyan := "\033[36m"
 	reset := "\033[0m"
+	now := time.Now().Format("2006/01/02 15:04:05")
 
 	for _, item := range list {
 		if item == "" {
@@ -84,6 +104,6 @@ func TaskResultList(list []string) {
 
 		item = strings.TrimSuffix(item, "\n")
 
-		fmt.Printf("%s - %s%s\n", cyan, item, reset)
+		fmt.Printf("[%s] %s - %s%s\n", now, cyan, item, reset)
 	}
 }

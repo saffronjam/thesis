@@ -31,6 +31,11 @@ type ConfigType struct {
 		Virtctl struct {
 			Version string `yaml:"version"`
 		} `yaml:"virtctl"`
+
+		Disabled         bool `yaml:"disabled"`
+		SkipNodeCreation bool `yaml:"skipNodeCreation"`
+		SkipInstallation bool `yaml:"skipInstallation"`
+		SkipDeletion     bool `yaml:"skipDeletion"`
 	} `yaml:"kubevirt"`
 
 	OpenNebula struct {
@@ -42,6 +47,11 @@ type ConfigType struct {
 		Template struct {
 			Name string `yaml:"name"`
 		} `yaml:"template"`
+
+		Disabled         bool `yaml:"disabled"`
+		SkipNodeCreation bool `yaml:"skipNodeCreation"`
+		SkipInstallation bool `yaml:"skipInstallation"`
+		SkipDeletion     bool `yaml:"skipDeletion"`
 	} `yaml:"opennebula"`
 }
 

@@ -34,6 +34,7 @@ type ConfigType struct {
 		Disabled         bool `yaml:"disabled"`
 		SkipNodeCreation bool `yaml:"skipNodeCreation"`
 		SkipInstallation bool `yaml:"skipInstallation"`
+		SkipBenchmark    bool `yaml:"skipBenchmark"`
 		SkipDeletion     bool `yaml:"skipDeletion"`
 	} `yaml:"kubevirt"`
 
@@ -49,6 +50,7 @@ type ConfigType struct {
 		Disabled         bool `yaml:"disabled"`
 		SkipNodeCreation bool `yaml:"skipNodeCreation"`
 		SkipInstallation bool `yaml:"skipInstallation"`
+		SkipBenchmark    bool `yaml:"skipBenchmark"`
 		SkipDeletion     bool `yaml:"skipDeletion"`
 	} `yaml:"opennebula"`
 

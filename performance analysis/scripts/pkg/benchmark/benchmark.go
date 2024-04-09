@@ -50,23 +50,25 @@ func Run(environments []models.BenchmarkEnvironment) (*models.BenchmarkResult, e
 	// Install VM management systems if needed
 	wg := sync.WaitGroup{}
 	for _, environment := range environments {
-		if !environment.SkipInstallation {
-			e := environment
-			wg.Add(1)
-			go func(environment models.BenchmarkEnvironment) {
-				defer wg.Done()
-
-				vmms := vmmsMap[environment.Name]
-				pretty_log.TaskGroup("[%s] Installing VM management system (Not benchmarked)", environment.Name)
-				err := vmms.Install()
-				if err != nil {
-					mut.Lock()
-					anyError = fmt.Errorf("failed to install VM management system for %s. details: %s", environment.Name, err.Error())
-					mut.Unlock()
-					return
-				}
-			}(e)
+		if environment.SkipInstallation {
+			continue
 		}
+
+		e := environment
+		wg.Add(1)
+		go func(environment models.BenchmarkEnvironment) {
+			defer wg.Done()
+
+			vmms := vmmsMap[environment.Name]
+			pretty_log.TaskGroup("[%s] Installing VM management system (Not benchmarked)", environment.Name)
+			err := vmms.Install()
+			if err != nil {
+				mut.Lock()
+				anyError = fmt.Errorf("failed to install VM management system for %s. details: %s", environment.Name, err.Error())
+				mut.Unlock()
+				return
+			}
+		}(e)
 	}
 	wg.Wait()
 
@@ -76,6 +78,10 @@ func Run(environments []models.BenchmarkEnvironment) (*models.BenchmarkResult, e
 
 	// Setup VM management systems
 	for _, environment := range environments {
+		if environment.SkipBenchmark {
+			continue
+		}
+
 		e := environment
 		wg.Add(1)
 		go func(environment models.BenchmarkEnvironment) {
@@ -139,6 +145,10 @@ func Run(environments []models.BenchmarkEnvironment) (*models.BenchmarkResult, e
 
 	// Run tests asynchronously
 	for _, environment := range environments {
+		if environment.SkipBenchmark {
+			continue
+		}
+		
 		e := environment
 		wg.Add(1)
 		go func(environment models.BenchmarkEnvironment) {

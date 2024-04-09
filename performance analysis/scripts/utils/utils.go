@@ -7,13 +7,27 @@ import (
 	"log"
 	"math/rand"
 	"performance/pkg/app"
+	"strings"
+	"time"
 )
 
 // SshCommand executes an SshCommand command on the given VM
 func SshCommand(ip string, commands []string) ([]string, error) {
-	client, err := goph.NewUnknown(app.Config.Azure.Username, ip, goph.Password(app.Config.Azure.Password))
-	if err != nil {
-		return nil, err
+	var client *goph.Client
+	var err error
+
+	for {
+		client, err = goph.NewUnknown(app.Config.Azure.Username, ip, goph.Password(app.Config.Azure.Password))
+		if err != nil {
+			if strings.Contains(err.Error(), "ssh: handshake failed:") {
+				time.Sleep(100 * time.Millisecond)
+				continue
+			}
+
+			return nil, err
+		}
+
+		break
 	}
 	defer func(client *goph.Client) {
 		err := client.Close()
@@ -25,17 +39,26 @@ func SshCommand(ip string, commands []string) ([]string, error) {
 	var outAll []string
 
 	for _, command := range commands {
-		out, err := client.Run(command)
-		if out != nil {
-			outAll = append(outAll, string(out))
-		}
-
-		if err != nil {
-			if len(outAll) > 0 {
-				return outAll, fmt.Errorf("ssh err %w. details: %s", err, outAll[len(outAll)-1])
-			} else {
-				return outAll, fmt.Errorf("ssh err %w", err)
+		for {
+			out, err := client.Run(command)
+			if err != nil && strings.Contains(err.Error(), "ssh: handshake failed:") {
+				time.Sleep(100 * time.Millisecond)
+				continue
 			}
+
+			if out != nil {
+				outAll = append(outAll, string(out))
+			}
+
+			if err != nil {
+				if len(outAll) > 0 {
+					return outAll, fmt.Errorf("ssh err %w. details: %s", err, outAll[len(outAll)-1])
+				} else {
+					return outAll, fmt.Errorf("ssh err %w", err)
+				}
+			}
+
+			break
 		}
 	}
 

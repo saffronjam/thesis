@@ -23,8 +23,11 @@ type KubeVirt struct {
 
 	vm_management_system.VmManagementSystem
 
-	token string
+	token         string
+	nodeSelectors map[string]string
 }
+
+var mut sync.RWMutex
 
 func (o *KubeVirt) Install() error {
 	pretty_log.TaskGroup("[KubeVirt] Install control node")
@@ -64,7 +67,7 @@ func (o *KubeVirt) Install() error {
 	workerCommandGroups := [][]string{
 		{"sudo apt-get update"},
 		{"sudo apt-get install nfs-common -y"},
-		{"curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC=\"--node-label kubevirt=kubevirt \" INSTALL_K3S_SKIP_START=true INSTALL_K3S_VERSION=v1.28.7+k3s1 K3S_URL=https://" + o.Environment.ControlNode.InternalIP + ":6443 K3S_TOKEN=" + o.token + " sh -"},
+		{"curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.28.7+k3s1 K3S_URL=https://" + o.Environment.ControlNode.InternalIP + ":6443 K3S_TOKEN=" + o.token + " sh -"},
 	}
 
 	if app.Config.Cluster.MaxNodes > 0 {
@@ -79,7 +82,7 @@ func (o *KubeVirt) Install() error {
 			go func(workerIdx int, ip string) {
 				defer wg.Done()
 				for jdx, cmdGroup := range workerCommandGroups {
-					id := pretty_log.BeginTask("[KubeVirt] - Command (%d/%d) for [Worker %d]: %s", jdx+1, len(workerCommandGroups), workerIdx, strings.Join(cmdGroup, " && "))
+					id := pretty_log.BeginTask("[KubeVirt] - Command (%d/%d) for [Worker %d]: %s", jdx+1, len(workerCommandGroups), workerIdx+1, strings.Join(cmdGroup, " && "))
 					_, err = utils.SshCommand(ip, cmdGroup)
 					if err != nil {
 						pretty_log.FailTask(id)
@@ -90,6 +93,35 @@ func (o *KubeVirt) Install() error {
 					}
 					pretty_log.CompleteTask(id)
 				}
+
+				// Label the node accordingly. We don't need to label the other workers, since they will be created and removed dynamically
+				if workerIdx < app.Config.Cluster.MinNodes {
+					id := pretty_log.BeginTask("[KubeVirt] Labeling [Worker %d] with type=%s", workerIdx+1, "base")
+					err = o.labelHost(*o.Environment.WorkerNodes[workerIdx].VM.Name, "type", "base")
+					if err != nil {
+						pretty_log.FailTask(id)
+						mut.Lock()
+						anyErr = err
+						mut.Unlock()
+						return
+					}
+					pretty_log.CompleteTask(id)
+				}
+
+				// Disconnect non-base workers
+				if workerIdx >= app.Config.Cluster.MinNodes {
+					id := pretty_log.BeginTask("[KubeVirt] Disconnecting [Worker %d]", workerIdx+1)
+					err = o.DisconnectWorker(workerIdx)
+					if err != nil {
+						pretty_log.FailTask(id)
+						mut.Lock()
+						anyErr = err
+						mut.Unlock()
+						return
+					}
+					pretty_log.CompleteTask(id)
+				}
+
 			}(workerIdx, ip)
 		}
 		wg.Wait()
@@ -251,6 +283,38 @@ func (o *KubeVirt) ListVMs() []models.VM {
 }
 
 func (o *KubeVirt) CreateVM(vm *models.VM, hostIdx ...int) error {
+	var host *int
+	if len(hostIdx) > 0 {
+		host = &hostIdx[0]
+	}
+
+	var affinity100Key string
+	var affinity100Value string
+	var affinity50Key string
+	var affinity50Value string
+
+	if host != nil {
+		randomLabel := o.setRandomVmLabels(vm.Name)
+		affinity100Key = randomLabel
+		affinity100Value = randomLabel
+		affinity50Key = "type"
+		affinity50Value = "base"
+
+		// Label the host
+		err := o.labelHost(*o.Environment.WorkerNodes[*host].VM.Name, randomLabel, randomLabel)
+		if err != nil {
+			return err
+		}
+
+	} else {
+		affinity100Key = "type"
+		affinity100Value = "base"
+		affinity50Key = "type"
+		affinity50Value = "base"
+	}
+
+	// Label the host with idx=hostIdx[0] with the random label
+
 	manifest := fmt.Sprintf(`
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
@@ -260,8 +324,24 @@ spec:
   running: true
   template:
     spec:
-      nodeSelector:
-        kubevirt: kubevirt
+      evictionStrategy: LiveMigrate
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: %s
+                operator: In
+                values:
+                - %s
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: %s
+                operator: In
+                values:
+                - %s
       domain:
         devices:
           rng: {}
@@ -292,50 +372,26 @@ spec:
       - name: containerdisk
         containerDisk:
           image: %s
-`, vm.Name, vm.Specs.RAM, vm.Specs.CPU, vm.Specs.RAM, vm.Specs.DiskSize, app.Config.KubeVirt.Image.URL)
+`, vm.Name, affinity100Key, affinity100Value, affinity50Key, affinity50Value, vm.Specs.RAM, vm.Specs.CPU, vm.Specs.RAM, vm.Specs.DiskSize, app.Config.KubeVirt.Image.URL)
 
 	createVmCommand := "kubectl apply -f - <<EOF\n" + manifest + "\nEOF"
-
-	// Sometimes the command fails with "connection reset by peer" or "EOF" since we create too many too quickly.
-	// If that is the case, we simply try again.
-	var err error
-	for {
-		_, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{createVmCommand})
-		if err != nil {
-			if strings.Contains(err.Error(), "connection reset by peer") || strings.Contains(err.Error(), "EOF") {
-				continue
-			}
-
-			return err
-		}
-
-		return nil
-	}
+	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{createVmCommand})
+	return err
 }
 
 func (o *KubeVirt) DeleteVM(name string) error {
 	deleteVmCommand := "kubectl delete vm " + name
-
-	// Sometimes the command fails with "connection reset by peer" or "EOF" since we create too many too quickly.
-	// If that is the case, we simply try again.
-	var err error
-	for {
-		_, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{deleteVmCommand})
-		if err != nil {
-			if strings.Contains(err.Error(), "connection reset by peer") || strings.Contains(err.Error(), "EOF") {
-				continue
-			}
-
-			return err
-		}
-
-		return nil
-	}
+	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{deleteVmCommand})
+	return err
 }
 
 func (o *KubeVirt) ConnectWorker(workerIdx int) error {
-	// run sudo systemctl restart k3s-agent
 	_, err := utils.SshCommand(o.Environment.WorkerNodes[workerIdx].PublicIP, []string{"sudo systemctl restart k3s-agent"})
+	if err != nil {
+		return err
+	}
+
+	err = o.WaitForNodeLabel(*o.Environment.WorkerNodes[workerIdx].VM.Name, "kubevirt.io/schedulable", "true")
 	if err != nil {
 		return err
 	}
@@ -356,8 +412,8 @@ func (o *KubeVirt) DisconnectWorker(workerIdx int) error {
 	}
 
 	commands := []string{
-		"kubectl drain " + *o.Environment.WorkerNodes[workerIdx].VM.Name + " --ignore-daemonsets --delete-local-data",
-		"kubectl delete node " + *o.Environment.WorkerNodes[workerIdx].VM.Name,
+		"kubectl drain " + workerName + " --delete-emptydir-data --force --ignore-daemonsets",
+		"kubectl delete node " + workerName,
 	}
 
 	for _, cmd := range commands {
@@ -367,19 +423,56 @@ func (o *KubeVirt) DisconnectWorker(workerIdx int) error {
 		}
 	}
 
-	//_, err = utils.SshCommand(o.Environment.WorkerNodes[workerIdx].PublicIP, []string{"sudo k3s-agent-uninstall.sh"})
-	//if err != nil {
-	//	if strings.Contains(err.Error(), "command not found") {
-	//		return nil
-	//	}
-	//
-	//	return err
-	//}
+	getDaemonSetPodCommand := fmt.Sprintf("kubectl get pods -l kubevirt.io=virt-handler -n kubevirt --field-selector spec.nodeName=%s -o=jsonpath='{.items[0].metadata.name}'", workerName)
+	res, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{getDaemonSetPodCommand})
+	if err != nil && !strings.Contains(err.Error(), "array index out of bounds: index 0") {
+		return err
+	}
 
-	return nil
+	return o.WaitForDeletedPod(res[0], "kubevirt")
 }
 
 func (o *KubeVirt) MigrateVM(name string, hostIdx int) error {
+	// Create migration object with the new host
+	migrationManifest := fmt.Sprintf(`
+apiVersion: kubevirt.io/v1
+kind: VirtualMachineInstanceMigration
+metadata:
+  name: %s-migration
+spec:
+  vmiName: %s
+`, name, name)
+
+	createMigrationCommand := "kubectl apply -f - <<EOF\n" + migrationManifest + "\nEOF"
+	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{createMigrationCommand})
+	if err != nil {
+		return err
+	}
+
+	// Label the host with idx=hostIdx with the VM's custom label to make it move
+	randomLabel := o.getVmLabel(name)
+	if randomLabel == "" {
+		return fmt.Errorf("could not find label for VM %s", name)
+	}
+
+	err = o.labelHost(*o.Environment.WorkerNodes[hostIdx].VM.Name, randomLabel, randomLabel)
+	if err != nil {
+		return err
+	}
+
+	// Wait for the migration to finish
+	err = o.WaitForFinishedMigration(name + "-migration")
+	if err != nil {
+		return err
+	}
+
+	// Delete the migration object
+	deleteMigrationCommand := "kubectl delete vmim " + name + "-migration"
+	_, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{deleteMigrationCommand})
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -446,8 +539,109 @@ func (o *KubeVirt) WaitForDeletedVM(name string) error {
 	}
 }
 
+func (o *KubeVirt) WaitForDeletedPod(name, namespace string) error {
+	existsCommand := "kubectl get pod " + name + " -n " + namespace
+	attemptsLeft := 1000
+	for {
+		time.Sleep(100 * time.Millisecond)
+		attemptsLeft--
+		res, _ := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{existsCommand})
+		if len(res) == 0 {
+			continue
+		}
+
+		if strings.Contains(res[0], "NotFound") {
+			return nil
+		}
+
+		if attemptsLeft <= 0 {
+			return fmt.Errorf("timeout waiting for pod %s to be deleted", name)
+		}
+	}
+}
+
+func (o *KubeVirt) WaitForFinishedMigration(name string) error {
+	runningCommand := "kubectl get vmim " + name + " -o jsonpath='{.status.phase}'"
+	attemptsLeft := 1000
+	for {
+		time.Sleep(100 * time.Millisecond)
+		attemptsLeft--
+		res, _ := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{runningCommand})
+		if len(res) == 0 {
+			continue
+		}
+
+		if res[0] == "Succeeded" {
+			return nil
+		}
+
+		if attemptsLeft <= 0 {
+			return fmt.Errorf("timeout waiting for VM %s to be running", name)
+		}
+	}
+}
+
+func (o *KubeVirt) WaitForNodeLabel(node, label, value string) error {
+	// kubectl get nodes kubevirt-worker-3 -o=jsonpath='{.metadata.labels.kubevirt\.io/schedulable}'
+	label = strings.ReplaceAll(label, ".", `\.`)
+	runningCommand := fmt.Sprintf("kubectl get nodes %s -o=jsonpath='{.metadata.labels.%s}'", node, label)
+	attemptsLeft := 1000
+	for {
+		time.Sleep(100 * time.Millisecond)
+		attemptsLeft--
+		res, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{runningCommand})
+		if len(res) == 0 || err != nil {
+			continue
+		}
+
+		if strings.Contains(res[0], value) {
+			return nil
+		}
+
+		if attemptsLeft <= 0 {
+			return fmt.Errorf("timeout waiting for node %s to have label %s=%s", node, label, value)
+		}
+	}
+}
+
 func (o *KubeVirt) DeleteAllVMs() error {
 	deleteAllVmsCommand := "kubectl delete vms --all"
 	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{deleteAllVmsCommand})
 	return err
+}
+
+// labelHost labels the host with the given label and value
+// If value is empty, the label is removed
+func (o *KubeVirt) labelHost(host, label, value string) error {
+	var labelHostCommand string
+	if value == "" {
+		labelHostCommand = fmt.Sprintf("kubectl label node %s %s- --overwrite", host, label)
+	} else {
+		labelHostCommand = fmt.Sprintf("kubectl label node %s %s=%s --overwrite", host, label, value)
+	}
+
+	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{labelHostCommand})
+	return err
+}
+
+func (o *KubeVirt) setRandomVmLabels(vmName string) string {
+	randomLabel := utils.RandomName("worker")
+	mut.Lock()
+	if o.nodeSelectors == nil {
+		o.nodeSelectors = make(map[string]string)
+	}
+	o.nodeSelectors[vmName] = randomLabel
+	mut.Unlock()
+
+	return randomLabel
+}
+
+func (o *KubeVirt) getVmLabel(vmName string) string {
+	mut.RLock()
+	defer mut.RUnlock()
+	if o.nodeSelectors == nil {
+		return ""
+	}
+
+	return o.nodeSelectors[vmName]
 }

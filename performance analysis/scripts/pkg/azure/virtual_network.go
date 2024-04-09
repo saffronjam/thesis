@@ -2,6 +2,8 @@ package azure
 
 import (
 	"context"
+	"errors"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/network/armnetwork/v2"
 	"strings"
@@ -52,6 +54,13 @@ func (c *Client) CreateVirtualNetwork(ctx context.Context, name string, resource
 func (c *Client) DeleteVirtualNetwork(ctx context.Context, name string, resourceGroupName string) error {
 	pResp, err := c.VirtualNetworksClient.BeginDelete(ctx, resourceGroupName, name, nil)
 	if err != nil {
+		var respError *azcore.ResponseError
+		if errors.As(err, &respError) {
+			if respError.StatusCode == 404 {
+				return nil
+			}
+		}
+
 		return err
 	}
 

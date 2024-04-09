@@ -93,6 +93,7 @@ func Setup() ([]models.BenchmarkEnvironment, error) {
 					Name:             prettyName,
 					AzureEnvironment: kubevirtEnv,
 					SkipInstallation: app.Config.KubeVirt.SkipInstallation,
+					SkipBenchmark:    app.Config.KubeVirt.SkipBenchmark,
 				})
 			} else {
 				id := pretty_log.BeginTask("[%s] Creating environment", prettyName)
@@ -110,6 +111,7 @@ func Setup() ([]models.BenchmarkEnvironment, error) {
 					Name:             prettyName,
 					AzureEnvironment: kubevirtEnv,
 					SkipInstallation: app.Config.KubeVirt.SkipInstallation,
+					SkipBenchmark:    app.Config.KubeVirt.SkipBenchmark,
 				})
 			}
 		}()
@@ -189,38 +191,63 @@ func FetchAzureEnvironment(ctx context.Context, client *azure.Client, prettyName
 	}
 	pretty_log.CompleteTask(id)
 
-	workerNodes := make([]models.WorkerNode, 0)
+	workerNodes := make([]models.WorkerNode, app.Config.Cluster.MaxNodes)
+	mut := sync.RWMutex{}
+	var anyErr error
+	wg := sync.WaitGroup{}
 
 	for i := 0; i < app.Config.Cluster.MaxNodes; i++ {
-		id = pretty_log.BeginTask("[%s] Fetching worker node %d public IP", prettyName, i+1)
-		workerPublicIP, err := client.GetPublicIP(ctx, prefixed("worker-ip-"+strconv.Itoa(i+1)), rg)
-		if err != nil {
-			pretty_log.FailTask(id)
-			return nil, err
-		}
-		pretty_log.CompleteTask(id)
+		idx := i
+		wg.Add(1)
+		go func(idx int) {
+			defer wg.Done()
 
-		id = pretty_log.BeginTask("[%s] Fetching worker node %d NIC", prettyName, i+1)
-		workerNIC, err := client.GetNIC(ctx, "worker-nic-"+strconv.Itoa(i+1), rg)
-		if err != nil {
-			pretty_log.FailTask(id)
-			return nil, err
-		}
-		pretty_log.CompleteTask(id)
+			id := pretty_log.BeginTask("[%s] Fetching worker node %d public IP", prettyName, idx+1)
+			workerPublicIP, err := client.GetPublicIP(ctx, prefixed("worker-ip-"+strconv.Itoa(idx+1)), rg)
+			if err != nil {
+				pretty_log.FailTask(id)
+				mut.Lock()
+				anyErr = err
+				mut.Unlock()
+				return
+			}
+			pretty_log.CompleteTask(id)
 
-		id = pretty_log.BeginTask("[%s] Fetching worker node %d VM", prettyName, i+1)
-		workerVM, err := client.GetVM(ctx, prefixed("worker-"+strconv.Itoa(i+1)), rg)
-		if err != nil {
-			pretty_log.FailTask(id)
-			return nil, err
-		}
-		pretty_log.CompleteTask(id)
+			id = pretty_log.BeginTask("[%s] Fetching worker node %d NIC", prettyName, idx+1)
+			workerNIC, err := client.GetNIC(ctx, "worker-nic-"+strconv.Itoa(idx+1), rg)
+			if err != nil {
+				pretty_log.FailTask(id)
+				mut.Lock()
+				anyErr = err
+				mut.Unlock()
+				return
+			}
+			pretty_log.CompleteTask(id)
 
-		workerNodes = append(workerNodes, models.WorkerNode{
-			VM:         *workerVM,
-			InternalIP: *workerNIC.Properties.IPConfigurations[0].Properties.PrivateIPAddress,
-			PublicIP:   *workerPublicIP.Properties.IPAddress,
-		})
+			id = pretty_log.BeginTask("[%s] Fetching worker node %d VM", prettyName, idx+1)
+			workerVM, err := client.GetVM(ctx, prefixed("worker-"+strconv.Itoa(idx+1)), rg)
+			if err != nil {
+				pretty_log.FailTask(id)
+				mut.Lock()
+				anyErr = err
+				mut.Unlock()
+				return
+			}
+			pretty_log.CompleteTask(id)
+
+			mut.Lock()
+			workerNodes[idx] = models.WorkerNode{
+				VM:         *workerVM,
+				InternalIP: *workerNIC.Properties.IPConfigurations[0].Properties.PrivateIPAddress,
+				PublicIP:   *workerPublicIP.Properties.IPAddress,
+			}
+			mut.Unlock()
+		}(idx)
+	}
+	wg.Wait()
+
+	if anyErr != nil {
+		return nil, anyErr
 	}
 
 	return &models.AzureEnvironment{
@@ -384,6 +411,9 @@ func SetupAzureEnvironment(ctx context.Context, client *azure.Client, prettyName
 		return nil, anyErr
 	}
 
+	// Sleep for a bit to allow the VMs to boot
+	time.Sleep(30 * time.Second)
+
 	// Collect all IPs
 	ips := []string{*controlPublicIP.Properties.IPAddress}
 	for _, worker := range workerNodes {
@@ -411,12 +441,17 @@ func SetupAzureEnvironment(ctx context.Context, client *azure.Client, prettyName
 					mut.Lock()
 					anyErr = err
 					mut.Unlock()
+					return
 				}
 			}
 			pretty_log.CompleteTask(id)
 		}(idx2, ip2)
 	}
 	wg.Wait()
+
+	if anyErr != nil {
+		return nil, anyErr
+	}
 
 	// Setup metrics scraping
 	systemdService := `[Unit]

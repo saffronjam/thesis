@@ -194,48 +194,55 @@ func (o *OpenNebula) ListVMs() []models.VM {
 }
 
 func (o *OpenNebula) CreateVM(vm *models.VM, hostIdx ...int) error {
-	createCmd := fmt.Sprintf("sudo onetemplate instantiate %d --name %s <<EOF\nCPU=\"0.1\"\nVCPU=\"%d\"\nMEMORY=\"%d\"\nDISK=[SIZE=\"%d\",\nIMAGE=\"cirros\"]\nEOF", o.DefaultTemplateID, vm.Name, vm.Specs.CPU, vm.Specs.RAM, vm.Specs.DiskSize*1024)
+	var host *int
+	if len(hostIdx) > 0 {
+		host = &hostIdx[0]
+	}
 
-	// Sometimes the command fails with "connection reset by peer" or "EOF" since we create too many too quickly.
-	// If that is the case, we simply try again.
-	var err error
-	for {
-		_, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{createCmd})
+	var hold string
+	if host != nil {
+		hold = "--hold"
+	} else {
+		hold = ""
+	}
+
+	createCmd := fmt.Sprintf("sudo onetemplate instantiate %d --name %s %s <<EOF\nCPU=\"0.1\"\nVCPU=\"%d\"\nMEMORY=\"%d\"\nDISK=[SIZE=\"%d\",\nIMAGE=\"cirros\"]\nEOF", o.DefaultTemplateID, vm.Name, hold, vm.Specs.CPU, vm.Specs.RAM, vm.Specs.DiskSize*1024)
+
+	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{createCmd})
+	if err != nil {
+		return err
+	}
+
+	if host != nil {
+		// Move VM to host
+		moveCmd := fmt.Sprintf("sudo onevm deploy %s %s", vm.Name, o.Environment.WorkerNodes[*host].InternalIP)
+		_, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{moveCmd})
 		if err != nil {
-			if strings.Contains(err.Error(), "connection reset by peer") || strings.Contains(err.Error(), "EOF") || strings.Contains(err.Error(), "Process exited with status 255") {
-				continue
-			}
-
 			return err
 		}
-
-		return nil
 	}
+
+	return nil
 }
 
 func (o *OpenNebula) DeleteVM(name string) error {
 	deleteCmd := "sudo onevm terminate --hard " + name
-
-	// Sometimes the command fails with "connection reset by peer" or "EOF" since we create too many too quickly.
-	// Also, hen adding the "--hard" flag, this command occasionally fails with exit status 255.
-	// If that is the case, we simply try again.
-	var err error
-	for {
-		_, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{deleteCmd})
-		if err != nil {
-			if strings.Contains(err.Error(), "connection reset by peer") || strings.Contains(err.Error(), "EOF") || strings.Contains(err.Error(), "Process exited with status 255") {
-				continue
-			}
-
-			return err
-		}
-
-		return o.WaitForDeletedVM(name)
+	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{deleteCmd})
+	if err != nil {
+		return err
 	}
+
+	return o.WaitForDeletedVM(name)
 }
 
 func (o *OpenNebula) MigrateVM(name string, hostIdx int) error {
-	return nil
+	migrateCmd := "sudo onevm migrate --live " + name + " " + o.Environment.WorkerNodes[hostIdx].InternalIP
+	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{migrateCmd})
+	if err != nil {
+
+		return err
+	}
+	return o.WaitForRunningVmOnHost(name, o.Environment.WorkerNodes[hostIdx].InternalIP)
 }
 
 func (o *OpenNebula) ConnectWorker(workerIdx int) error {
@@ -287,17 +294,16 @@ func (o *OpenNebula) DisconnectWorker(workerIdx int) error {
 	}
 
 	// Delete host
-	_, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{"sudo onehost delete 10.1.0.6 | { grep -q \"not found\" || [ -z \"$(cat)\" ]; } && exit 0 || exit 1"})
+	_, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{"sudo onehost delete " + o.Environment.WorkerNodes[workerIdx].InternalIP + " | { grep -q \"not found\" || [ -z \"$(cat)\" ]; } && exit 0 || exit 1"})
 	if err != nil {
 		return err
 	}
 
 	return nil
-
 }
 
 func (o *OpenNebula) WaitForRunningVM(name string) error {
-	runningCmd := "sudo onevm list --list NAME --json | jq '.VM_POOL.VM[] | select(.NAME == \"" + name + "\") | .STATE' | tr -d '\"'"
+	runningCmd := "sudo onevm list --list NAME --json | jq '.VM_POOL.VM[] | select(.NAME == \"" + name + "\") | .LCM_STATE' | tr -d '\"'"
 
 	attemptsLeft := 1000
 	for {
@@ -310,6 +316,33 @@ func (o *OpenNebula) WaitForRunningVM(name string) error {
 
 		runningState := "3"
 		if strings.Contains(res[0], runningState) {
+			return nil
+		}
+
+		if attemptsLeft <= 0 {
+			return fmt.Errorf("timeout waiting for VM %s to be running", name)
+		}
+	}
+}
+
+func (o *OpenNebula) WaitForRunningVmOnHost(name, host string) error {
+	correctHostCmd := "sudo onevm list --list NAME --json | jq '.VM_POOL.VM[] | select(.NAME == \"" + name + "\") | .HISTORY_RECORDS.HISTORY | select(.HOSTNAME == \"" + host + "\") | .HOSTNAME' | tr -d '\"'"
+
+	attemptsLeft := 1000
+	for {
+		time.Sleep(100 * time.Millisecond)
+		err := o.WaitForRunningVM(name)
+		if err != nil {
+			return err
+		}
+
+		attemptsLeft--
+		res, _ := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{correctHostCmd})
+		if len(res) == 0 {
+			continue
+		}
+
+		if strings.Contains(res[0], host) {
 			return nil
 		}
 
@@ -374,7 +407,8 @@ func (o *OpenNebula) WaitForRunningHost(host string) error {
 
 func (o *OpenNebula) WaitForEmptyHost(host string) error {
 	emptyCmd := "sudo onehost show " + host + " --json | jq '.HOST.VMS'"
-	attemptsLeft := 1000
+	attemptsLeft := 10000
+
 	for {
 		time.Sleep(100 * time.Millisecond)
 		attemptsLeft--
@@ -391,23 +425,8 @@ func (o *OpenNebula) WaitForEmptyHost(host string) error {
 
 func (o *OpenNebula) DeleteAllVMs() error {
 	listAndDeleteCmd := "sudo onevm list --list NAME --json | jq '.VM_POOL.VM[].ID' | xargs -I {} sudo onevm terminate --hard {}"
-
-	// Sometimes the command fails with "connection reset by peer" or "EOF" since we create too many too quickly.
-	// Also, hen adding the "--hard" flag, this command occasionally fails with exit status 255.
-	// If that is the case, we simply try again.
-	var err error
-	for {
-		_, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{listAndDeleteCmd})
-		if err != nil {
-			if strings.Contains(err.Error(), "connection reset by peer") || strings.Contains(err.Error(), "EOF") || strings.Contains(err.Error(), "Process exited with status 255") {
-				continue
-			}
-
-			return err
-		}
-
-		return nil
-	}
+	_, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{listAndDeleteCmd})
+	return err
 }
 
 func (o *OpenNebula) hostExists(name string) (bool, error) {

@@ -171,10 +171,10 @@ spec:
 ### Live Migration Steps
 1. Ensure worker node 1 has your label (Make sure to replace `my-label` and `some-value` with your own values):
 ```bash
-kubectl label node aks-user-21932338-vmss000004 my-label=some-value
+kubectl label node usability-worker-1 my-label=some-value
 ```
 
-2. Create a VM and wait for it to start. The VM should start on **aks-user-21932338-vmss000004**:
+2. Create a VM and wait for it to start. The VM should start on **usability-worker-1**:
 ```bash
 kubectl apply -f my-vm.yml
 ```
@@ -194,8 +194,8 @@ virtctl migrate my-vm
 
 5. Add the same label to worker node 2 and remove it from worker node 1 (Make sure to replace `my-label` and `some-value` with your own values):
 ```bash
-kubectl label node aks-user-21932338-vmss000005 my-label=some-value
-kubectl label node aks-user-21932338-vmss000004 my-label-
+kubectl label node usability-worker-2 my-label=some-value
+kubectl label node usability-worker-1 my-label-
 ```
 
 6. (Optional) Check if the VM is now running on worker node 2:
@@ -205,7 +205,7 @@ kubectl get vmis
 
 7. Unlabel worker node 2
 ```bash
-kubectl label node aks-user-21932338-vmss000005 my-label-
+kubectl label node usability-worker-2 my-label-
 ```
 
 8. Delete the VM
@@ -213,7 +213,26 @@ kubectl label node aks-user-21932338-vmss000005 my-label-
 kubectl delete vm my-vm
 ```
 
-### Snapshot Manifests
+### Snapshot Manifests{
+			Name: "CreateMany",
+			Func: b.CreateMany,
+		},
+		{
+			Name: "LiveMigrate",
+			Func: b.LiveMigrate,
+		},
+		{
+			Name: "LiveMigrateMany",
+			Func: b.LiveMigrateMany,
+		},
+		{
+			Name: "ScaleCluster",
+			Func: b.ScaleCluster,
+		},
+		{
+			Name: "ScaleClusterWithVMs",
+			Func: b.ScaleClusterWithVMs,
+		},
 The following is a minimal manifest for creating a VM with a DataVolume. The credentials for the Alpine image are user **root** without password.
 
 **my-vm.yml**

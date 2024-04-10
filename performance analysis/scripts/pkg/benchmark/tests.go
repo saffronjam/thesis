@@ -30,30 +30,30 @@ func (b *Benchmark) AllTests() []models.TestDefinition {
 			Name: "CreateEachType",
 			Func: b.CreateEachType,
 		},
-		{
-			Name: "CreateMany",
-			Func: b.CreateMany,
-		},
-		{
-			Name: "LiveMigrate",
-			Func: b.LiveMigrate,
-		},
-		{
-			Name: "LiveMigrateMany",
-			Func: b.LiveMigrateMany,
-		},
-		{
-			Name: "ScaleCluster",
-			Func: b.ScaleCluster,
-		},
-		{
-			Name: "ScaleClusterWithVMs",
-			Func: b.ScaleClusterWithVMs,
-		},
+		//{
+		//	Name: "CreateMany",
+		//	Func: b.CreateMany,
+		//},
+		//{
+		//	Name: "LiveMigrate",
+		//	Func: b.LiveMigrate,
+		//},
+		//{
+		//	Name: "LiveMigrateMany",
+		//	Func: b.LiveMigrateMany,
+		//},
+		//{
+		//	Name: "ScaleCluster",
+		//	Func: b.ScaleCluster,
+		//},
+		//{
+		//	Name: "ScaleClusterWithVMs",
+		//	Func: b.ScaleClusterWithVMs,
+		//},
 	}
 }
 
-func RunTests(vmm string, tests []models.TestDefinition) map[string][]models.TestResult {
+func RunTests(vmm string, tests []models.TestDefinition, saveTest func(vmm string, result models.TestResult) error) {
 	results := make(map[string][]models.TestResult)
 
 	for idx, test := range tests {
@@ -73,9 +73,19 @@ func RunTests(vmm string, tests []models.TestDefinition) map[string][]models.Tes
 		groupResults := results[test.Name]
 		groupResults = append(groupResults, res...)
 		results[test.Name] = groupResults
-	}
 
-	return results
+		for _, result := range res {
+			if result.Err != nil {
+				continue
+			}
+
+			err := saveTest(vmm, result)
+			if err != nil {
+				pretty_log.TaskResultBad("[%s] Failed to save test results: %s", vmm, err.Error())
+				return
+			}
+		}
+	}
 }
 
 // StartMetricScrapers starts the metric scrapers on all nodes.

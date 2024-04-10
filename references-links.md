@@ -171,6 +171,7 @@ azure-pricing https://azure.microsoft.com/en-in/pricing/calculator
 kubevirt-docs-disks https://kubevirt.io/user-guide/virtual_machines/disks_and_volumes/
 kubevirt-docs-validation https://kubevirt.io/user-guide/operations/api_validation/
 kubevirt-docs-virtctl https://kubevirt.io/user-guide/operations/virtctl_client_tool/
+azure-dv3-series https://learn.microsoft.com/en-us/azure/virtual-machines/dv3-dsv3-series
 
 ## Pre-study
 cs-os-benchmark https://ieeexplore.ieee.org/abstract/document/6899177

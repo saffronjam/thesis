@@ -407,7 +407,7 @@ func (o *OpenNebula) WaitForRunningHost(host string) error {
 
 func (o *OpenNebula) WaitForEmptyHost(host string) error {
 	emptyCmd := "sudo onehost show " + host + " --json | jq '.HOST.VMS'"
-	attemptsLeft := 10000
+	attemptsLeft := 1000
 
 	for {
 		time.Sleep(100 * time.Millisecond)

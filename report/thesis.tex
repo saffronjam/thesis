@@ -1,6 +1,15 @@
 \documentclass{kththesis}
 
 \usepackage{blindtext}
+\usepackage{ifluatex}
+\ifluatex
+  \usepackage{pdftexcmds}
+  \makeatletter
+  \let\pdfstrcmp\pdf@strcmp
+  \let\pdffilemoddate\pdf@filemoddate
+  \makeatother
+\fi
+\usepackage{svg}
 
 \usepackage[hidelinks]{hyperref}
 \usepackage{csquotes} % Recommended by biblatex
@@ -522,34 +531,50 @@ A set of scripts will be created to automate the testing process, including crea
 
 In the study by Paradowski et al., they used several preconfigured VM types in the tests, including \textit{tiny}, \textit{small}, and \textit{medium}. As such, this project will use a similar approach, with CPU ranging from 1 to 4 CPU cores, and RAM ranging from 128 MB to 4 GB (see Table \ref{table:vm-specs}). Furthermore, VMs will use the lightweight Alpine Linux image. This helps improve the accuracy of tests, as a lightweight OS image is less likely to introduce noise in measurements\ \cite{linux-boot-time}. It also means VMs can be smaller, allowing for more VMs to be created per node and quicker test runs since a lightweight image is usually faster to boot than a larger image.
 
-Each test case will use a setup of three nodes, one acting as the management node, and the other two as worker nodes. Having more than one worker node is crucial since live migration tests involve moving VMs between nodes. The nodes will be configured to be large enough to facilitate a broad range of tests, including tests with many small VMs and tests with a few large VMs. For this, Azure VM type A3 will be used. This VM type has 4 CPU cores and 7GB of RAM, enabling it to run many of the VMs that will be used in the tests. The price of the A3 VM type is 0.2 USD per hour, which was deemed acceptable for the project\ \cite{azure-pricing}.
+Each test case will use a setup of three nodes, one acting as the management node, and the other two as worker nodes. Having more than one worker node is crucial since live migration tests involve moving VMs between nodes. The nodes will be configured to be large enough to facilitate a broad range of tests, including tests 
+with many small VMs and tests with a few large VMs. Azure offers many different VM types that would be suitable for this, however only a few offer virtualization support, which is required when running nested VMs. This leaves the Azure Dv3-series as the most suitable VM type and specifically D4v3, which has 4 CPU cores and 16 GB of RAM\ \cite{azure-dv3-series}. The price of the D4v3 VM type is 0.2 USD per hour, which was deemed acceptable for the project\ \cite{azure-pricing}.
 \\~\\
-Below is a summary of the metrics that will be used to evaluate the performance of the VM management systems. The metrics will be used for the affected node in the test, for instance, when live migrating VMs it is important to measure both the source and the destination node, while when a VM is created, it is only necessary to measure the node where the VM is created. However, the control-plane node will be measured in all tests, as it is the node that is responsible for scheduling and managing the VMs. 
+Below is a summary of the metrics that will be used to evaluate the performance of the VM management systems. The metrics will be collected for every node in each VM management system and will be used as a base when comparing the systems. The duration metric is dependent on the test case and is aimed at measuring how long a specific operation takes. However, each of the metrics is not conclusive on its own since a short burst of CPU utilization might be preferrable over a long period of medium CPU utilization. As such, the metrics will be used in conjunction to provide an accurate representation of the performance of the VM management systems.
 
-\begin{itemize}
-    \item Metrics
-    \begin{itemize}
-        \item CPU usage
-        \item Memory usage
-        \item Disk usage
-        \item Duration
-    \end{itemize}
-\end{itemize}
+\begin{table}
+    \centering
+    \begin{tabular}{ |c|c|c|c| }
+        \hline
+        \textbf{Metric} & \textbf{Unit} & \textbf{Description}\\
+        \hline
+        CPU utilization & \% & The percentage of CPU used by the system\\
+        Memory utilization & \% & The percentage of memory used by the system\\
+        Disk utilization & \% & The percentage of disk used by the system\\
+        Task duration & s & The duration of a specific task\\
+        \hline
+    \end{tabular}
+    \caption{Performance metrics}
+\end{table}
 
 \noindent Below is a summary of the tests that will be performed. They can be divided into three categories: basic, limit testing, and scaling. The basic tests are designed to evaluate the basic functionality of the VM management systems, such as creating and deleting VMs. The limit testing tests are designed to evaluate how a VM management operates when the maximum capacity is reached in the worker nodes. 100 tiny VMs were specifically chosen to reach maximum RAM capacity for two worker nodes. The scaling tests are designed to evaluate how a VM management system handles the scale-out and scale-in of worker nodes, both with and without VMs on it (that would need to be migrated). Each test will be run 10 times. 
 
-\begin{itemize}
-    \item Tests
-    \begin{itemize}
-        \item Create each type of VM and delete it
-        \item Create 100 tiny VMs and delete them
-        \item Create VM Snapshot and delete it
-        \item Live Migrate a VM
-        \item Scale from 2 to 10
-        \item Scale down 10 to 2 workers without VMs
-        \item Scale down 10 to 2 workers with 1 small VM on each worker
-    \end{itemize}
-\end{itemize}
+\begin{table}
+    \centering
+    \begin{tabular}{ |p{6cm}|p{6cm}| }
+        \hline
+        \textbf{Test} & \textbf{Purpose}\\
+        \hline
+        \hline
+        Create each type of VM and delete it & Evaluate the basic functionality of the VM management systems without addressing potential load issues\\
+        \hline
+        Create 20 tiny VMs and delete them & Evaluate how the VM management systems manage a relatively large burst of VMs\\
+        \hline
+        Live migrate a large VM & Evaluate how well the VM management systems executes a migration operation without addressing potential load issues\\
+        \hline
+        Live migrate 20 tiny VMs & Evaluate how well the VM management systems manage a relatively large burst of migration operations\\
+        \hline
+        Scale up and down 2 to 10 workers without VMs & Evaluate how well the VM management systems scale up and down without any load\\
+        \hline
+        Scale up and down 2 to 10 workers with a tiny VM on each worker & Evaluate how the VM management systems handle scaling operation that incur migration operations\\
+        \hline
+    \end{tabular}
+    \caption{Performance tests}
+\end{table}
 
 \noindent The following is a summary of the setup:
 \begin{table}[!ht]
@@ -557,12 +582,12 @@ Below is a summary of the metrics that will be used to evaluate the performance 
     \centering
     \begin{tabular}{ |c|c|c|c| }
         \hline
-        Role & CPU & RAM & Disk\\
+        \textbf{Role} & \textbf{CPU} & \textbf{RAM} & \textbf{Disk}\\
         \hline
-        Control Plane (Azure A3) & 4 & 7GB & 120GB  \\
-        Worker 1 (Azure A3) & 4 & 7GB & 120GB  \\
-        Worker 2 (Azure A3) & 4 & 7GB & 120GB  \\
-        Scale-up Workers 3-10 (Azure A3) & 4 & 7GB & 120GB  \\
+        Control Plane (Azure D4v3) & 4 & 16GB & 100GB  \\
+        Worker 1 (Azure D4v3) & 4 & 16GB & 100GB  \\
+        Worker 2 (Azure D4v3) & 4 & 16GB & 100GB  \\
+        Scale-up Workers 3-10 (Azure D4v3) & 4 & 16GB & 100GB  \\
         \hline
     \end{tabular}
     \caption{Node specifications}
@@ -574,12 +599,12 @@ Below is a summary of the metrics that will be used to evaluate the performance 
     \centering
     \begin{tabular}{ |c|c|c|c| } 
         \hline
-        Type & CPU & RAM & Disk Size\\ 
+        \textbf{Type} & \textbf{CPU} & \textbf{RAM} & \textbf{Disk Size}\\ 
         \hline
         Tiny & 1 & 128MB & 1GB \\
-        Small & 1 & 1GB & 1GB \\
+        Small & 1 & 1GB & 5GB \\
         Medium & 2 & 2GB & 10GB \\
-        Large & 4 & 4GB & 100GB \\
+        Large & 4 & 4GB & 20GB \\
         \hline
     \end{tabular}
     \caption{VM specifications}
@@ -639,8 +664,31 @@ Below is a summary of the tasks that will be performed. The tasks will be perfor
 \subsubsection*{System Management}
 \noindent The last factor that will be considered in this project is system management. This includes exploring how the system is managed and is mainly concerned with integrations with other technologies to understand how well KubeVirt integrates with other systems. For instance, how well KubeVirt integrates with GitOps, a way to manage infrastructure using files in Git\ \cite{declarative-benefits, k8s-gitops}. Exploring system management also involves exploring how well VMs in KubeVirt can communicate with other Kubernetes resources, such as Pods, which reflects how well it can integrate with container-based applications. This will be evaluated through literature and documentation study\ \cite{k8s-gitops}
 
+\section{Performance Analysis}
+
 \chapter{Results}
-\blindtext%
+
+% same page
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/create-many_cpu.pdf}
+    \caption{CPU utilization when creating many VMs}
+    \label{fig:create-many-cpu}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/create-many_ram.pdf}
+    \caption{Memory utilization when creating many VMs}
+    \label{fig:create-many-memory}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/create-many_disk.pdf}
+    \caption{Disk utilization when creating many VMs}
+    \label{fig:create-many-disk}
+\end{figure}
 
 \chapter{Discussion}
 \blindtext%

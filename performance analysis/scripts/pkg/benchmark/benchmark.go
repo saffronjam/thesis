@@ -148,7 +148,7 @@ func Run(environments []models.BenchmarkEnvironment) (*models.BenchmarkResult, e
 		if environment.SkipBenchmark {
 			continue
 		}
-		
+
 		e := environment
 		wg.Add(1)
 		go func(environment models.BenchmarkEnvironment) {
@@ -158,22 +158,9 @@ func Run(environments []models.BenchmarkEnvironment) (*models.BenchmarkResult, e
 
 			pretty_log.TaskGroup("[%s] Running benchmark", environment.Name)
 			timeStart := time.Now()
-			results := RunTests(environment.Name, NewBenchmark(environment, vmms).AllTests())
+			RunTests(environment.Name, NewBenchmark(environment, vmms).AllTests(), SaveResult)
 			timeEnd := time.Now()
 			pretty_log.TaskGroup("[%s] Benchmark complete (%s)", environment.Name, timeEnd.Sub(timeStart).String())
-
-			pretty_log.TaskGroup("[%s] Saving results", environment.Name)
-			for _, taskResults := range results {
-				for _, result := range taskResults {
-					err := SaveResult(environment.Name, result)
-					if err != nil {
-						mut.Lock()
-						anyError = err
-						mut.Unlock()
-						return
-					}
-				}
-			}
 
 			pretty_log.TaskGroup("[%s] Cleaning up after test", environment.Name)
 			err := vmms.DeleteAllVMs()

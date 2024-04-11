@@ -112,7 +112,7 @@ In parallel with the evolution of VMs, containers have emerged as an alternative
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=1\textwidth]{img/vm_container_virtualization.png}
+    \includegraphics[width=1\textwidth]{img/vm_container_virtualization.pdf}
     \caption{Overview of VMs and containers}
     \label{fig:container-vm-architecture}
 \end{figure}
@@ -123,7 +123,7 @@ Due to their different use cases, VMs and containers have traditionally been man
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=1\textwidth]{img/vm_management_system.png}
+    \includegraphics[width=1\textwidth]{img/vm_management_system.pdf}
     \caption{Overview of a VM management system}
     \label{fig:vm-management-system}
 \end{figure}
@@ -132,7 +132,7 @@ Kubernetes, originally designed to manage containerized applications at scale, h
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=1\textwidth]{img/container_vm_with_kubevirt.png}
+    \includegraphics[width=1\textwidth]{img/container_vm_with_kubevirt.pdf}
     \caption{Overview of VMs and containers managed by using KubeVirt}
     \label{fig:container-vm-kubevirt-architecture}
 \end{figure}
@@ -194,7 +194,7 @@ Depending on the required level of abstraction, virtualization can be achieved i
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{img/hardware_os_virtualization.png}
+    \includegraphics[width=1\textwidth]{img/hardware_os_virtualization.pdf}
     \caption{Overview of the different layers of virtualization}
     \label{fig:hardware-os-virtualization}
 \end{figure}
@@ -221,7 +221,7 @@ Hypervisors can be categorized into two types, \textit{type 1} and \textit{type 
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{img/type1_type2_hypervisor.png}
+    \includegraphics[width=1\textwidth]{img/type1_type2_hypervisor.pdf}
     \caption{Overview of type 1 and type 2 hypervisors}
     \label{fig:hypervisor-types}
 \end{figure}
@@ -233,7 +233,7 @@ In the realm of hypervisors, the concept of \textit{security rings} is often use
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.7\textwidth]{img/hypervisor_security_rings.png}
+    \includegraphics[width=0.7\textwidth]{img/hypervisor_security_rings.pdf}
     \caption{Overview of security rings in a hypervisor}
     \label{fig:hypervisor-security-rings}
 \end{figure}
@@ -263,7 +263,7 @@ Scalability involves technologies to ensure resources can manage an increase or 
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{img/availability_zones.png}
+    \includegraphics[width=1\textwidth]{img/availability_zones.pdf}
     \caption{Overview of availability zones}
     \label{fig:availability-zones}
 \end{figure}
@@ -275,7 +275,7 @@ Other cloud service models include Platform as a Service (PaaS) and Software as 
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.9\textwidth]{img/cloud_service_models.png}
+    \includegraphics[width=0.9\textwidth]{img/cloud_service_models.pdf}
     \caption{Overview of cloud service models}
     \label{fig:cloud-service-models}
 \end{figure}
@@ -347,7 +347,7 @@ Containers are a form of virtualization that offers a lightweight alternative to
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{img/vm_container_virtualization.png}
+    \includegraphics[width=1\textwidth]{img/vm_container_virtualization.pdf}
     \caption{Overview of container and hypervisor virtualization}
     \label{fig:container-vm-difference}
 \end{figure}
@@ -356,7 +356,7 @@ A container is created from a container image, which is a lightweight executable
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{img/container_image_layers.png}
+    \includegraphics[width=1\textwidth]{img/container_image_layers.pdf}
     \caption{Overview of container image layers}
     \label{fig:container-image-layers}
 \end{figure}
@@ -379,7 +379,7 @@ Figure \ref{fig:k8s-overview} presents a brief overview of the Kubernetes abstra
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{img/kubernetes_overview.png}
+    \includegraphics[width=1\textwidth]{img/kubernetes_overview.pdf}
     \caption{Overview of Kubernetes abstractions}
     \label{fig:k8s-overview}
 \end{figure}
@@ -412,7 +412,7 @@ Overcommitment is a technique used to improve packing efficiency, often referred
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.9\textwidth]{img/memory_ballooning.png}
+    \includegraphics[width=0.9\textwidth]{img/memory_ballooning.pdf}
     \caption{Overview of memory ballooning}
     \label{fig:memory-ballooning}
 \end{figure}
@@ -446,7 +446,7 @@ In summary, Firecracker stands out among the three since it does not use contain
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{img/secure_containers_overview.png}
+    \includegraphics[width=1\textwidth]{img/secure_containers_overview.pdf}
     \caption{Overview of gVisor and Kata Containers}
     \label{fig:secure-containers-overview}
 \end{figure}
@@ -470,7 +470,7 @@ KubeVirt consists of four main components to enable the running of VMs in Kubern
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{img/kubevirt_components.png}
+    \includegraphics[width=1\textwidth]{img/kubevirt_components.pdf}
     \caption{Overview of KubeVirt components}
     \label{fig:kubevirt-components}
 \end{figure}
@@ -519,10 +519,8 @@ In terms of network performance, a study conducted by Kolahdouzan investigated t
 
 Hypervisors are a key component of VM management systems, and several studies have evaluated the performance of hypervisors. A study by Hwang et al.\ evaluated the performance of a range of hypervisors including KVM, Hyper-V and Xen\ \cite{hypervisor-comparion-2010}. The study found that applications and assigned resources had a significant impact on the overhead of the hypervisors. However, the study concluded that no single hypervisor was the silver bullet and that the choice of hypervisor should be based on the specific use case. Reviewing the performance of hypervisors is important when evaluating KubeVirt, as KubeVirt uses KVM as its hypervisor. 
 
-\chapter{Methods}
-
-\section{Choice of Method}
-\subsection{Performance Analysis}
+\chapter{Choice of Method}
+\section{Performance Analysis}
 As presented in the literature study, Paradowski et al.\ present a set of benchmarks used to evaluate CloudStack and OpenStack\ \cite{cs-os-comparison-2013}. This comparison will be used as the foundational basis for the performance analysis, using many of its approaches when testing a VM management system. For this project, KubeVirt will primarily be compared to OpenNebula. This decision was made together with Net Insight, to limit the scope to a single VM management system, as well as to ensure that the tests are relevant to Net Insight's current infrastructure. OpenNebula was chosen as it is currently used by Net Insight and is a popular open-source VM management system. \textit{Other alternatives, such as CloudStack and OpenStack, will be considered if time allows it}. 
 
 The testing process will be conducted on Azure using a group of VMs that will act as \textit{hosting nodes}. This approach was chosen to ensure that the tests are not affected by the underlying hardware and to facilitate reproducibility. 
@@ -573,6 +571,7 @@ Below is a summary of the metrics that will be used to evaluate the performance 
         Scale up and down 2 to 10 workers with a tiny VM on each worker & Evaluate how the VM management systems handle scaling operation that incur migration operations\\
         \hline
     \end{tabular}
+    \label{table:performance-tests}
     \caption{Performance tests}
 \end{table}
 
@@ -612,7 +611,7 @@ Below is a summary of the metrics that will be used to evaluate the performance 
 
 
 \newpage
-\subsection{Usability Analysis}
+\section{Usability Analysis}
 To accurately measure the usability of KubeVirt, a set of tasks has been crafted. These tasks have been designed in cooperation with a system administrator at Net Insight. The tasks are designed to be representative of the tasks that a system administrator would perform when managing VMs, including creation, deleting and debugging. 
 \\~\\
 Below is a summary of the tasks that will be performed. The tasks will be performed by a group of system administrators at Net Insight using the tools \textit{kubectl} and \textit{virtctl}, and not a graphical user interface\ \cite{kubevirt-docs-virtctl}. This approach was chosen as the system administrators at Net Insight are familiar with using the command line interface (CLI). Moreover, the VM specifications will be configured uniformly across all tasks using 1 CPU and 512 MB RAM and will use the lightweight Alpine Linux image. This is to ensure that the VMs are fast to create and start, and to emphasize the usability of KubeVirt and not the performance of the VMs. 
@@ -661,12 +660,94 @@ Below is a summary of the tasks that will be performed. The tasks will be perfor
     \item How would you describe the overall experience of using KubeVirt?
 \end{itemize}
 
-\subsubsection*{System Management}
+\subsection*{System Management}
 \noindent The last factor that will be considered in this project is system management. This includes exploring how the system is managed and is mainly concerned with integrations with other technologies to understand how well KubeVirt integrates with other systems. For instance, how well KubeVirt integrates with GitOps, a way to manage infrastructure using files in Git\ \cite{declarative-benefits, k8s-gitops}. Exploring system management also involves exploring how well VMs in KubeVirt can communicate with other Kubernetes resources, such as Pods, which reflects how well it can integrate with container-based applications. This will be evaluated through literature and documentation study\ \cite{k8s-gitops}
+
+\chapter{Performance Analysis Framework}
+Evaluating the performance of a VM management system is a complex task that requires a structured approach due to its many components and multi-node setup. For this reason, a framework to form standardized testing environments was created. The framework is designed to be VM management system agnostic, meaning that it can be used to evaluate any VM management system as long as the system supports the set of features defined in the framework. Consequently, this means that the framework can be extended to evaluate any other VM management system, such as OpenStack or CloudStack. However, it is important to note that the framework is designed to evaluate VM management systems that can be hosted on-premise since it quantifies the performance of a VM management system by measuring the utilization of nodes running the system. As such, the framework does not consider cloud-based VM management systems, such as Amazon EC2, Google Compute Engine or Azure Virtual Machines.
+
+\section{Framework Design}
+The framework was written in the Go programming language and was designed to be modular and loosely coupled with external libraries. This design choice was made to ensure that the framework can be easily extended and modified and that it does not rely on external dependencies. To interact with a VM management system an interface was created that defines the methods that a VM management system must implement to be compatible. For instance, it defines methods for creating and deleting VMs, migrating VMs between nodes and scaling up and down the number of worker nodes, as well as methods for installing control and worker nodes. Each VM management system implements these methods in their respective packages. The full definition of the interface can be found in the appendix\ \ref{appendix:vmm-interface}. To host each VM management system, a set of nodes is created in Azure. These are completely installed and configured before any performance analysis is conducted to form a fair starting point for every VM management system. However, any dependencies required by the VM management system are intentionally left to the installation implementation for the VM management system, as unnecessary dependencies could introduce noise in the measurements. Metrics were collected by running a daemon on each Azure node that collects utilization metrics, including CPU, memory and disk utilization. The daemon operated by fetching metrics every second and storing them in a JSON file locally. However, to only capture metrics when a test was running, the daemon only started collecting metrics when a test was initiated and stopped when the test was finished. This was controlled by placing an empty file called \textit{run} where the daemon was running. The final output file was fetched using \textit{scp} and parsed by the framework to extract the metrics. By having each Azure node produce their output file locally, and only fetching it when a test is finished, it reduced the risk of introducing noise in the measurements. Both the daemon and metrics collector are documented in the appendix\ \ref{appendix:metrics-collector} and an overview of the framework design is illustrated in Figure \ref{fig:framework-design}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{img/framework_design.pdf}
+    \caption{Framework design}
+    \label{fig:framework-design}
+\end{figure}
+
+The workflow of the framework was split into 4 phases to form a structured approach that allows for caching. The entire workflow is illustrated in Figure \ref{fig:framework-workflow} and is described below:
+\begin{enumerate}
+    \item \textbf{Setup}: The setup phase is responsible for creating the nodes and networking in Azure. It is also responsible for installing base packages that every node requires, such as \textit{sysstat} to collect utilization metrics and \textit{jq} to parse JSON output.
+    \item \textbf{Installation}: The installation phase is responsible for installing and configuring the VM management system on the Azure nodes. Each VM management system implements an installation method that is responsible for installing and configuring the system with one control node and two worker nodes such that it can run a VM. The installation method also installs several standby workers that will be used when scaling up and down the number of worker nodes. By having standby workers, the framework can independently measure the cost of scaling up and down without the cost of downloading dependencies. While larger dependencies can be metric on their own, it is important to note that production environments usually generate images with prepared dependencies, rendering the cost of downloading dependencies irrelevant.
+    \item \textbf{Benchmark}: The benchmark phase is responsible for running the performance tests. The tests are described in\ \ref{table:performance-tests} and are designed to evaluate the general performance of the VM management system. Each test is a combination of the methods the VM management system interface offers, such as creating VMs in different sizes, migrating VMs between nodes and scaling up and down the number of worker nodes. 
+    \item \textbf{Teardown}: The teardown phase is responsible for deleting the Azure nodes and ensuring that no resources are left behind. Having this as a separate phase allows for tests to run sequentially without the time cost of creating and deleting nodes for each test. 
+\end{enumerate}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/framework_workﬂow.pdf}
+    \caption{Framework workflow}
+    \label{fig:framework-workflow}  
+\end{figure}
+
+
+
+\chapter{Usability Analysis}
+
+
+\chapter{Results}
+The results of the performance analysis and usability analysis are presented in this chapter. The performance analysis covers a vast range of tests that evaluate the performance of KubeVirt and OpenNebula. The usability analysis covers the tasks that system administrators at Net Insight performed to evaluate the usability of KubeVirt. All of the results from the performance analysis use a rolling mean with a window size of 5\% to smooth out the data. 
 
 \section{Performance Analysis}
 
-\chapter{Results}
+% Create small VM KubeVirt
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/create-small_kubevirt.pdf}
+    \caption{CPU utilization when creating a small VM in KubeVirt}
+    \label{fig:create-small-kubevirt}
+\end{figure}
+
+% Create small VM OpenNebula
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/create-small_opennebula.pdf}
+    \caption{CPU utilization when creating a small VM in OpenNebula}
+    \label{fig:create-small-opennebula}
+\end{figure}
+
+% Create small VM workers
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/create-small_cpu_worker.pdf}
+    \caption{CPU utilization when creating a small VM in workers between KubeVirt and OpenNebula}
+    \label{fig:create-small-workers}
+\end{figure}
+
+% Create medium VM KubeVirt
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/create-medium_kubevirt.pdf}
+    \caption{CPU utilization when creating a medium VM in KubeVirt}
+    \label{fig:create-medium-kubevirt}
+\end{figure}
+
+% Create medium VM OpenNebula
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/create-medium_opennebula.pdf}
+    \caption{CPU utilization when creating a medium VM in OpenNebula}
+    \label{fig:create-medium-opennebula}
+\end{figure}
+
+% Create medium VM workers
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/create-medium_cpu_worker.pdf}
+    \caption{CPU utilization when creating a medium VM in workers between KubeVirt and OpenNebula}
+    \label{fig:create-medium-workers}
+\end{figure}
 
 % same page
 \begin{figure}
@@ -700,6 +781,90 @@ Below is a summary of the tasks that will be performed. The tasks will be perfor
 \printbibliography[heading=bibintoc]
 
 \appendix
+
+\chapter{Performance Analysis Component}
+\section{VM Management System Interface}
+\label{appendix:vmm-interface}
+\begin{lstlisting}[language=Go]
+type VmManagementSystem interface {
+    Setup() error
+    GetVM(name string) *models.VM
+    ListVMs() []models.VM
+    CreateVM(vm *models.VM, hostIdx ...int) error
+    DeleteVM(name string) error
+    MigrateVM(name string, hostIdx int) error
+    ConnectWorker(workerIdx int) error
+    DisconnectWorker(workerIdx int) error
+    WaitForRunningVM(name string) error
+    DeleteAllVMs() error
+}
+\end{lstlisting}
+
+\section{Metrics Collector}
+\label{appendix:metrics-collector}
+\begin{lstlisting}[language=bash]
+#!/bin/bash
+
+interval=1
+OUTPUT_FILE="./output.json"
+
+cpu_tmp_file=$(mktemp)
+ram_tmp_file=$(mktemp)
+disk_tmp_file=$(mktemp)
+
+while true; do
+    if [ ! -f "./run" ]; then
+        sleep $interval
+        continue
+    fi
+
+    (mpstat -P ALL "$interval" 1 | awk '/^[0-9]/ {if (NR>1) print $3/100}' | jq -R -s -c 'split("\n")[1:-1]' | jq '[.[] | gsub(","; ".") | tonumber]' > "$cpu_tmp_file") &
+
+    (free | awk '/Mem:/ {print $3/$2}' | sed 's/,/./' > "$ram_tmp_file") &
+
+    (iostat -dx "$disk" 1 2 | awk '/Device/{flag=1; next} flag && /^[^ ]/ {util=$NF} END{print util/100}' | sed 's/,/./' > "$disk_tmp_file") &
+    timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+    wait
+
+    name=$(hostname)
+    cpu_core_utilization=$(cat "$cpu_tmp_file")
+    cpu_utilization_avg=$(echo "$cpu_core_utilization" | jq 'add/length')
+    ram_utilization=$(cat "$ram_tmp_file")
+    disk_utilization=$(cat "$disk_tmp_file")
+
+    # Create the JSON object for the current datapoint
+    datapoint=$(jq -n \
+                    --argjson cpuCores "$cpu_core_utilization" \
+                    --argjson cpuAverage "$cpu_utilization_avg" \
+                    --arg name "$name" \
+                    --arg ramUtilization "$ram_utilization" \
+                    --arg diskUtilization "$disk_utilization" \
+                    --arg timestamp "$timestamp" \
+                    '{name: $name, cpu: {cores: $cpuCores, average: $cpuAverage}, ram: ($ramUtilization | tonumber), disk: ($diskUtilization | tonumber), timestamp: $timestamp}')
+
+    if [ ! -f "$OUTPUT_FILE" ]; then
+        echo "[]" > "$OUTPUT_FILE"
+    fi
+
+    jq --argjson newData "$datapoint" '. += [$newData]' "$OUTPUT_FILE" > tmp.$$.json && mv tmp.$$.json "$OUTPUT_FILE"
+
+    sleep $interval
+done
+\end{lstlisting}
+
+\section{Metrics Collector Daemon}
+\begin{lstlisting}[language=bash]
+[Unit]
+Description=Metrics scraping
+[Service]
+WorkingDirectory=/home/user
+ExecStart=/bin/bash /home/user/metrics.sh
+Restart=always
+[Install]
+WantedBy=multi-user.target`
+\end{lstlisting}
+
 
 \chapter{Usability Tasks}
 

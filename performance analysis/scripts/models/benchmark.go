@@ -17,8 +17,10 @@ type NodeMetrics struct {
 }
 
 type TestDefinition struct {
-	Name string
-	Func func() []TestResult
+	Name     string
+	Func     func() []TestResult
+	RunCount int
+	Disabled bool
 }
 
 type TestResult struct {

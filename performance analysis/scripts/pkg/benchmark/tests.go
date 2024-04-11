@@ -27,29 +27,37 @@ const (
 func (b *Benchmark) AllTests() []models.TestDefinition {
 	return []models.TestDefinition{
 		{
-			Name: "CreateEachType",
-			Func: b.CreateEachType,
+			Name:     "CreateEachType",
+			Func:     b.CreateEachType,
+			RunCount: 15,
 		},
-		//{
-		//	Name: "CreateMany",
-		//	Func: b.CreateMany,
-		//},
-		//{
-		//	Name: "LiveMigrate",
-		//	Func: b.LiveMigrate,
-		//},
-		//{
-		//	Name: "LiveMigrateMany",
-		//	Func: b.LiveMigrateMany,
-		//},
-		//{
-		//	Name: "ScaleCluster",
-		//	Func: b.ScaleCluster,
-		//},
-		//{
-		//	Name: "ScaleClusterWithVMs",
-		//	Func: b.ScaleClusterWithVMs,
-		//},
+		{
+			Name:     "CreateMany",
+			Func:     b.CreateMany,
+			RunCount: 15,
+		},
+		{
+			Name:     "LiveMigrate",
+			Func:     b.LiveMigrate,
+			RunCount: 15,
+		},
+		{
+			Name:     "LiveMigrateMany",
+			Func:     b.LiveMigrateMany,
+			RunCount: 15,
+		},
+		{
+			Name:     "ScaleCluster",
+			Func:     b.ScaleCluster,
+			RunCount: 5,
+			Disabled: true,
+		},
+		{
+			Name:     "ScaleClusterWithVMs",
+			Func:     b.ScaleClusterWithVMs,
+			RunCount: 5,
+			Disabled: true,
+		},
 	}
 }
 
@@ -57,32 +65,42 @@ func RunTests(vmm string, tests []models.TestDefinition, saveTest func(vmm strin
 	results := make(map[string][]models.TestResult)
 
 	for idx, test := range tests {
-		pretty_log.TaskGroup("[%s] Running test %d/%d: %s", vmm, idx+1, len(tests), test.Name)
-
-		res := test.Func()
-		for _, r := range res {
-			if r.Err != nil {
-				pretty_log.TaskResultBad("[%s] Test %s failed: %s", vmm, r.Name, r.Err.Error())
-			}
+		if test.Disabled {
+			continue
 		}
 
-		if _, ok := results[test.Name]; !ok {
-			results[test.Name] = make([]models.TestResult, 0)
+		if test.RunCount == 0 {
+			test.RunCount = 1
 		}
 
-		groupResults := results[test.Name]
-		groupResults = append(groupResults, res...)
-		results[test.Name] = groupResults
+		for n := 0; n < test.RunCount; n++ {
+			pretty_log.TaskGroup("[%s] Running test %d/%d (Run %d/%d): %s", vmm, idx+1, len(tests), n+1, test.RunCount, test.Name)
 
-		for _, result := range res {
-			if result.Err != nil {
-				continue
+			res := test.Func()
+			for _, r := range res {
+				if r.Err != nil {
+					pretty_log.TaskResultBad("[%s] Test %s failed: %s", vmm, r.Name, r.Err.Error())
+				}
 			}
 
-			err := saveTest(vmm, result)
-			if err != nil {
-				pretty_log.TaskResultBad("[%s] Failed to save test results: %s", vmm, err.Error())
-				return
+			if _, ok := results[test.Name]; !ok {
+				results[test.Name] = make([]models.TestResult, 0)
+			}
+
+			groupResults := results[test.Name]
+			groupResults = append(groupResults, res...)
+			results[test.Name] = groupResults
+
+			for _, result := range res {
+				if result.Err != nil {
+					continue
+				}
+
+				err := saveTest(vmm, result)
+				if err != nil {
+					pretty_log.TaskResultBad("[%s] Failed to save test results: %s", vmm, err.Error())
+					return
+				}
 			}
 		}
 	}

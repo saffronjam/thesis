@@ -103,7 +103,6 @@ breaklines=true
 
 
 \chapter{Introduction}
-\section{Background}
 Virtualization is a technique that either splits or combines computing resources into one or more operating environments by creating a software layer that surrounds or underlies existing hardware or software. This enables the creation of virtualized resources that are decoupled from the underlying hardware. Virtualization can occur in various forms including the virtualization of storage, networks and servers. Virtualizing networks and storage is achieved by creating an abstraction layer on top of the physical network and storage resources, respectively, to provide a more flexible and scalable environment for other resources to interact with. Server virtualization, on the other hand, is used to create virtual computing environments that are decoupled from the underlying computing resources. By combining virtualized resources into a single operating environment, virtualization allows heterogeneous hardware resources to be used homogeneously and thus it improves resource utilization and flexibility\ \cite{virtualization-history, virtualization-basics, virtualization-trends}. 
 
 To enable server virtualization and manage virtual computing environments, a hypervisor is used. A hypervisor is a software layer that operates between the hardware and the operating system (OS) and is responsible for creating virtual computing environments called virtual machines (VMs)\ \cite{virtualization-trends, virtualization-ibm, hypervisor-survey}. VMs are emulations of physical computers that are perceived as real computers by applications running inside them. They provide a complete and independent environment by virtualizing an OS, rendering them suitable for a wide range of applications, including legacy applications and applications that require a high level of isolation. For this reason, VMs have long been the core part of IT infrastructure, serving as foundational components in system architecture\ \cite{virtualization-history, virtualization-basics}. 
@@ -452,6 +451,7 @@ In summary, Firecracker stands out among the three since it does not use contain
 \end{figure}
 
 \section{Extending Kubernetes with KubeVirt}
+\label{sec:kubevirt}
 KubeVirt is a novel project that aims to provide a unified platform for managing both containers and VMs using Kubernetes. It is designed to naturally blend in with the Kubernetes ecosystem and provide a consistent interface to manage the life cycle of VMs, such as deployment, scaling, and monitoring. KubeVirt being built on top of Kubernetes means that it does not implement all the components found in a traditional VM management system, such as the scheduler, but instead uses the mature and feature-rich services the Kubernetes ecosystem provides\ \cite{k8s-scheduler}. By using CRDs (see\ \ref{containers-kubernetes}), KubeVirt can extend the Kubernetes API to provide a specification for VMs to support features commonly found in traditional VM management systems, such as live migration, scaling and snapshot management. Moreover, CRDs allow KubeVirt to enforce validation on the resources to prevent invalid configurations, such as a VM that references a non-existing storage disk\ \cite{kubevirt-architecture, kubevirt-validation}.
 
 The design pattern chosen for KubeVirt's VM management is heavily inspired by other Kubernetes resources. A VM in KubeVirt is split into two resources called \textit{VirtualMachine} and \textit{VirtualMachineInstance}. The VirtualMachine resource is comparable to a StatefulSet and is used to describe the desired state of a VM, such as the VM's desired running state, CPU and RAM requirements, as well as cloud-init configuration. The VirtualMachineInstance, on the other hand, is comparable to a Pod and is created by the VirtualMachine resource to represent the running state of the VM. As such, a non-existing VirtualMachineInstance represents a non-running VM, and an existing VirtualMachineInstance represents a running VM. The VirtualMachineInstance contains runtime information about the VM such as the VM's IP address, running state and resource usage. 
@@ -519,20 +519,34 @@ In terms of network performance, a study conducted by Kolahdouzan investigated t
 
 Hypervisors are a key component of VM management systems, and several studies have evaluated the performance of hypervisors. A study by Hwang et al.\ evaluated the performance of a range of hypervisors including KVM, Hyper-V and Xen\ \cite{hypervisor-comparion-2010}. The study found that applications and assigned resources had a significant impact on the overhead of the hypervisors. However, the study concluded that no single hypervisor was the silver bullet and that the choice of hypervisor should be based on the specific use case. Reviewing the performance of hypervisors is important when evaluating KubeVirt, as KubeVirt uses KVM as its hypervisor. 
 
-\chapter{Choice of Method}
-\section{Performance Analysis}
-As presented in the literature study, Paradowski et al.\ present a set of benchmarks used to evaluate CloudStack and OpenStack\ \cite{cs-os-comparison-2013}. This comparison will be used as the foundational basis for the performance analysis, using many of its approaches when testing a VM management system. For this project, KubeVirt will primarily be compared to OpenNebula. This decision was made together with Net Insight, to limit the scope to a single VM management system, as well as to ensure that the tests are relevant to Net Insight's current infrastructure. OpenNebula was chosen as it is currently used by Net Insight and is a popular open-source VM management system. \textit{Other alternatives, such as CloudStack and OpenStack, will be considered if time allows it}. 
+\chapter{Performance Analysis}
+As described in the literature study, Paradowski et al.\ present a set of benchmarks used to evaluate CloudStack and OpenStack\ \cite{cs-os-comparison-2013}. This comparison was used as a foundational basis for the performance analysis in this project, employing many of its approaches for evaluating the performance of a VM management system. In this project, however, OpenNebula was compared with KubeVirt. This decision was made to limit the scope to a single VM management system, as well as to ensure that the tests are relevant to Net Insight's current infrastructure. 
 
-The testing process will be conducted on Azure using a group of VMs that will act as \textit{hosting nodes}. This approach was chosen to ensure that the tests are not affected by the underlying hardware and to facilitate reproducibility. 
+The testing process was conducted on Azure using a group of VMs that acted as hosting nodes. This approach was chosen to ensure that the tests are not affected by the underlying hardware and to facilitate reproducibility. 
 
-A set of scripts will be created to automate the testing process, including creating nodes in Azure and then installing and configuring a VM management system on the nodes. After the tests are finished, the results will be collected by the scripts, and the nodes will be deleted in Azure. The scripts will thus be used to create a complete setup for each system in a consistent manner using a single command. The programming language Go will be used to create the scripts since it is commonly used to interact with APIs. 
+A set of scripts was created to automate the entire testing process. The scripts automated node creation in Azure, as well as installation and configuration of the VM management system on the nodes. Once the tests were finished, the results were collected by the scripts and the nodes were deleted in Azure. The scripts were thus used to create a complete setup for each system in a consistent manner using a single command.
 
-In the study by Paradowski et al., they used several preconfigured VM types in the tests, including \textit{tiny}, \textit{small}, and \textit{medium}. As such, this project will use a similar approach, with CPU ranging from 1 to 4 CPU cores, and RAM ranging from 128 MB to 4 GB (see Table \ref{table:vm-specs}). Furthermore, VMs will use the lightweight Alpine Linux image. This helps improve the accuracy of tests, as a lightweight OS image is less likely to introduce noise in measurements\ \cite{linux-boot-time}. It also means VMs can be smaller, allowing for more VMs to be created per node and quicker test runs since a lightweight image is usually faster to boot than a larger image.
+Payload-wise, this project used a similar approach to the study by Paradowski et al.\ with predefined types for VMs with CPU ranging from 1 to 4 CPU cores, and RAM ranging from 128 MB to 4 GB (see Table\ \ref{table:vm-specs} for a detailed overview). Moreover, VMs used the lightweight Cirros Linux image, since a lightweight OS image is less likely to introduce noise in measurements\ \cite{linux-boot-time}. This also meant a VM disk could be smaller, which allowed for more VMs to be created per node and for tests to run quicker since a lightweight image is usually faster to boot than a larger image.
 
-Each test case will use a setup of three nodes, one acting as the management node, and the other two as worker nodes. Having more than one worker node is crucial since live migration tests involve moving VMs between nodes. The nodes will be configured to be large enough to facilitate a broad range of tests, including tests 
-with many small VMs and tests with a few large VMs. Azure offers many different VM types that would be suitable for this, however only a few offer virtualization support, which is required when running nested VMs. This leaves the Azure Dv3-series as the most suitable VM type and specifically D4v3, which has 4 CPU cores and 16 GB of RAM\ \cite{azure-dv3-series}. The price of the D4v3 VM type is 0.2 USD per hour, which was deemed acceptable for the project\ \cite{azure-pricing}.
-\\~\\
-Below is a summary of the metrics that will be used to evaluate the performance of the VM management systems. The metrics will be collected for every node in each VM management system and will be used as a base when comparing the systems. The duration metric is dependent on the test case and is aimed at measuring how long a specific operation takes. However, each of the metrics is not conclusive on its own since a short burst of CPU utilization might be preferrable over a long period of medium CPU utilization. As such, the metrics will be used in conjunction to provide an accurate representation of the performance of the VM management systems.
+Each test case used a setup of three Azure nodes, one management node and two worker nodes. Having more than one worker node was crucial for certain tests to be able to run. For instance, a live migration test requires at least two worker nodes since it involves moving VMs between nodes. The Azure nodes were configured large enough to facilitate a broad range of tests, including tests with many small VMs and tests with a few large VMs. Azure offered many different VM types, many of which were suitable in terms of CPU and memory specification. However, only a few offered virtualization support, which was required when running nested VMs. This left the Azure Dv3-series as the most suitable VM type and, specifically, the D4v3 VM type that has 4 CPU cores and 16 GB of memory\ \cite{azure-dv3-series}. The price of the D4v3 VM type was 0.2 USD per hour, which was deemed acceptable for the project\ \cite{azure-pricing}. Table\ \ref{table:node-specs} shows the overview of the Azure node specification used in the tests.
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{ |c|c|c|c| }
+        \hline
+        \textbf{Role} & \textbf{CPU} & \textbf{RAM} & \textbf{Disk}\\
+        \hline
+        Control Plane (Azure D4v3) & 4 & 16GB & 100GB  \\
+        Worker 1 (Azure D4v3) & 4 & 16GB & 100GB  \\
+        Worker 2 (Azure D4v3) & 4 & 16GB & 100GB  \\
+        Scale-up Workers 3-10 (Azure D4v3) & 4 & 16GB & 100GB  \\
+        \hline
+    \end{tabular}
+    \caption{Node specifications}
+    \label{table:node-specs}
+\end{table}
+
+To quantify the results of the tests, several metrics were collected on each Azure node for every test. This includes measuring the utilization of a node's CPU, memory and disk, as well as the duration of the specific task, see Table\ \ref{table:performance-metrics}. Further technical details on how metrics were collected are described later in this chapter.
 
 \begin{table}
     \centering
@@ -547,9 +561,10 @@ Below is a summary of the metrics that will be used to evaluate the performance 
         \hline
     \end{tabular}
     \caption{Performance metrics}
+    \label{table:performance-metrics}
 \end{table}
 
-\noindent Below is a summary of the tests that will be performed. They can be divided into three categories: basic, limit testing, and scaling. The basic tests are designed to evaluate the basic functionality of the VM management systems, such as creating and deleting VMs. The limit testing tests are designed to evaluate how a VM management operates when the maximum capacity is reached in the worker nodes. 100 tiny VMs were specifically chosen to reach maximum RAM capacity for two worker nodes. The scaling tests are designed to evaluate how a VM management system handles the scale-out and scale-in of worker nodes, both with and without VMs on it (that would need to be migrated). Each test will be run 10 times. 
+The tests performed were divided into three categories: basic, limit testing, and scaling. The basic tests were designed to evaluate the basic functionality of the VM management systems, such as creating and deleting VMs. The limit testing tests were designed to evaluate how a VM management operates when the maximum capacity is reached in the worker nodes. The scaling tests were designed to evaluate how a VM management system handles the scale-out and scale-in of worker nodes, both with and without VMs on it (that would need to be migrated). Each test was run 10 times. Table \ref{table:performance-tests} shows an overview of the tests and their purpose.
 
 \begin{table}
     \centering
@@ -558,116 +573,46 @@ Below is a summary of the metrics that will be used to evaluate the performance 
         \textbf{Test} & \textbf{Purpose}\\
         \hline
         \hline
-        Create each type of VM and delete it & Evaluate the basic functionality of the VM management systems without addressing potential load issues\\
+        Create each type of VM and delete it & Evaluate the basic functionality of the VM management systems without addressing potential load issues.\\
         \hline
-        Create 20 tiny VMs and delete them & Evaluate how the VM management systems manage a relatively large burst of VMs\\
+        Create 20 tiny VMs and delete them & Evaluate how the VM management systems manage a relatively large burst of VMs.\\
         \hline
-        Live migrate a large VM & Evaluate how well the VM management systems executes a migration operation without addressing potential load issues\\
+        Live migrate a large VM & Evaluate how well the VM management systems executes a migration operation without addressing potential load issues.\\
         \hline
-        Live migrate 20 tiny VMs & Evaluate how well the VM management systems manage a relatively large burst of migration operations\\
+        Live migrate 20 tiny VMs & Evaluate how well the VM management systems manage a relatively large burst of migration operations.\\
         \hline
-        Scale up and down 2 to 10 workers without VMs & Evaluate how well the VM management systems scale up and down without any load\\
+        Scale up and down 2 to 10 workers without VMs & Evaluate how well the VM management systems scale up and down without any load.\\
         \hline
-        Scale up and down 2 to 10 workers with a tiny VM on each worker & Evaluate how the VM management systems handle scaling operation that incur migration operations\\
+        Scale up and down 2 to 10 workers with a tiny VM on each worker & Evaluate how the VM management systems handle scaling operations that incur migration operations.\\
         \hline
     \end{tabular}
-    \label{table:performance-tests}
     \caption{Performance tests}
-\end{table}
-
-\noindent The following is a summary of the setup:
-\begin{table}[!ht]
-    \label{table:node-specs}
-    \centering
-    \begin{tabular}{ |c|c|c|c| }
-        \hline
-        \textbf{Role} & \textbf{CPU} & \textbf{RAM} & \textbf{Disk}\\
-        \hline
-        Control Plane (Azure D4v3) & 4 & 16GB & 100GB  \\
-        Worker 1 (Azure D4v3) & 4 & 16GB & 100GB  \\
-        Worker 2 (Azure D4v3) & 4 & 16GB & 100GB  \\
-        Scale-up Workers 3-10 (Azure D4v3) & 4 & 16GB & 100GB  \\
-        \hline
-    \end{tabular}
-    \caption{Node specifications}
+    \label{table:performance-tests}
 \end{table}
 
 
 \begin{table}[!ht]
-    \label{table:vm-specs}
     \centering
     \begin{tabular}{ |c|c|c|c| } 
         \hline
         \textbf{Type} & \textbf{CPU} & \textbf{RAM} & \textbf{Disk Size}\\ 
         \hline
-        Tiny & 1 & 128MB & 1GB \\
-        Small & 1 & 1GB & 5GB \\
-        Medium & 2 & 2GB & 10GB \\
-        Large & 4 & 4GB & 20GB \\
+        Type 1 & 1 & 128MB & 1GB \\
+        Type 2 & 1 & 1GB & 5GB \\
+        Type 3 & 2 & 2GB & 10GB \\
+        Type 4 & 4 & 4GB & 20GB \\
         \hline
     \end{tabular}
     \caption{VM specifications}
+    \label{table:vm-specs}
 \end{table}
 
+\section*{Building a Framework}
+Evaluating the performance of a VM management system is a complex task that requires a structured approach due to its many components and multi-node setup. For this reason, a framework to form standardized testing environments was created. The framework was designed to be VM management system agnostic, meaning that it can be used to evaluate any VM management system as long as the system supports the set of features defined in the framework. Consequently, this means that the framework can be extended to evaluate any other VM management system, such as OpenStack or CloudStack, and not only OpenNebula and KubeVirt. However, it is important to note that the framework is designed to evaluate VM management systems that can be hosted on-premise since it quantifies the performance of a VM management system by measuring the utilization of nodes hosting the system. As such, the framework does not consider cloud-based VM management systems, such as Amazon EC2, Google Compute Engine or Azure Virtual Machines.
 
-\newpage
-\section{Usability Analysis}
-To accurately measure the usability of KubeVirt, a set of tasks has been crafted. These tasks have been designed in cooperation with a system administrator at Net Insight. The tasks are designed to be representative of the tasks that a system administrator would perform when managing VMs, including creation, deleting and debugging. 
-\\~\\
-Below is a summary of the tasks that will be performed. The tasks will be performed by a group of system administrators at Net Insight using the tools \textit{kubectl} and \textit{virtctl}, and not a graphical user interface\ \cite{kubevirt-docs-virtctl}. This approach was chosen as the system administrators at Net Insight are familiar with using the command line interface (CLI). Moreover, the VM specifications will be configured uniformly across all tasks using 1 CPU and 512 MB RAM and will use the lightweight Alpine Linux image. This is to ensure that the VMs are fast to create and start, and to emphasize the usability of KubeVirt and not the performance of the VMs. 
-\begin{itemize}
-    \item\textbf{Basic usage}\\
-    This is a basic task meant to act as a starting point for the usability analysis. KubeVirt offers different ways to deploy VMs depending on the use case. For instance, using a \textit{containerDisk} (stateless) versus using a \textit{Persistent Volume Claim} (stateful), or applying cloud-init scripts using \textit{cloudInitNoCloud} \cite{kubevirt-docs-disks}. The system administrator will be presented with brief descriptions of the different methods, as well as links to the official KubeVirt documentation, and will be asked to create a VM using the method they find most suitable. After creating a VM, the system administrator will be asked to perform basic operations including starting, stopping, and restarting the VM, as well as accessing the VM using SSH and VNC, and then finally deleting the VM.
-
-    After the task is finished, the system administrator will be asked to provide feedback on the experience by answering the following questions:
-    \begin{itemize}
-        \item How easy was it to decide which method to use for creating a VM?
-        \item How intuitive was the process of creating and deleting a VM?
-        \item How straightforward was it to access the VM using SSH and VNC?
-        \item Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?
-    \end{itemize}
-
-    \item\textbf{Maintenance}\\
-    This task is designed to evaluate how well KubeVirt supports tasks related to maintenance. The first part of this task includes creating a snapshot of a preconfigured VM, after it is finished, the system administrator will asked to restore the VM from the snapshot. The second part of this task is migrating a VM from one node to another. The system administrator will be presented with a VM that is running on a node and will be asked to migrate the VM to another node. Links to KubeVirt's official documentation will be provided as a reference.
-
-    In this task, the preconfigured VM will use a containerDisk, as it provides a stateless VM that is reinstalled at every boot\ \cite{kubevirt-docs-disks}. By reinstalling the VM at every boot, the system administrator can easily reset the VM to a known state, which prevents any issues related to the VM's state.
-
-    After the task is finished, the system administrator will be asked to provide feedback on the experience by answering the following questions:
-    \begin{itemize}
-        \item How straightforward was it to create and restore a snapshot of a VM?
-        \item How intuitive was the process of migrating a VM from one node to another?
-        \item Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?
-    \end{itemize}
-
-    \item\textbf{Debugging}\\
-    This task is designed to evaluate how well KubeVirt supports debugging. KubeVirt uses API validation to ensure that VMs are correctly configured before creating them\ \cite{kubevirt-docs-validation}. However, it is still possible that a VM is not starting if the misconfiguration is validated at runtime. For this reason, a system administrator will be presented with a VM that is not accessible due to cloud-init misconfiguration that prevents SSH access to the VM but is accessible using VNC. The system administrator will be presented with the basic problem statement "The VM is only accessible through VNC and not SSH" and will then be asked to debug the issue to fix the misconfiguration. Links to KubeVirt's official documentation will be provided as a reference.
-
-    In this task, the preconfigured VM will use a containerDisk, as it provides a stateless VM that is reinstalled at every boot\ \cite{kubevirt-docs-disks}. By reinstalling the VM at every boot, the system administrator can easily reset the VM to a known state, which is useful when debugging.
-    
-    After the task is finished, the system administrator will be asked to provide feedback on the experience by answering the following questions:
-    \begin{itemize}
-        \item How easy was it to debug and find the issue?
-        \item How easy was it to fix the issue?
-        \item Does the debug process differ from debugging a traditional VM management system?
-        \item Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?
-    \end{itemize}    
-\end{itemize}
-
-\noindent After the tasks are finished, the system administrators will be asked to provide overall feedback by answering the following questions:
-\begin{itemize}
-    \item How would you compare the experience of using KubeVirt with other VM management systems you have used?
-    \item How intuitive is the workflow of KubeVirt? Can you use it without reading the documentation?
-    \item How would you describe the overall experience of using KubeVirt?
-\end{itemize}
-
-\subsection*{System Management}
-\noindent The last factor that will be considered in this project is system management. This includes exploring how the system is managed and is mainly concerned with integrations with other technologies to understand how well KubeVirt integrates with other systems. For instance, how well KubeVirt integrates with GitOps, a way to manage infrastructure using files in Git\ \cite{declarative-benefits, k8s-gitops}. Exploring system management also involves exploring how well VMs in KubeVirt can communicate with other Kubernetes resources, such as Pods, which reflects how well it can integrate with container-based applications. This will be evaluated through literature and documentation study\ \cite{k8s-gitops}
-
-\chapter{Performance Analysis Framework}
-Evaluating the performance of a VM management system is a complex task that requires a structured approach due to its many components and multi-node setup. For this reason, a framework to form standardized testing environments was created. The framework is designed to be VM management system agnostic, meaning that it can be used to evaluate any VM management system as long as the system supports the set of features defined in the framework. Consequently, this means that the framework can be extended to evaluate any other VM management system, such as OpenStack or CloudStack. However, it is important to note that the framework is designed to evaluate VM management systems that can be hosted on-premise since it quantifies the performance of a VM management system by measuring the utilization of nodes running the system. As such, the framework does not consider cloud-based VM management systems, such as Amazon EC2, Google Compute Engine or Azure Virtual Machines.
-
-\section{Framework Design}
-The framework was written in the Go programming language and was designed to be modular and loosely coupled with external libraries. This design choice was made to ensure that the framework can be easily extended and modified and that it does not rely on external dependencies. To interact with a VM management system an interface was created that defines the methods that a VM management system must implement to be compatible. For instance, it defines methods for creating and deleting VMs, migrating VMs between nodes and scaling up and down the number of worker nodes, as well as methods for installing control and worker nodes. Each VM management system implements these methods in their respective packages. The full definition of the interface can be found in the appendix\ \ref{appendix:vmm-interface}. To host each VM management system, a set of nodes is created in Azure. These are completely installed and configured before any performance analysis is conducted to form a fair starting point for every VM management system. However, any dependencies required by the VM management system are intentionally left to the installation implementation for the VM management system, as unnecessary dependencies could introduce noise in the measurements. Metrics were collected by running a daemon on each Azure node that collects utilization metrics, including CPU, memory and disk utilization. The daemon operated by fetching metrics every second and storing them in a JSON file locally. However, to only capture metrics when a test was running, the daemon only started collecting metrics when a test was initiated and stopped when the test was finished. This was controlled by placing an empty file called \textit{run} where the daemon was running. The final output file was fetched using \textit{scp} and parsed by the framework to extract the metrics. By having each Azure node produce their output file locally, and only fetching it when a test is finished, it reduced the risk of introducing noise in the measurements. Both the daemon and metrics collector are documented in the appendix\ \ref{appendix:metrics-collector} and an overview of the framework design is illustrated in Figure \ref{fig:framework-design}.
+\subsection*{Framework Design}
+\label{sec:framework-design}
+The framework was designed to be modular and loosely coupled with external libraries. This design choice was made to ensure that the framework can be easily extended and modified and that it does not rely on external dependencies. To interact with a VM management system an interface was created that defines the methods that a VM management system must implement to be compatible. For instance, it defines methods for creating and deleting VMs, migrating VMs between nodes and scaling up and down the number of worker nodes, as well as methods for installing control and worker nodes. Each VM management system implements these methods in their respective packages. The full definition of the interface can be found in the appendix\ \ref{appendix:vmm-interface}. To host each VM management system, the framework created a set of nodes in Azure, which were completely installed and configured before any performance analysis was conducted to form a fair starting point for every VM management system. However, any dependencies required by the VM management system were intentionally left to the installation implementation for the VM management system, as unnecessary dependencies could introduce noise in the measurements. Metrics were collected by running a daemon on each Azure node that collects utilization metrics, including CPU, memory and disk utilization. The daemon operated by fetching metrics every second and storing them in a JSON file locally. However, to only capture metrics when a test was running, the daemon only started collecting metrics when a test was initiated and stopped when the test was finished. This was controlled by placing an empty file called \textit{run} where the daemon was running. The final output file was fetched using \textit{scp} and parsed by the framework to extract the metrics. By having each Azure node produce their output file locally, and only fetching it when a test is finished, it reduced the risk of introducing noise in the measurements. Both the daemon and metrics collector are documented in the appendix\ \ref{appendix:metrics-collector} and an overview of the framework design is illustrated in Figure \ref{fig:framework-design}.
 
 \begin{figure}
     \centering
@@ -676,10 +621,10 @@ The framework was written in the Go programming language and was designed to be 
     \label{fig:framework-design}
 \end{figure}
 
-The workflow of the framework was split into 4 phases to form a structured approach that allows for caching. The entire workflow is illustrated in Figure \ref{fig:framework-workflow} and is described below:
+The workflow of the framework was split into four phases to form a structured approach that allows for modularity and caching, where each phase was responsible for a specific part of the workflow and, in most cases, independent of each other. For instance, the installation phase can be omitted if the nodes are already installed and configured from a previous run. However, if the teardown phase was executed in one run, the next run after it must start with the setup phase. The design choice of dividing the workflow into phases was made to allow for more efficient testing, both when developing the scripts and when executing them. This was especially important when considering that each test comes with a cost in Azure. The entire workflow is illustrated in Figure \ref{fig:framework-workflow} and is described below:
 \begin{enumerate}
     \item \textbf{Setup}: The setup phase is responsible for creating the nodes and networking in Azure. It is also responsible for installing base packages that every node requires, such as \textit{sysstat} to collect utilization metrics and \textit{jq} to parse JSON output.
-    \item \textbf{Installation}: The installation phase is responsible for installing and configuring the VM management system on the Azure nodes. Each VM management system implements an installation method that is responsible for installing and configuring the system with one control node and two worker nodes such that it can run a VM. The installation method also installs several standby workers that will be used when scaling up and down the number of worker nodes. By having standby workers, the framework can independently measure the cost of scaling up and down without the cost of downloading dependencies. While larger dependencies can be metric on their own, it is important to note that production environments usually generate images with prepared dependencies, rendering the cost of downloading dependencies irrelevant.
+    \item \textbf{Installation}: The installation phase is responsible for installing and configuring the VM management system on the Azure nodes. Each VM management system implements an installation method that is responsible for installing and configuring the system with one control node and two worker nodes such that it can run a VM. The installation method also installs several standby workers that will be used when scaling up and down the number of worker nodes. By having standby workers, the framework can independently measure the cost of scaling up and down without the cost of downloading dependencies. While larger dependencies can be seen as a metric on its own, it is important to note that production environments usually generate OS images with prepared dependencies, rendering the cost of downloading dependencies irrelevant.
     \item \textbf{Benchmark}: The benchmark phase is responsible for running the performance tests. The tests are described in\ \ref{table:performance-tests} and are designed to evaluate the general performance of the VM management system. Each test is a combination of the methods the VM management system interface offers, such as creating VMs in different sizes, migrating VMs between nodes and scaling up and down the number of worker nodes. 
     \item \textbf{Teardown}: The teardown phase is responsible for deleting the Azure nodes and ensuring that no resources are left behind. Having this as a separate phase allows for tests to run sequentially without the time cost of creating and deleting nodes for each test. 
 \end{enumerate}
@@ -691,15 +636,111 @@ The workflow of the framework was split into 4 phases to form a structured appro
     \label{fig:framework-workflow}  
 \end{figure}
 
+\subsection*{Implementation}
+The framework was implemented in the programming language Go, a language popular for its performance and concurrency features. Concurrency was a particularly important factor as several tests involved running multiple operations in parallel, such as creating or migrating several VMs at the same time. As such, settling for Go reduced the risk of introducing noise in the measurements and could run each test more efficiently. 
 
+Furthermore, the most important part of the framework was arguably to provide fair and reproducible comparisons. As described previously, each VM management system implemented an interface that defined methods for creating and deleting VMs. While this provided uniform operations from the framework's point of view, it also made the method's implementation crucial: KubeVirt's implementation of creating a VM should be as close to OpenNebula's implementation as possible to ensure that the comparison is fair, and no unnecessary overhead should be introduced. One example of this was that any network-related configuration had to be omitted since network-related metrics were not considered in this project. However, all features that a VM management system offered and that were beneficial for the specific operation were considered. For instance, OpenNebula did not allow a live migration action to be performed on a VM that is not running, while KubeVirt allowed the operation to be requested despite the state of a VM.\ This allowed KubeVirt to omit the waiting time for a VM to be in the correct state before requesting a migration action. 
+\\~\\
+\noindent Below is an extraction of OpenNebula's and KubeVirt's implementations for creating a VM.
+
+\subsection*{KubeVirt}
+\begin{lstlisting}[language=yaml]
+kubectl apply -f <<EOF
+    apiVersion: kubevirt.io/v1
+    kind: VirtualMachine
+    metadata:
+    name: $NAME
+    spec:
+    running: true
+    template:
+        spec:
+        domain:
+            devices:
+            rng: {}
+            disks:
+            - disk:
+                bus: virtio
+                name: containerdisk
+            - disk:
+                bus: virtio
+                name: emptydisk
+            interfaces:
+            - name: default
+                masquerade: {}
+            resources:
+            requests:
+                cpu: 100m
+                memory: %dMi
+            limits:
+                cpu: %d
+                memory: %dMi
+        networks:
+        - pod: {}
+            name: default
+        volumes:
+        - name: emptydisk
+            emptyDisk:
+            capacity: {$DISK_SIZE}Gi
+        - name: containerdisk
+            containerDisk:
+            image: %s
+EOF
+\end{lstlisting}
+
+\subsection*{OpenNebula}
+\begin{lstlisting}[language=bash]
+onetemplate instantiate $TEMPLATE_ID --name $NAME <<EOF
+    CPU="0.1"
+    VCPU="$CPU_CORES"
+    MEMORY="$MEMORY"
+    DISK=[
+        SIZE="$DISK_SIZE"
+        IMAGE="$OS_IMAGE"]
+EOF
+\end{lstlisting}
+
+The entire framework is open-source and available at \url{INSERT URL HERE}. The GitHub repository contains all the code required to run the framework, including documentation on how to set up and run the framework. 
 
 \chapter{Usability Analysis}
+To accurately measure the usability of KubeVirt, a set of tasks was crafted in cooperation with a system administrator at Net Insight. The tasks were designed to be representative of the tasks that a system administrator would perform when managing VMs. The tasks were designed to be performed using the Kubernetes command line interface (CLI) tool \textit{kubectl} and KubeVirt's complementary CLI tool \textit{virtctl}. This approach was chosen since KubeVirt did not directly offer a graphical user interface (GUI), and using any third-party solution could risk introducing biases in the results. The usability analysis was performed on an Azure Kubernetes cluster (AKS) that was set up solely for the analysis. 
+\\~\\
+\noindent Below is a summary of the tasks and their purpose in the usability analysis:
+\begin{itemize}
+    \item\textbf{Basic usage}\\
+    This task was designed to act as a starting point for the usability analysis. The participants were asked to create a single VM configured with a \textit{containerDisk}, connect to it using SSH and VNC and then delete it. The purpose of this task was to evaluate how well KubeVirt supports the most basic operations and whether the participants deem the process intuitive. 
 
+    \item\textbf{Maintenance}\\
+    The second was designed to evaluate how well KubeVirt supports recurring tasks that a system administrator could face when managing VMs and the platform hosting them. The analysis divided this task into two parts: live migration and snapshotting. The participants were first asked to create a single VM and start it on a specific host, then migrate the VM to another host without any downtime. A lightweight VM configured with a \textit{containerDisk} was chosen for this task to keep the focus on the live migration operation. The second part of the task was to create a snapshot of a VM and then restore it. A VM configured with a \textit{DataVolume} disk was chosen for this task since a container disk cannot be snapshotted. Both live migration and snapshotting were included in the usability analysis since they are inherently different in KubeVirt compared to traditional VM management systems due to the declarative nature of Kubernetes, see \ref{sec:kubevirt}. 
+
+    \item\textbf{Debugging}\\
+    This task was designed to evaluate how well KubeVirt supports debugging and how intuitive the process of resolving runtime issues is. While KubeVirt does enforce correct specification upon creation with API validation, see \ref{sec:kubevirt}, it is still possible that a VM does not start if the misconfiguration affects the runtime. For this reason, the participants were presented with a VM that is not accessible due to a cloud-init misconfiguration that prevents SSH access to the VM by having invalid password syntax and missing authorized SSH public keys. This means that the participants could solve the issue either by resolving the password formatting issue or supplying a valid SSH public key. The participants were presented with a basic problem statement and were encouraged to use the official documentation if needed. For this task, a lightweight VM configured with a containerDisk was used to keep the focus on the debugging operation.
+\end{itemize}
+
+After each group of tasks was finished, the participants were asked to reflect on the experience and provide feedback on the tasks. The participants were encouraged to use a free-form approach but could use a set of open-ended questions as a reference. 
+
+\section*{Conducting the Usability Analysis}
+The usability analysis was performed together with a group of system administrators at Net Insight. The participants were presented with a set of tasks as described in the previous section. Each participant was given a document containing all the tasks as well as an introduction to KubeVirt and each of the operations they would perform. For each task, the participant was encouraged to use the official KubeVirt documentation to aid them in completing the tasks. Together with the document containing the tasks, each participant was given a \textit{kubeconfig} and the name for their Kubernetes namespace in which they would perform their tasks. They were given separate namespaces to ensure that none of the tasks would interfere with the results of the other participants. Once finished, the reflection and feedback were collected from each participant. The entire usability analysis can be found in the appendix\ \ref{appendix:usability-tasks}.
 
 \chapter{Results}
-The results of the performance analysis and usability analysis are presented in this chapter. The performance analysis covers a vast range of tests that evaluate the performance of KubeVirt and OpenNebula. The usability analysis covers the tasks that system administrators at Net Insight performed to evaluate the usability of KubeVirt. All of the results from the performance analysis use a rolling mean with a window size of 5\% to smooth out the data. 
+The results of the performance analysis and usability analysis are presented in this chapter. The performance analysis covers a vast range of tests that evaluate the performance of KubeVirt and OpenNebula. The usability analysis covers the tasks that system administrators at Net Insight performed to evaluate the usability of KubeVirt. All of the results from the performance analysis use a rolling mean with a window size of 5\% to reduce noise in the visualizations.  
 
 \section{Performance Analysis}
+
+% Create tiny VM KubeVirt
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/create-tiny_kubevirt.pdf}
+    \caption{CPU utilization when creating a tiny VM in KubeVirt}
+    \label{fig:create-tiny-kubevirt}
+\end{figure}
+
+% Create tiny VM OpenNebula
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/create-tiny_opennebula.pdf}
+    \caption{CPU utilization when creating a tiny VM in OpenNebula}
+    \label{fig:create-tiny-opennebula}
+\end{figure}
 
 % Create small VM KubeVirt
 \begin{figure}
@@ -715,14 +756,6 @@ The results of the performance analysis and usability analysis are presented in 
     \includegraphics[width=1\textwidth]{plt/create-small_opennebula.pdf}
     \caption{CPU utilization when creating a small VM in OpenNebula}
     \label{fig:create-small-opennebula}
-\end{figure}
-
-% Create small VM workers
-\begin{figure}
-    \centering
-    \includegraphics[width=1\textwidth]{plt/create-small_cpu_worker.pdf}
-    \caption{CPU utilization when creating a small VM in workers between KubeVirt and OpenNebula}
-    \label{fig:create-small-workers}
 \end{figure}
 
 % Create medium VM KubeVirt
@@ -741,15 +774,23 @@ The results of the performance analysis and usability analysis are presented in 
     \label{fig:create-medium-opennebula}
 \end{figure}
 
-% Create medium VM workers
+% Create large VM KubeVirt
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{plt/create-medium_cpu_worker.pdf}
-    \caption{CPU utilization when creating a medium VM in workers between KubeVirt and OpenNebula}
-    \label{fig:create-medium-workers}
+    \includegraphics[width=1\textwidth]{plt/create-large_kubevirt.pdf}
+    \caption{CPU utilization when creating a large VM in KubeVirt}
+    \label{fig:create-large-kubevirt}
 \end{figure}
 
-% same page
+% Create large VM OpenNebula
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/create-large_opennebula.pdf}
+    \caption{CPU utilization when creating a large VM in OpenNebula}
+    \label{fig:create-large-opennebula}
+\end{figure}
+
+% Create many CPU
 \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{plt/create-many_cpu.pdf}
@@ -757,6 +798,15 @@ The results of the performance analysis and usability analysis are presented in 
     \label{fig:create-many-cpu}
 \end{figure}
 
+% Create many CPU workers
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/create-many_cpu_worker.pdf}
+    \caption{CPU utilization among workers nodes when creating many VMs}
+    \label{fig:create-many-cpu}
+\end{figure}
+
+% Create many RAM
 \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{plt/create-many_ram.pdf}
@@ -764,6 +814,15 @@ The results of the performance analysis and usability analysis are presented in 
     \label{fig:create-many-memory}
 \end{figure}
 
+% Create many RAM workers
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/create-many_ram_worker.pdf}
+    \caption{Memory utilization among workers nodes when creating many VMs}
+    \label{fig:create-many-memory}
+\end{figure}
+
+% Create many disk
 \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{plt/create-many_disk.pdf}
@@ -771,8 +830,117 @@ The results of the performance analysis and usability analysis are presented in 
     \label{fig:create-many-disk}
 \end{figure}
 
+% Create many disk workers
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/create-many_disk_worker.pdf}
+    \caption{Disk utilization among workers nodes when creating many VMs}
+    \label{fig:create-many-disk}
+\end{figure}
+
+% Live migrate many CPU
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/live-migrate-many_cpu.pdf}
+    \caption{CPU utilization when live migrating many VMs}
+    \label{fig:migrate-many-cpu}
+\end{figure}
+
+% Live migrate many CPU workers
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/live-migrate-many_cpu_worker.pdf}
+    \caption{CPU utilization among workers nodes when live migrating many VMs}
+    \label{fig:migrate-many-cpu}
+\end{figure}
+
+% Live migrate many RAM
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/live-migrate-many_ram.pdf}
+    \caption{Memory utilization when live migrating many VMs}
+    \label{fig:migrate-many-memory}
+\end{figure}
+
+% Live migrate many RAM workers
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/live-migrate-many_ram_worker.pdf}
+    \caption{Memory utilization among workers nodes when live migrating many VMs}
+    \label{fig:migrate-many-memory}
+\end{figure}
+
+% Live migrate many disk
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/live-migrate-many_disk.pdf}
+    \caption{Disk utilization when live migrating many VMs}
+    \label{fig:migrate-many-disk}
+\end{figure}
+
+% Live migrate many disk workers
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/live-migrate-many_disk_worker.pdf}
+    \caption{Disk utilization among workers nodes when live migrating many VMs}
+    \label{fig:migrate-many-disk}
+\end{figure}
+
+% Scale cluster CPU
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/scale-cluster_cpu.pdf}
+    \caption{CPU utilization when scaling the cluster}
+    \label{fig:scale-cluster}
+\end{figure}
+
+% Scale cluster CPU workers
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/scale-cluster_cpu_worker.pdf}
+    \caption{CPU utilization among workers nodes when scaling the cluster}
+    \label{fig:scale-cluster}
+\end{figure}
+
+% Scale cluster RAM
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/scale-cluster_ram.pdf}
+    \caption{Memory utilization when scaling the cluster}
+    \label{fig:scale-cluster}
+\end{figure}
+
+% Scale cluster RAM workers
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/scale-cluster_ram_worker.pdf}
+    \caption{Memory utilization among workers nodes when scaling the cluster}
+    \label{fig:scale-cluster}
+\end{figure}
+
+% Scale cluster disk
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/scale-cluster_disk.pdf}
+    \caption{Disk utilization when scaling the cluster}
+    \label{fig:scale-cluster}
+\end{figure}
+
+% Scale cluster disk workers
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{plt/scale-cluster_disk_worker.pdf}
+    \caption{Disk utilization among workers nodes when scaling the cluster}
+    \label{fig:scale-cluster}
+\end{figure}
+
+
 \chapter{Discussion}
 \blindtext%
+
+
+% Write about this
+% The duration metric is dependent on the test case and is aimed at measuring how long a specific operation takes. However, each of the metrics is not conclusive on its own since a short burst of CPU utilization might be preferrable over a long period of medium CPU utilization. As such, the metrics will be used in conjunction to provide an accurate representation of the performance of the VM management systems.
 
 \chapter{Conclusions}
 \blindtext%
@@ -865,20 +1033,18 @@ Restart=always
 WantedBy=multi-user.target`
 \end{lstlisting}
 
-
 \chapter{Usability Tasks}
+\label{appendix:usability-tasks}
+The following is a replicated version of what was given to the participants for the usability analysis formatted for the appendix. The original version was provided as a separate document to the participants.
 
-These tasks were given to system administrators at Net Insight to evaluate the usability of KubeVirt. The tasks and questions were designed to evaluate how well KubeVirt supports tasks related to basic usage, maintenance and debugging. The following is a replicated version of what was given to the participants formatted for the appendix. The original version was provided as a separate PDF document.
-
-\section{Introduction}
+\section*{Introduction}
 This is a usability analysis of KubeVirt that involves performing a set of tasks and then reflecting on the experience, where the goal is to evaluate how well KubeVirt works in practice. By participating in the usability analysis you provide valuable feedback and insight that can be used to improve KubeVirt. Your answers will be included as-is in the appendix of the project report. Upon request, the answers can be anonymized.
 
-\section{KubeVirt}
 The following is a brief introduction to KubeVirt, its most relevant features and how it compares to previous VM management systems. If you are already familiar with KubeVirt and its machinery, you can skip this section.
 \\~\\
 KubeVirt is an extension to Kubernetes that allows for the creation of virtual machines (VMs) and is designed to provide a similar experience to managing any other resource in Kubernetes, such as Pods or Deployments. This means that VMs are defined in YAML files and integrate with the command line tool \textit{kubectl}. KubeVirt defines its resources as a \textit{Custom Resource Definition} (CRD) in Kubernetes, where the most prominent resources are \textit{VirtualMachine} and \textit{VirtualMachineInstance}. The relationship between them is comparable to that of a Deployment and a Pod, where the Deployment defines a desired state and a Pod represents the running state. See References below for more information. 
 
-Certain VM operations are not possible using kubectl, such as accessing the VM using SSH or VNC. For this reason, KubeVirt provides a complementary CLI tool called \textit{virtctl}. Virtctl is thus required to complete the tasks, and you should have already been provided with a link to install it. 
+Certain VM operations are not possible using kubectl, such as accessing the VM using SSH or VNC. For this reason, KubeVirt provides a complementary CLI tool called \textit{virtctl}.
 
 Being built on top of Kubernetes allows the VMs to integrate with other resources, including the Service and PersistentVolume resources. For instance, a VM can be exposed to the network using a LoadBalancer Service or manage storage dynamically using a persistent storage provisioner. However, since a VM requires a disk image (such as a QCOW2 image), it means that a PersistentVolume must point to a folder with a disk image in it. For this reason, manually creating a PersistentVolume for a VM can be tedious. Instead, KubeVirt primarily provides two alternatives for managing disks that are presented below. See the References section for more information.
 \begin{itemize}
@@ -886,8 +1052,8 @@ Being built on top of Kubernetes allows the VMs to integrate with other resource
     \item \textbf{DataVolume}: A disk that is persistent and initialized when the VM is created. It uses PersistentVolumeClaim and a PersistentVolume under the hood where it injects a disk image. 
 \end{itemize}
 
-\section{Basic usage}
-The first task is about creating a VM using KubeVirt. You will need to create a VM and then access it using SSH or VNC. You can use a containerDisk for simplicity. 
+\section*{Basic usage (Task 1/3)}
+The first task is about creating a VM using KubeVirt. You will need to create a VM and then access it using SSH or VNC. You can use a containerDisk for simplicity.
 
 \subsection*{Manifests}
 Below is a minimal manifest for creating the VM using a containerDisk. The credentials for the Cirros image are user \textbf{cirros} and password \textbf{gocubsgo}.
@@ -897,20 +1063,26 @@ Below is a minimal manifest for creating the VM using a containerDisk. The crede
     metadata:
       name: my-vm
     spec:
-      running: true  
+      running: true
       template:
         spec:
           domain:
-          cpu:
-            cores: 1
-          devices:
-            disks:
+            cpu:
+              cores: 1
+            devices:
+              disks:
               - name: containerdisk
                 disk:
                   bus: virtio
-          resources:
-            requests:
-            memory: 128M
+              interfaces:
+              - name: default
+                masquerade: {}
+            resources:
+              requests:
+                memory: 128M
+          networks:
+          - name: default
+            pod: {}
           volumes:
           - name: containerdisk
             containerDisk:
@@ -923,7 +1095,7 @@ Below is a minimal manifest for creating the VM using a containerDisk. The crede
 \begin{lstlisting}
     kubectl apply -f my-vm.yaml
 \end{lstlisting}
-    \item Access the VM through SSH or VNC (credentials vary depending on the image since no CloudInit is used) 
+    \item Access the VM through SSH or VNC (credentials vary depending on the image since no CloudInit is used)
 \begin{lstlisting}
     virtctl ssh cirros@my-vm
     virtctl vnc my-vm
@@ -941,49 +1113,160 @@ Below is a minimal manifest for creating the VM using a containerDisk. The crede
 \end{enumerate}
 
 \subsubsection*{Questions}
-After you have finished the task, reflect on the experience. You may use the following questions as a guide, but feel free to add comparisons with other VM management systems you have used.
+After you have finished the tasks, reflect on the experience. You may use the following questions as a guide, but feel free to elaborate with your own thoughts.
 \begin{itemize}
     \item How intuitive was the process of creating and deleting a VM?
-    \item How would you describe the process of starting, stopping, and restarting a VM?
     \item How straightforward was it to access the VM using SSH and VNC?
     \item Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?
 \end{itemize}
 
-\section{Maintenance}
-The second task is related to maintenance, where you will create a snapshot of a VM and then restore it. You will also perform a live migration on a VM to move it from one node to another without shutting it down. For this task, you can use a VM with a containerDisk since the task is not related to persistent storage.  
+\section*{Maintenance (Task 2/3)}
+The second task is related to maintenance, where you will create a snapshot of a VM and then restore it. You will also perform a live migration on a VM to move it from one node to another without shutting it down. 
 
-Both snapshots and live migrations are treated as a resource by KubeVirt, meaning that the operation will take place in the background after a VirtualMachineSnapshot resource or a LiveMigration resource is created. See the References section for more information.
+Both snapshots and live migrations are treated as a resource by KubeVirt, meaning that the operation will take place in the background after a VirtualMachineSnapshot resource or a VirtalMachineInstanceMigration resource is created. See the References section for more information.
 
-A live migration resource in KubeVirt does not move resources itself and instead uses the Kubernetes scheduler to decide where to place the VM. This means that a LiveMigration resource only tells the scheduler that the VM can be moved but not where to move it. The simplest way to tell the scheduler to move a VM to a specific host is to edit \textit{spec.template.spec.nodeSelector} in the VM manifest. See the References section for more information. 
+A live migration resource in KubeVirt does not move resources itself and instead uses the Kubernetes scheduler to decide where to place the VM. This means that a LiveMigration resource only tells the scheduler that the VM can be moved but not where to move it. See the References section for more information. The Kubernetes scheduler is sophisticated and supports a wide range of scheduling strategies, but for this task, we can force a move between two nodes by using the \textit{spec.template.spec.nodeSelector} in the VM and editing the labels of the worker nodes in the cluster. To not interfere with other participants, you should create a unique label for you. 
 
-\subsection*{Manifests}
+A snapshot in KubeVirt works similarly to a snapshot in other VM management systems, where it captures the state of the VM at a specific point in time. However, the snapshot uses Kubernetes VolumeSnapshot, which is a Kubernetes API for taking snapshots of PersistentVolumes. This means that a VM with a containerDisk cannot be snapshotted. Instead, you should use a VM with a DataVolume. See the References section for more information.
+
+\subsection*{Live Migration Manifests}
 The following is a minimal manifest for creating a VM that runs on a node with label \textbf{name: worker-1}. The credentials for the Cirros image are user \textbf{cirros} and password \textbf{gocubsgo}.
 \begin{lstlisting}[language=yaml]
-  apiVersion: kubevirt.io/v1
-  kind: VirtualMachine
-  metadata:
-    name: my-vm
-  spec:
-    running: true
-    template:
-      spec:
-        nodeSelector:
-          name: worker1
-        domain:
-        cpu:
-          cores: 1
-        devices:
-          disks:
+    apiVersion: kubevirt.io/v1
+    kind: VirtualMachine
+    metadata:
+      name: my-vm
+    spec:
+      running: true
+      template:
+        spec:
+          nodeSelector:
+            # Edit this to use a label of your choice
+            my-label: some-value
+          domain:
+            cpu:
+              cores: 1
+            devices:
+              disks:
+              - name: containerdisk
+                disk:
+                  bus: virtio
+              interfaces:
+              - name: default
+                masquerade: {}
+            resources:
+              requests:
+                memory: 128M
+          networks:
+          - name: default
+            pod: {}
+          volumes:
           - name: containerdisk
-            disk:
-              bus: virtio
-        resources:
-          requests:
-          memory: 128M
-        volumes:
-        - name: containerdisk
-          containerDisk:
-            image: quay.io/kubevirt/cirros-container-disk-demo
+            containerDisk:
+              image: quay.io/kubevirt/cirros-container-disk-demo
+\end{lstlisting}
+
+\begin{lstlisting}[language=yaml]
+    apiVersion: kubevirt.io/v1
+    kind: VirtualMachineInstanceMigration
+    metadata:
+      name: my-vm-migration
+    spec:
+      vmiName: my-vm
+\end{lstlisting}
+
+\subsection*{Live Migration Steps}
+\begin{enumerate}
+    \item Ensure worker node 1 has your label (Make sure to replace \texttt{my-label} and \texttt{some-value} with your own values):
+\begin{lstlisting}
+kubectl label node usability-worker-1 my-label=some-value
+\end{lstlisting}
+
+    \item Create a VM and wait for it to start. The VM should start on \textbf{usability-worker-1}:
+\begin{lstlisting}
+kubectl apply -f my-vm.yml
+\end{lstlisting}
+
+    \item (Optional) Check if the VM is running on worker node 1:
+\begin{lstlisting}
+kubectl get vmis
+\end{lstlisting}
+
+    \item Create a LiveMigration resource or use virtctl:
+\begin{lstlisting}
+kubectl apply -f my-vm-migration.yml
+\end{lstlisting}
+\begin{lstlisting}
+virtctl migrate my-vm
+\end{lstlisting}
+
+    \item Add the same label to worker node 2 and remove it from worker node 1 (Make sure to replace \texttt{my-label} and \texttt{some-value} with your own values):
+\begin{lstlisting}
+kubectl label node usability-worker-2 my-label=some-value
+kubectl label node usability-worker-1 my-label-
+\end{lstlisting}
+
+    \item (Optional) Check if the VM is now running on worker node 2:
+\begin{lstlisting}
+kubectl get vmis
+\end{lstlisting}
+
+    \item Unlabel worker node 2
+\begin{lstlisting}
+kubectl label node usability-worker-2 my-label-
+\end{lstlisting}
+
+    \item Delete the VM
+\begin{lstlisting}
+kubectl delete vm my-vm
+\end{lstlisting}
+\end{enumerate}
+
+\subsection*{Snapshot Manifests}
+The following is a minimal manifest for creating a VM with a DataVolume. The credentials for the Cirros image are user \textbf{cirros} and password \textbf{gocubsgo}.
+\begin{lstlisting}[language=yaml]
+    apiVersion: kubevirt.io/v1
+    kind: VirtualMachine
+    metadata:
+      name: my-vm
+    spec:
+      running: true
+      template:
+        spec:
+          domain:
+            devices:
+              rng: {}
+              disks:
+              - disk:
+                  bus: virtio
+                name: datavolume-disk
+              interfaces:
+              - name: default
+                masquerade: {}
+            resources:
+              requests:
+                memory: 1Gi
+          networks:
+          - pod: {}
+            name: default
+          volumes:
+          - dataVolume:
+              name: datavolume
+            name: datavolume-disk
+      dataVolumeTemplates:
+      - metadata:
+          name: datavolume
+        spec:
+          pvc:
+            storageClassName: azurefile-csi-kubevirt
+            accessModes:
+            - ReadWriteOnce
+            resources:
+              requests:
+                storage: 5Gi
+          source:
+            registry:
+              url: docker://quay.io/kubevirt/cirros-container-disk-demo
 \end{lstlisting}
 
 \noindent The following is a minimal manifest for creating a VirtualMachineSnapshot resource.
@@ -991,23 +1274,12 @@ The following is a minimal manifest for creating a VM that runs on a node with l
     apiVersion: snapshot.kubevirt.io/v1alpha1
     kind: VirtualMachineSnapshot
     metadata:
-        name: my-vm-snapshot
+      name: my-vm-snapshot
     spec:
-        source:
+      source:
         apiGroup: kubevirt.io
         kind: VirtualMachine
         name: my-vm
-\end{lstlisting}
-
-\noindent The following is a minimal manifest for creating a LiveMigration resource.
-\begin{lstlisting}[language=yaml]
-    apiVersion: kubevirt.io/v1
-    kind: VirtualMachineInstanceMigration
-    metadata:
-        name: my-vm-migration
-    spec:
-        vmiName: my-vm
-        targetNode: worker2
 \end{lstlisting}
 
 \noindent The following is a minimal manifest for restoring a VM from a snapshot.
@@ -1015,137 +1287,134 @@ The following is a minimal manifest for creating a VM that runs on a node with l
     apiVersion: snapshot.kubevirt.io/v1alpha1
     kind: VirtualMachineRestore
     metadata:
-        name: my-vm-restore
+      name: my-vm-restore
     spec:
-    target:
+      target:
         apiGroup: kubevirt.io
         kind: VirtualMachine
         name: my-vm
-    virtualMachineSnapshotName: my-vm-snapshot
+      virtualMachineSnapshotName: my-vm-snapshot
 \end{lstlisting}
 
 \subsection*{Snapshot Steps}
 \begin{enumerate}
     \item Create a VM
 \begin{lstlisting}
-    kubectl apply -f my-vm.yaml
+kubectl apply -f my-vm.yml
 \end{lstlisting}
+
     \item Create a snapshot of the VM
 \begin{lstlisting}
-    kubectl apply -f my-vm-snapshot.yaml
+kubectl apply -f my-vm-snapshot.yml
 \end{lstlisting}
+
     \item Wait for the snapshot to be ready:
 \begin{lstlisting}
-    kubectl wait vmsnapshot my-vm-snapshot --for condition=Ready
-\end{lstlisting} 
+kubectl get vmsnapshots
+\end{lstlisting}
+
+    \item Stop the VM
+\begin{lstlisting}
+virtctl stop my-vm
+\end{lstlisting}
+
     \item Restore the VM from the snapshot
 \begin{lstlisting}
-    kubectl apply -f my-vm-restore.yaml
+kubectl apply -f my-vm-restore.yml
 \end{lstlisting}
-    \item Use the following kubectl command to wait for the restore to be ready:
-\begin{lstlisting}
-    kubectl wait vmrestore my-vm-restore --for condition=Ready
-\end{lstlisting}
-\end{enumerate}
 
-\subsection*{Live Migration Steps}
-\begin{enumerate}
-    \item Create a VM and wait for it to start
+    \item Wait for the VM to be restored
 \begin{lstlisting}
-    kubectl apply -f my-vm.yaml
+kubectl get vmrestore
 \end{lstlisting}
-    \item Edit the label under \textit{spec.template.spec.nodeSelector} in the VM manifest to \textbf{name: worker-2}:
+
+    \item Delete the resources
 \begin{lstlisting}
-    kubectl edit vm my-vm
+kubectl delete vmsnapshot my-vm-snapshot
+kubectl delete vm my-vm
 \end{lstlisting}
-    \item Create a LiveMigration resource or virtctl:
-\begin{lstlisting}
-    kubectl apply -f my-vm-migration.yaml
-\end{lstlisting}
-\begin{lstlisting}
-    virtctl migrate my-vm
-\end{lstlisting}
-    \item Use the following kubectl command to wait for the migration to be ready:
 \end{enumerate}
 
 \subsection*{Questions}
-After you have finished the task, reflect on the experience. You may use the following questions as a guide, but feel free to add comparisons with other VM management systems you have used.
+After you have finished the tasks, reflect on the experience. You may use the following questions as a guide, but feel free to elaborate with your own thoughts.
 \begin{itemize}
-    \item How straightforward was it to create and restore a snapshot of a VM?
     \item How intuitive was the process of migrating a VM from one node to another?
+    \item How straightforward was it to create and restore a snapshot of a VM?
     \item Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?
 \end{itemize}
 
-\section{Debugging}
-The third task is about debugging a VM that is not accessible through SSH. You will be presented with a VM manifest which, if deployed, will result in a VM that is running but cannot be accessed through SSH. Since the VM is running, you can access it through VNC using virtctl. You can use a \textit{containerDisk} since the task is not related to persistent storage. 
+\section*{Debugging (Task 3/3)}
+The third task is about debugging a VM that is not accessible through SSH. You will be presented with a VM manifest which, if deployed, will result in a VM that is running but cannot be accessed through SSH. Since the VM is running, you can access it through VNC using virtctl. You can use a containerDisk since the task is not related to persistent storage.
 
 \subsection*{Manifests}
-The following is a manifest for creating a Ubuntu VM that is not accessible through SSH. Credentials for the Ubuntu image are user \textbf{cloud} and password \textbf{cloud}.
+The following is a manifest for creating a Ubuntu VM that is not accessible through SSH. Credentials for the Ubuntu image should be user \textbf{cloud} and password \textbf{cloud}.
 \begin{lstlisting}[language=yaml]
-  apiVersion: kubevirt.io/v1
-  kind: VirtualMachine
-  metadata:
-    name: my-vm
-  spec:
-    running: true
-    template:
-      spec:
-        domain:
-          devices:
-            disks:
-            - name: containerdisk
-              disk:
-                bus: virtio
-            - name: cloudinit
-              disk:
-                bus: virtio
-            rng: {}
-          resources:
-            requests:
-              cpu: 2
-              memory: 2Gi
-        volumes:
-        - name: containerdisk
-          containerDisk:
-            image: quay.io/containerdisks/ubuntu:22.04
-        - name: cloudinit 
-          cloudInitNoCloud:
-            userData: |-
-            #cloud-config
-            users:
-            - name: cloud
-              passwd: $6$rounds=4096$abc
-              shell: /bin/bash
-              lock-passwd: false
-              ssh_pwauth: True
-              chpasswd: { expire: False }
-              sudo: ALL=(ALL) NOPASSWD:ALL
-              ssh_authorized_keys:
-              - ssh-ed25519 abc
+    apiVersion: kubevirt.io/v1
+    kind: VirtualMachine
+    metadata:
+      name: my-vm
+    spec:
+      running: true
+      template:
+        spec:
+          domain:
+            devices:
+              disks:
+              - name: containerdisk
+                disk:
+                  bus: virtio
+              - name: cloudinit
+                disk:
+                  bus: virtio
+              rng: {}
+            resources:
+              requests:
+                cpu: 2
+                memory: 2Gi
+          volumes:
+          - name: containerdisk
+            containerDisk:
+              image: quay.io/containerdisks/ubuntu:22.04
+          - name: cloudinit
+            cloudInitNoCloud:
+              userData: |-
+                #cloud-config
+                users:
+                - name: cloud
+                  # Generated with `mkpasswd -m sha-512 --rounds 4096`
+                  passwd: $6$rounds=4096$abc
+                  shell: /bin/bash
+                  lock-passwd: false
+                  chpasswd: { expire: False }
+                  sudo: ALL=(ALL) NOPASSWD:ALL
+                  ssh_authorized_keys:
+                  - ssh-ed25519 abc
+                ssh_pwauth: True
 \end{lstlisting}
 
 \subsubsection*{Steps}
 \begin{enumerate}
     \item Create a VM
 \begin{lstlisting}
-    kubectl apply -f my-vm.yaml
+kubectl apply -f my-vm.yml
 \end{lstlisting}
     \item Access the VM through VNC
 \begin{lstlisting}
-    virtctl vnc my-vm
+virtctl vnc my-vm
 \end{lstlisting}
-    \item Debug the issue to fix the misconfiguration
-    \item Edit the VM manifest to fix the issue
+    \item Find out what the issue is.
+    \item Edit the VM manifest to fix the issue.
+    \item (Optional) Restart the VM (some changes require a restart)
 \begin{lstlisting}
-    kubectl edit vm my-vm
+virtctl restart my-vm
 \end{lstlisting}
-    \item Ensure the VM is accessible through SSH
+    \item Ensure the VM is accessible through SSH. You can use the *--local-ssh* flag if there is a problem with the SSH keys.
 \begin{lstlisting}
-    virtctl ssh cirros@my-vm
+virtctl ssh cloud@my-vm
 \end{lstlisting}
     \item Delete the VM
 \begin{lstlisting}
-    kubectl delete vm my-vm
+kubectl delete vm my-vm
 \end{lstlisting}
 \end{enumerate}
 
@@ -1159,7 +1428,7 @@ After you have finished the task, reflect on the experience. You may use the fol
     \item Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?
 \end{itemize}
 
-\section{Summary}
+\section*{Summary}
 After you have completed the tasks, reflect on the overall experience of using KubeVirt. You may use the following questions as a guide, but feel free to discuss and compare them with other VM management systems you have used. 
 
 \begin{itemize}
@@ -1171,7 +1440,7 @@ After you have completed the tasks, reflect on the overall experience of using K
 Thank you for participating in the usability analysis of KubeVirt!
 
 
-\section{References}
+\section*{References}
 \begin{itemize}
     \item \textbf{VirtualMachineInstance}: \url{https://kubevirt.io/user-guide/virtual_machines/virtual_machine_instances/}
     \item \textbf{Disks}: \url{https://kubevirt.io/user-guide/virtual_machines/disks_and_volumes}

@@ -1,6 +1,16 @@
 ### Questions
 After you have finished the tasks, reflect on the experience. You may use the following questions as a guide, but feel free to elaborate with your own thoughts.
 
+1. How intuitive was the process of creating and deleting a VM?
+Very easy! I like that it's as simple as creating a yaml file and then applying it. Much simpler than any other way I've tried for managing VMs.
+2. How straightforward was it to access the VM using SSH and VNC?
+Very simple! Simply doing `virtctl ssh cirros@my-vm` and then typing in the password and then I was in!
+3. Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?
+Getting VNC to work on Mac was a bit tricky, but I downloaded Tiger VNC and saved the following script (while updating the Tiger VNC version) as /usr/local/bin/remote-viewer: https://github.com/kubevirt/kubevirt/issues/812#issuecomment-391832335
+
+### Questions
+After you have finished the tasks, reflect on the experience. You may use the following questions as a guide, but feel free to elaborate with your own thoughts.
+
 1. How intuitive was the process of migrating a VM from one node to another?
 Very simple! I once again really like that you just edit yaml files and apply labels to conveniently move VMs between worker nodes. Much simpler than our current way of doing it in OpenNebula...
 2. How straightforward was it to create and restore a snapshot of a VM?

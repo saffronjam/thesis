@@ -10,6 +10,7 @@
   \makeatother
 \fi
 \usepackage{svg}
+\usepackage{float}
 
 \usepackage[hidelinks]{hyperref}
 \usepackage{csquotes} % Recommended by biblatex
@@ -720,30 +721,31 @@ To accurately measure the usability of KubeVirt, a set of tasks was crafted in c
 After each group of tasks was finished, the participants were asked to reflect on the experience and provide feedback on the tasks. The participants were encouraged to use a free-form approach but could use a set of open-ended questions as a reference. 
 
 \section*{Conducting the Usability Analysis}
-The usability analysis was performed together with a group of system administrators at Net Insight. The participants were presented with a set of tasks as described in the previous section. Each participant was given a document containing all the tasks as well as an introduction to KubeVirt and each of the operations they would perform. For each task, the participant was encouraged to use the official KubeVirt documentation to aid them in completing the tasks. Together with the document containing the tasks, each participant was given a \textit{kubeconfig} and the name for their Kubernetes namespace in which they would perform their tasks. They were given separate namespaces to ensure that none of the tasks would interfere with the results of the other participants. Once finished, the reflection and feedback were collected from each participant. The entire usability analysis can be found in the appendix\ \ref{appendix:usability-tasks}.
+The usability analysis was performed together with a group of system administrators at Net Insight. The participants were presented with a set of tasks as described in the previous section. Each participant was given a document containing all the tasks as well as an introduction to KubeVirt and each of the operations they would perform. For each task, the participant was encouraged to use the official KubeVirt documentation to aid them in completing the tasks. Together with the document containing the tasks, each participant was given a \textit{kubeconfig} and the name for their Kubernetes namespace in which they would perform their tasks. They were given separate namespaces to ensure that none of the tasks would interfere with the results of the other participants. Once finished, the reflection and feedback were collected from each participant. Each participant was given two weeks to complete the tasks. While this was a relatively long time, it was chosen to ensure that the participants were given enough time to explore KubeVirt and potentially explore other features that were not part of the given tasks. The entire usability analysis can be found in the appendix\ \ref{appendix:usability-tasks}.
 
 \chapter{Results}
 This section contains the results of the performance analysis and usability analysis. Each test in the performance analysis was run 10 times, and the result visualizations were averaged using a rolling mean with a window size of 5\% of the total number of data points. The usability analysis received feedback in different forms, either by answering questions or providing a free-form response. 
 
-\section{Performance Analysis}
+\newpage
+\section{Performance Analysis Results}
 % Create a tiny VM - KubeVirt
-\begin{figure}
+\begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{plt/create-tiny_kubevirt.pdf}
+    \includegraphics[width=0.95\textwidth]{plt/create-tiny_kubevirt.pdf}
     \caption{CPU utilization when creating a VM type 1 in KubeVirt}
     \label{fig:create-tiny-kubevirt}
 \end{figure}
 
 % Create a tiny VM - OpenNebula
-\begin{figure}
+\begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{plt/create-tiny_opennebula.pdf}
+    \includegraphics[width=0.95\textwidth]{plt/create-tiny_opennebula.pdf}
     \caption{CPU utilization when creating a VM type 1 in OpenNebula}
     \label{fig:create-tiny-opennebula}
 \end{figure}
 
 % Create a small VM - KubeVirt
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/create-small_kubevirt.pdf}
     \caption{CPU utilization when creating a VM type 2 in KubeVirt}
@@ -751,7 +753,7 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Create a small VM - OpenNebula
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/create-small_opennebula.pdf}
     \caption{CPU utilization when creating a VM type 2 in OpenNebula}
@@ -759,7 +761,7 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Create medium VM - KubeVirt
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/create-medium_kubevirt.pdf}
     \caption{CPU utilization when creating a VM type 3 in KubeVirt}
@@ -767,7 +769,7 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Create medium VM - OpenNebula
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/create-medium_opennebula.pdf}
     \caption{CPU utilization when creating a VM type 3 in OpenNebula}
@@ -775,7 +777,7 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Create a large VM - KubeVirt
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/create-large_kubevirt.pdf}
     \caption{CPU utilization when creating a VM type 4 in KubeVirt}
@@ -783,7 +785,7 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Create large VM - OpenNebula
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/create-large_opennebula.pdf}
     \caption{CPU utilization when creating a VM type 4 in OpenNebula}
@@ -791,7 +793,7 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Create many - CPU
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/create-many_cpu.pdf}
     \caption{CPU utilization when creating many type-1 VMs}
@@ -799,7 +801,7 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Create many - CPU - workers
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/create-many_cpu_worker.pdf}
     \caption{CPU utilization among workers nodes when creating many type-1 VMs}
@@ -807,23 +809,23 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Create many - RAM
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/create-many_ram.pdf}
     \caption{Memory utilization when creating many type-1 VMs}
     \label{fig:create-many-memory}
-\end{figure}
+\end{figure}[H]
 
 % Create many - RAM - workers
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/create-many_ram_worker.pdf}
     \caption{Memory utilization among workers nodes when creating many type-1 VMs}
     \label{fig:create-many-memory}
-\end{figure}
+\end{figure}[H]
 
 % Create many - disk
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/create-many_disk.pdf}
     \caption{Disk utilization when creating many type-1 VMs}
@@ -831,7 +833,7 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Create many - disk - workers
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/create-many_disk_worker.pdf}
     \caption{Disk utilization among workers nodes when creating many type-1 VMs}
@@ -839,7 +841,7 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Migrate many - CPU
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/live-migrate-many_cpu.pdf}
     \caption{CPU utilization when live migrating many type-1 VMs}
@@ -847,15 +849,15 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Migrate many - CPU - workers
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/live-migrate-many_cpu_worker.pdf}
     \caption{CPU utilization among workers nodes when live migrating many type-1 VMs}
     \label{fig:migrate-many-cpu}
-\end{figure}
+\end{figure}[H]
 
 % Migrate many - RAM
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/live-migrate-many_ram.pdf}
     \caption{Memory utilization when live migrating many type-1 VMs}
@@ -863,7 +865,7 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Migrate many - RAM - workers
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/live-migrate-many_ram_worker.pdf}
     \caption{Memory utilization among workers nodes when live migrating many type-1 VMs}
@@ -871,7 +873,7 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Migrate many - disk
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/live-migrate-many_disk.pdf}
     \caption{Disk utilization when live migrating many type-1 VMs}
@@ -879,7 +881,7 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Migrate many - disk - workers
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/live-migrate-many_disk_worker.pdf}
     \caption{Disk utilization among workers nodes when live migrating many type-1 VMs}
@@ -887,7 +889,7 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Scale cluster - CPU
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/scale-cluster_cpu.pdf}
     \caption{CPU utilization when scaling the cluster}
@@ -895,7 +897,7 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Scale cluster - CPU - workers
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/scale-cluster_cpu_worker.pdf}
     \caption{CPU utilization among workers nodes when scaling the cluster}
@@ -903,7 +905,7 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Scale cluster - RAM
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/scale-cluster_ram.pdf}
     \caption{Memory utilization when scaling the cluster}
@@ -911,7 +913,7 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Scale cluster - RAM - workers
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/scale-cluster_ram_worker.pdf}
     \caption{Memory utilization among workers nodes when scaling the cluster}
@@ -919,7 +921,7 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Scale cluster - disk
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/scale-cluster_disk.pdf}
     \caption{Disk utilization when scaling the cluster}
@@ -927,7 +929,7 @@ This section contains the results of the performance analysis and usability anal
 \end{figure}
 
 % Scale cluster - disk - workers
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/scale-cluster_disk_worker.pdf}
     \caption{Disk utilization among workers nodes when scaling the cluster}
@@ -936,17 +938,61 @@ This section contains the results of the performance analysis and usability anal
 
 \section{Usability Analysis}
 
-\textbf{Summary}
+The collected answers from the participants are summarized below. Some participants chose a free-hand approach when answering the questions, while other participants chose to answer the questions directly in a structured manner. The full answers from every participant can found in the appendix\ \ref{appendix:usability-analysis-answers}.
+
+\subsection*{Basic Usage}
+The participants found the process of creating a VM in KubeVirt to be mostly straightforward.
+
+\begin{itemize}
+    \item Participant 1: \textit{The act of doing kubectl apply -f and kubectl delete is quite neat.}
+    \item Participant 2: \textit{Very easy! I like that it’s as simple as creating a YAML file and then
+    applying it.}
+\end{itemize}
+
+However, participants expressed some confusion when connecting to the VM using SSH, as it was not clear which SSH public key was used to connect to the VM, and that conflicts with previously created VMs could occur. Moreoever, participant 1 in particular found the definition complex, and that the process was not intuitive. 
+
+\begin{itemize}
+    \item Participant 1: \textit{It would be quite difficult for me to figure out I need to use bus: virtio without having someone else tell me I need to.}
+\end{itemize}
+
+KubeVirt's complementary CLI tool \textit{virtctl} was found to be useful when connecting to the VM, as it provided a single tool for both VNC and SSH.
+
+\begin{itemize}
+    \item Participant 2: \textit{Very simple! Simply doing virtctl ssh cirros@my-vm and then typing
+    in the password and then I was in!}
+\end{itemize}
+\subsection*{Maintenance}
+
+The maintenance tasks received a broad range of feedback. Some of the participants found the process of live migration to be simple, while other participants deemed the process to be overly complex and non-intuitive. Participant 1 in particular regarded many of the operations as flawed, such as the live migration object not being deleted after the migration was completed, but also that KubeVirt lacked proper documentation around the practical aspects of how to perform a live migration. Similar to the basic usage tasks, the participants experienced issues with connecting to VMs using SSH, as it was not clear which SSH public key was used to connect to the VM.
+
+\begin{itemize}
+    \item Participant 2: \textit{I had to delete the entry from /.ssh/kubevirt\_known\_hosts after each time I restarted the VM because virtctl ssh complained about a key mismatch.}
+\end{itemize}
+
+\subsection*{Debugging}
+
+Compared to both the basic tasks and maintenance, the debugging tasks received the most negative feedback. The participants found the process of debugging to be complex and unclear. Finding the correct documentation was another issue some participants faced, as both the official documentation and the \textit{virtctl --help} command did not provide the necessary information to solve the issue. 
+
+\begin{itemize}
+    \item Participant 1: \textit{I did not manage to solve the key mismatch issue as there is very little in the way of debugging virtctl ssh.}
+\end{itemize}
+
+However, while debugging was found to be complex, participant 3 regarded the YAML-files as a positive aspect to debugging.
+
+\begin{itemize}
+    \item Participant 3: \textit{Debugging the issue was easy because the manifest uses standard constructs that are easily googleable.}
+\end{itemize}
+
+\subsection*{Overall}
+The feedback to KubeVirt was in general mixed. While the workflow was found to be intuitive due to its similarities with ordinary Kubernetes resources, it was also found to be complex with a steep learning curve. The documentation was found to be lacking practical examples of how to get started outside the scope of the given tasks and instead focused more on the operational aspects of KubeVirt. 
 
 \chapter{Discussion}
-\blindtext%
 
 
 % Write about this
 % The duration metric is dependent on the test case and is aimed at measuring how long a specific operation takes. However, each of the metrics is not conclusive on its own since a short burst of CPU utilization might be preferable over a long period of medium CPU utilization. As such, the metrics will be used in conjunction to provide an accurate representation of the performance of the VM management systems.
 
 \chapter{Conclusions}
-\blindtext%
 
 % Print the bibliography (and make it appear in the table of contents)
 \printbibliography[heading=bibintoc]
@@ -1452,6 +1498,7 @@ Thank you for participating in the usability analysis of KubeVirt!
 \end{itemize}
 
 \chapter{Usability Analysis Answers}
+\label{appendix:usability-analysis-answers}
 
 \section{Participants}
 \begin{itemize}
@@ -1636,7 +1683,7 @@ The most difficult thing was to get the VNC viewer working on Mac, but after tha
 \begin{itemize}
 \item \textbf{Linus}
 
-A \"key mismatch\" error is difficult to debug because there are no good debug options for \textit{virtctl ssh}.
+A "key mismatch" error is difficult to debug because there are no good debug options for \textit{virtctl ssh}.
 
 \item \textbf{Karl}
 

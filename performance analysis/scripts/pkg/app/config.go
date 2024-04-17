@@ -58,6 +58,8 @@ type ConfigType struct {
 		MinNodes int `yaml:"minNodes"`
 		MaxNodes int `yaml:"maxNodes"`
 	} `yaml:"cluster"`
+
+	OutputDir string `yaml:"outputDir"`
 }
 
 var Config ConfigType

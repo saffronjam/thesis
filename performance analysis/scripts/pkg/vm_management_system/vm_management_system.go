@@ -41,6 +41,11 @@ type VmManagementSystem interface {
 	// It should be synchronous and wait for the worker node to be disconnected.
 	DisconnectWorker(workerIdx int) error
 
+	// CleanUp cleans up the VM management system after a single benchmark is run.
+	// This is meant to remove any artifacts created during the benchmark.
+	// It should be idempotent.
+	CleanUp() error
+
 	// WaitForRunningVM waits for the VM to be running
 	WaitForRunningVM(name string) error
 	// WaitForAccessibleVM waits for the VM to be accessible via SSH

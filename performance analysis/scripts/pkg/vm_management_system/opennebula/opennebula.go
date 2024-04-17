@@ -302,6 +302,11 @@ func (o *OpenNebula) DisconnectWorker(workerIdx int) error {
 	return nil
 }
 
+func (o *OpenNebula) CleanUp() error {
+	// Nothing to do
+	return nil
+}
+
 func (o *OpenNebula) WaitForRunningVM(name string) error {
 	runningCmd := "sudo onevm list --list NAME --json | jq '.VM_POOL.VM[] | select(.NAME == \"" + name + "\") | .LCM_STATE' | tr -d '\"'"
 

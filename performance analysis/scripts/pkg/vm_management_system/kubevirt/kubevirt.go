@@ -423,13 +423,7 @@ func (o *KubeVirt) DisconnectWorker(workerIdx int) error {
 		}
 	}
 
-	getDaemonSetPodCommand := fmt.Sprintf("kubectl get pods -l kubevirt.io=virt-handler -n kubevirt --field-selector spec.nodeName=%s -o=jsonpath='{.items[0].metadata.name}'", workerName)
-	res, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{getDaemonSetPodCommand})
-	if err != nil && !strings.Contains(err.Error(), "array index out of bounds: index 0") {
-		return err
-	}
-
-	return o.WaitForDeletedPod(res[0], "kubevirt")
+	return nil
 }
 
 func (o *KubeVirt) MigrateVM(name string, hostIdx int) error {
@@ -471,6 +465,36 @@ spec:
 	_, err = utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{deleteMigrationCommand})
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (o *KubeVirt) CleanUp() error {
+	// Ensure that the KubeVirt virt-handler DaemonSet is synced
+	var workerThatShouldNotExist []string
+	for idx, worker := range o.Environment.WorkerNodes {
+		if idx >= app.Config.Cluster.MinNodes {
+			workerThatShouldNotExist = append(workerThatShouldNotExist, *worker.VM.Name)
+		}
+	}
+
+	// For every worker node, ensure that the virt-handler pod is synced
+	for _, workerName := range workerThatShouldNotExist {
+		getDaemonSetPodCommand := fmt.Sprintf("kubectl get pods -l kubevirt.io=virt-handler -n kubevirt --field-selector spec.nodeName=%s -o=jsonpath='{.items[0].metadata.name}'", workerName)
+		res, err := utils.SshCommand(o.Environment.ControlNode.PublicIP, []string{getDaemonSetPodCommand})
+		if err != nil {
+			if strings.Contains(err.Error(), "array index out of bounds: index 0") {
+				continue
+			}
+
+			return err
+		}
+
+		err = o.WaitForDeletedPod(res[0], "kubevirt")
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

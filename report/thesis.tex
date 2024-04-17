@@ -730,225 +730,158 @@ The usability analysis was performed together with a group of system administrat
 This section contains the results of the performance analysis and usability analysis. Each test in the performance analysis was run 10 times, and the result visualizations were averaged using a rolling mean with a window size of 5\% of the total number of data points. The usability analysis received feedback in different forms, either by answering questions or providing a free-form response. 
 
 \newpage
-\section{Performance Analysis Results}
+\section{Performance Analysis}
+% The most significant results are copied from the appendix
 % Create a tiny VM - KubeVirt
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.95\textwidth]{plt/create-tiny_kubevirt.pdf}
-    \caption{CPU utilization when creating a VM type 1 in KubeVirt}
+    \includegraphics[width=0.75\textwidth]{plt/create-tiny_kubevirt.pdf}
+    \caption{CPU utilization on the control node when creating a VM type 1 in KubeVirt}
     \label{fig:create-tiny-kubevirt}
 \end{figure}
 
 % Create a tiny VM - OpenNebula
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.95\textwidth]{plt/create-tiny_opennebula.pdf}
-    \caption{CPU utilization when creating a VM type 1 in OpenNebula}
+    \includegraphics[width=0.75\textwidth]{plt/create-tiny_opennebula.pdf}
+    \caption{CPU utilization on the control node when creating a VM type 1 in OpenNebula}
     \label{fig:create-tiny-opennebula}
-\end{figure}
-
-% Create a small VM - KubeVirt
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{plt/create-small_kubevirt.pdf}
-    \caption{CPU utilization when creating a VM type 2 in KubeVirt}
-    \label{fig:create-small-kubevirt}
-\end{figure}
-
-% Create a small VM - OpenNebula
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{plt/create-small_opennebula.pdf}
-    \caption{CPU utilization when creating a VM type 2 in OpenNebula}
-    \label{fig:create-small-opennebula}
-\end{figure}
-
-% Create medium VM - KubeVirt
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{plt/create-medium_kubevirt.pdf}
-    \caption{CPU utilization when creating a VM type 3 in KubeVirt}
-    \label{fig:create-medium-kubevirt}
-\end{figure}
-
-% Create medium VM - OpenNebula
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{plt/create-medium_opennebula.pdf}
-    \caption{CPU utilization when creating a VM type 3 in OpenNebula}
-    \label{fig:create-medium-opennebula}
 \end{figure}
 
 % Create a large VM - KubeVirt
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{plt/create-large_kubevirt.pdf}
-    \caption{CPU utilization when creating a VM type 4 in KubeVirt}
+    \includegraphics[width=0.8\textwidth]{plt/create-large_kubevirt.pdf}
+    \caption{CPU utilization on the control node when creating a VM type 4 in KubeVirt}
     \label{fig:create-large-kubevirt}
 \end{figure}
 
 % Create large VM - OpenNebula
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{plt/create-large_opennebula.pdf}
-    \caption{CPU utilization when creating a VM type 4 in OpenNebula}
+    \includegraphics[width=0.8\textwidth]{plt/create-large_opennebula.pdf}
+    \caption{CPU utilization on the control node when creating a VM type 4 in OpenNebula}
     \label{fig:create-large-opennebula}
+\end{figure}
+
+% Create VMs - Duration - KubeVirt
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plt/create-vms_duration_kubevirt.pdf}
+    \caption{Duration of creating VMs in KubeVirt}
+    \label{fig:create-vms-duration-kubevirt}
+\end{figure}
+
+% Create VMs - Duration - OpenNebula
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plt/create-vms_duration_opennebula.pdf}
+    \caption{Duration of creating VMs in OpenNebula}
+    \label{fig:create-vms-duration-opennebula}
 \end{figure}
 
 % Create many - CPU
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{plt/create-many_cpu.pdf}
-    \caption{CPU utilization when creating many type-1 VMs}
+    \includegraphics[width=0.8\textwidth]{plt/create-many_cpu.pdf}
+    \caption{CPU utilization on the control node when creating many type-1 VMs}
     \label{fig:create-many-cpu}
 \end{figure}
 
 % Create many - CPU - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{plt/create-many_cpu_worker.pdf}
+    \includegraphics[width=0.8\textwidth]{plt/create-many_cpu_worker.pdf}
     \caption{CPU utilization among workers nodes when creating many type-1 VMs}
-    \label{fig:create-many-cpu}
+    \label{fig:create-many-cpu-worker}
 \end{figure}
 
 % Create many - RAM
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{plt/create-many_ram.pdf}
-    \caption{Memory utilization when creating many type-1 VMs}
+    \includegraphics[width=0.8\textwidth]{plt/create-many_ram.pdf}
+    \caption{Memory utilization on the control node when creating many type-1 VMs}
     \label{fig:create-many-memory}
-\end{figure}[H]
+\end{figure}
 
 % Create many - RAM - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{plt/create-many_ram_worker.pdf}
+    \includegraphics[width=0.8\textwidth]{plt/create-many_ram_worker.pdf}
     \caption{Memory utilization among workers nodes when creating many type-1 VMs}
-    \label{fig:create-many-memory}
-\end{figure}[H]
+    \label{fig:create-many-memory-worker}
+\end{figure}
 
 % Create many - disk
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{plt/create-many_disk.pdf}
-    \caption{Disk utilization when creating many type-1 VMs}
+    \includegraphics[width=0.8\textwidth]{plt/create-many_disk.pdf}
+    \caption{Disk utilization on the control node when creating many type-1 VMs}
     \label{fig:create-many-disk}
 \end{figure}
 
 % Create many - disk - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{plt/create-many_disk_worker.pdf}
+    \includegraphics[width=0.8\textwidth]{plt/create-many_disk_worker.pdf}
     \caption{Disk utilization among workers nodes when creating many type-1 VMs}
-    \label{fig:create-many-disk}
+    \label{fig:create-many-disk-worker}
+\end{figure}
+
+% Create many - duration
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plt/create-many_duration.pdf}
+    \caption{Duration of creating many type-1 VMs}
+    \label{fig:create-many-duration}
 \end{figure}
 
 % Migrate many - CPU
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{plt/live-migrate-many_cpu.pdf}
-    \caption{CPU utilization when live migrating many type-1 VMs}
+    \includegraphics[width=0.8\textwidth]{plt/live-migrate-many_cpu.pdf}
+    \caption{CPU utilization on the control node when live migrating many type-1 VMs}
     \label{fig:migrate-many-cpu}
 \end{figure}
-
-% Migrate many - CPU - workers
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{plt/live-migrate-many_cpu_worker.pdf}
-    \caption{CPU utilization among workers nodes when live migrating many type-1 VMs}
-    \label{fig:migrate-many-cpu}
-\end{figure}[H]
 
 % Migrate many - RAM
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{plt/live-migrate-many_ram.pdf}
-    \caption{Memory utilization when live migrating many type-1 VMs}
+    \includegraphics[width=0.8\textwidth]{plt/live-migrate-many_ram.pdf}
+    \caption{Memory utilization on the control node when live migrating many type-1 VMs}
     \label{fig:migrate-many-memory}
 \end{figure}
 
-% Migrate many - RAM - workers
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{plt/live-migrate-many_ram_worker.pdf}
-    \caption{Memory utilization among workers nodes when live migrating many type-1 VMs}
-    \label{fig:migrate-many-memory}
-\end{figure}
-
-% Migrate many - disk
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{plt/live-migrate-many_disk.pdf}
-    \caption{Disk utilization when live migrating many type-1 VMs}
-    \label{fig:migrate-many-disk}
-\end{figure}
-
-% Migrate many - disk - workers
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{plt/live-migrate-many_disk_worker.pdf}
-    \caption{Disk utilization among workers nodes when live migrating many type-1 VMs}
-    \label{fig:migrate-many-disk}
-\end{figure}
-
-% Scale cluster - CPU
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{plt/scale-cluster_cpu.pdf}
-    \caption{CPU utilization when scaling the cluster}
-    \label{fig:scale-cluster}
-\end{figure}
-
-% Scale cluster - CPU - workers
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{plt/scale-cluster_cpu_worker.pdf}
-    \caption{CPU utilization among workers nodes when scaling the cluster}
-    \label{fig:scale-cluster}
-\end{figure}
+\newpage
 
 % Scale cluster - RAM
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{plt/scale-cluster_ram.pdf}
-    \caption{Memory utilization when scaling the cluster}
-    \label{fig:scale-cluster}
-\end{figure}
-
-% Scale cluster - RAM - workers
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{plt/scale-cluster_ram_worker.pdf}
-    \caption{Memory utilization among workers nodes when scaling the cluster}
-    \label{fig:scale-cluster}
+    \includegraphics[width=0.8\textwidth]{plt/scale-cluster_ram.pdf}
+    \caption{Memory utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes}
+    \label{appendix:fig:scale-cluster-memory}
 \end{figure}
 
 % Scale cluster - disk
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{plt/scale-cluster_disk.pdf}
-    \caption{Disk utilization when scaling the cluster}
-    \label{fig:scale-cluster}
+    \includegraphics[width=0.8\textwidth]{plt/scale-cluster_disk.pdf}
+    \caption{Disk utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes}
+    \label{appendix:fig:scale-cluster-disk}
 \end{figure}
 
-% Scale cluster - disk - workers
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{plt/scale-cluster_disk_worker.pdf}
-    \caption{Disk utilization among workers nodes when scaling the cluster}
-    \label{fig:scale-cluster}
-\end{figure}
+\newpage
 
 \section{Usability Analysis}
 
-The collected answers from the participants are summarized below. Some participants chose a free-hand approach when answering the questions, while other participants chose to answer the questions directly in a structured manner. The full answers from every participant can found in the appendix\ \ref{appendix:usability-analysis-answers}.
+The collected answers from the participants are summarized below. Some participants chose a free-hand approach when answering the questions, while other participants chose to answer the questions directly in a structured manner. The full answers from every participant can be found in the appendix\ \ref{appendix:usability-analysis-answers}.
 
 \subsection*{Basic Usage}
 The participants found the process of creating a VM in KubeVirt to be mostly straightforward.
 
 \begin{itemize}
     \item Participant 1: \textit{The act of doing kubectl apply -f and kubectl delete is quite neat.}
-    \item Participant 2: \textit{Very easy! I like that it’s as simple as creating a YAML file and then
+    \item Participant 2: \textit{Very easy! I like that it is as simple as creating a YAML file and then
     applying it.}
 \end{itemize}
 
@@ -990,12 +923,22 @@ However, while debugging was found to be complex, participant 3 regarded the YAM
 The feedback to KubeVirt was in general mixed. While the workflow was found to be intuitive due to its similarities with ordinary Kubernetes resources, it was also found to be complex with a steep learning curve. The documentation was found to be lacking practical examples of how to get started outside the scope of the given tasks and instead focused more on the operational aspects of KubeVirt. 
 
 \chapter{Discussion}
+The research questions involved investigating potential efficiencies that could be gained by integrating VMs in Kubernetes using KubeVirt. This project has evaluated KubeVirt using two different approaches: a performance analysis and a usability analysis. The discussion aims to explore deeper into the results of the project to provide insight into how feasible KubeVirt is as a VM management system.
+
+\section{Intepreting Performance Results}
+The goal of the performance analysis was to find factual and provable claims regarding the performance of a VM management system. This included creating a framework that could be used to craft environments that were both reusable and fair among the systems being evaluated. The framework also provided a common interface for which an implementation was created per VM management system. By definition, such a system is only as good as the implementations are, which is why the implementations were designed to be as similar as possible to ensure a fair comparison. However, certain features and settings were not able to be tuned in the same way, such as the scheduling configuration where OpenNebula provides only a single option for scheduling: the number of VMs that can be dispatched concurrently. Not being able to accurately configure the systems identically in every aspect leaves the interpretation of the results open for discussion. This project has chosen the approach where if the system does not provide a specific feature to be tuned, the system is considered to be as optimized as possible. This approach was chosen as it favors the VM management system that provides the most features and flexibility, and as such, the results should be interpreted with this in mind. Having this aspect in mind is particularly important when interpreting the \textit{Create Many Type-1 VMs} tests, see figures\ \ref{fig:create-many-cpu},\ \ref{fig:create-many-memory},\ \ref{fig:create-many-disk} and\ \ref{fig:create-many-duration}. KubeVirt, using the scheduler built into Kubernetes, was able to create 20 type-1 VMs in 67 seconds, while it took OpenNebula 192 seconds on average. However, the results also suggest that KubeVirt is more resource-intensive, as the utilization of CPU, memory and disk was significantly higher than OpenNebula, which can viewed as a trade-off between speed and resource utilization. It is important to note, though, that KubeVirt does not reach 100\% utilization.
+
+\section{Kubernetes Overhead}
+The results of the performance analysis 
 
 
 % Write about this
 % The duration metric is dependent on the test case and is aimed at measuring how long a specific operation takes. However, each of the metrics is not conclusive on its own since a short burst of CPU utilization might be preferable over a long period of medium CPU utilization. As such, the metrics will be used in conjunction to provide an accurate representation of the performance of the VM management systems.
 
-\chapter{Conclusions}
+\chapter{Conclusions and Future Work}
+
+% Future work:
+% - What happens if the Kubernetes scheduler is tuned "slower" to match OpenNebula's scheduler?
 
 % Print the bibliography (and make it appear in the table of contents)
 \printbibliography[heading=bibintoc]
@@ -1003,6 +946,7 @@ The feedback to KubeVirt was in general mixed. While the workflow was found to b
 \appendix
 
 \chapter{Performance Analysis Components}
+
 \section{VM Management System Interface}
 \label{appendix:vmm-interface}
 \begin{lstlisting}[language=Go]
@@ -1084,6 +1028,294 @@ Restart=always
 [Install]
 WantedBy=multi-user.target`
 \end{lstlisting}
+
+\chapter{Performance Analysis Results}
+\newpage
+% Create a tiny VM - KubeVirt
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/create-tiny_kubevirt.pdf}
+    \caption{CPU utilization on the control node when creating a VM type 1 in KubeVirt}
+    \label{fig:create-tiny-kubevirt}
+\end{figure}
+
+% Create a tiny VM - OpenNebula
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/create-tiny_opennebula.pdf}
+    \caption{CPU utilization on the control node when creating a VM type 1 in OpenNebula}
+    \label{appendix:fig:create-tiny-opennebula}
+\end{figure}
+
+% Create a small VM - KubeVirt
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/create-small_kubevirt.pdf}
+    \caption{CPU utilization on the control node when creating a VM type 2 in KubeVirt}
+    \label{appendix:fig:create-small-kubevirt}
+\end{figure}
+
+% Create a small VM - OpenNebula
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/create-small_opennebula.pdf}
+    \caption{CPU utilization on the control node when creating a VM type 2 in OpenNebula}
+    \label{appendix:fig:create-small-opennebula}
+\end{figure}
+
+% Create medium VM - KubeVirt
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/create-medium_kubevirt.pdf}
+    \caption{CPU utilization on the control node when creating a VM type 3 in KubeVirt}
+    \label{appendix:fig:create-medium-kubevirt}
+\end{figure}
+
+% Create medium VM - OpenNebula
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/create-medium_opennebula.pdf}
+    \caption{CPU utilization on the control node when creating a VM type 3 in OpenNebula}
+    \label{appendix:fig:create-medium-opennebula}
+\end{figure}
+
+% Create a large VM - KubeVirt
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/create-large_kubevirt.pdf}
+    \caption{CPU utilization on the control node when creating a VM type 4 in KubeVirt}
+    \label{appendix:fig:create-large-kubevirt}
+\end{figure}
+
+% Create large VM - OpenNebula
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/create-large_opennebula.pdf}
+    \caption{CPU utilization on the control node when creating a VM type 4 in OpenNebula}
+    \label{appendix:fig:create-large-opennebula}
+\end{figure}
+
+% Create VMs - Duration - KubeVirt
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/create-vms_duration_kubevirt.pdf}
+    \caption{Duration of creating VMs in KubeVirt}
+    \label{appendix:fig:create-vms-duration-kubevirt}
+\end{figure}
+
+% Create VMs - Duration - OpenNebula
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/create-vms_duration_opennebula.pdf}
+    \caption{Duration of creating VMs in OpenNebula}
+    \label{appendix:fig:create-vms-duration-opennebula}
+\end{figure}
+
+% Create many - CPU
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/create-many_cpu.pdf}
+    \caption{CPU utilization on the control node when creating many type-1 VMs}
+    \label{appendix:fig:create-many-cpu}
+\end{figure}
+
+% Create many - CPU - workers
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/create-many_cpu_worker.pdf}
+    \caption{CPU utilization among workers nodes when creating many type-1 VMs}
+    \label{appendix:fig:create-many-cpu-worker}
+\end{figure}
+
+% Create many - RAM
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/create-many_ram.pdf}
+    \caption{Memory utilization on the control node when creating many type-1 VMs}
+    \label{appendix:fig:create-many-memory}
+\end{figure}
+
+% Create many - RAM - workers
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/create-many_ram_worker.pdf}
+    \caption{Memory utilization among workers nodes when creating many type-1 VMs}
+    \label{appendix:fig:create-many-memory-worker}
+\end{figure}
+
+% Create many - disk
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/create-many_disk.pdf}
+    \caption{Disk utilization on the control node when creating many type-1 VMs}
+    \label{appendix:fig:create-many-disk}
+\end{figure}
+
+% Create many - disk - workers
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/create-many_disk_worker.pdf}
+    \caption{Disk utilization among workers nodes when creating many type-1 VMs}
+    \label{appendix:fig:create-many-disk-worker}
+\end{figure}
+
+% Create many - duration
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/create-many_duration.pdf}
+    \caption{Duration of creating many type-1 VMs}
+    \label{appendix:fig:create-many-duration}
+\end{figure}
+
+\newpage
+
+% Migrate one - CPU
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/live-migrate_cpu.pdf}
+    \caption{CPU utilization on the control node when live migrating a type-4 VM}
+    \label{appendix:fig:migrate-one-cpu}
+\end{figure}
+
+% Migrate one - RAM
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/live-migrate_ram.pdf}
+    \caption{Memory utilization on the control node when live migrating a type-4 VM}
+    \label{appendix:fig:migrate-one-memory}
+\end{figure}
+
+% Migrate one - disk
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/live-migrate_disk.pdf}
+    \caption{Disk utilization on the control node when live migrating a type-4 VM}
+    \label{appendix:fig:migrate-one-disk}
+\end{figure}
+
+% Migrate one - duration
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/live-migrate_duration.pdf}
+    \caption{Duration of live migrating a type-4 VM}
+    \label{appendix:fig:migrate-one-duration}
+\end{figure}
+
+% Migrate many - CPU
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_cpu.pdf}
+    \caption{CPU utilization on the control node when live migrating many type-1 VMs}
+    \label{appendix:fig:migrate-many-cpu}
+\end{figure}
+
+% Migrate many - CPU - workers
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_cpu_worker.pdf}
+    \caption{CPU utilization among workers nodes when live migrating many type-1 VMs}
+    \label{appendix:fig:migrate-many-cpu-worker}
+\end{figure}
+
+% Migrate many - RAM
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_ram.pdf}
+    \caption{Memory utilization on the control node when live migrating many type-1 VMs}
+    \label{appendix:fig:migrate-many-memory}
+\end{figure}
+
+% Migrate many - RAM - workers
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_ram_worker.pdf}
+    \caption{Memory utilization among workers nodes when live migrating many type-1 VMs}
+    \label{appendix:fig:migrate-many-memory-worker}
+\end{figure}
+
+% Migrate many - disk
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_disk.pdf}
+    \caption{Disk utilization on the control node when live migrating many type-1 VMs}
+    \label{appendix:fig:migrate-many-disk}
+\end{figure}
+
+% Migrate many - disk - workers
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_disk_worker.pdf}
+    \caption{Disk utilization among workers nodes when live migrating many type-1 VMs}
+    \label{appendix:fig:migrate-many-disk-worker}
+\end{figure}
+
+% Migrate many - duration
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_duration.pdf}
+    \caption{Duration of live migrating many type-1 VMs}
+    \label{appendix:fig:migrate-many-duration}
+\end{figure}
+
+\newpage
+
+% Scale cluster - CPU
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/scale-cluster_cpu.pdf}
+    \caption{CPU utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes}
+    \label{appendix:fig:scale-cluster-cpu}
+\end{figure}
+
+% Scale cluster - CPU - workers
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/scale-cluster_cpu_worker.pdf}
+    \caption{CPU utilization among workers nodes when scaling the cluster from 2 worker nodes to 10 worker nodes}
+    \label{appendix:fig:scale-cluster-cpu-worker}
+\end{figure}
+
+% Scale cluster - RAM
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/scale-cluster_ram.pdf}
+    \caption{Memory utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes}
+    \label{appendix:fig:scale-cluster-memory}
+\end{figure}
+
+% Scale cluster - RAM - workers
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/scale-cluster_ram_worker.pdf}
+    \caption{Memory utilization among workers nodes when scaling the cluster from 2 worker nodes to 10 worker nodes}
+    \label{appendix:fig:scale-cluster-memory-worker}
+\end{figure}
+
+% Scale cluster - disk
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/scale-cluster_disk.pdf}
+    \caption{Disk utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes}
+    \label{appendix:fig:scale-cluster-disk}
+\end{figure}
+
+% Scale cluster - disk - workers
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/scale-cluster_disk_worker.pdf}
+    \caption{Disk utilization among workers nodes when scaling the cluster from 2 worker nodes to 10 worker nodes}
+    \label{appendix:fig:scale-cluster-disk-worker}
+\end{figure}
+
+% Scale cluster - duration
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{plt/scale-cluster_duration.pdf}
+    \caption{Duration of scaling the cluster}
+    \label{appendix:fig:scale-cluster}
+\end{figure}
+
+\newpage
 
 \chapter{Usability Tasks}
 \label{appendix:usability-tasks}

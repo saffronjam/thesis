@@ -18,8 +18,10 @@ const (
 	TimerStarted        = "started"
 	TimerFinished       = "finished"
 	TimerVmRunning      = "vm-running"
-	TimerScaledUp       = "scaled-up"
-	TimerScaledDown     = "scaled-down"
+	TimerScaleUpStart   = "scaled-up-start"
+	TimerScaleUpEnd     = "scaled-up-end"
+	TimerScaleDownStart = "scaled-down-start"
+	TimerScaleDownEnd   = "scaled-down-end"
 	TimerMigrationStart = "migration-start"
 	TimerMigrationEnd   = "migration-end"
 )
@@ -30,42 +32,42 @@ func (b *Benchmark) AllTests() []models.TestDefinition {
 			Name:     "CreateEachType",
 			Func:     b.CreateEachType,
 			RunCount: 15,
-			Disabled: false,
+			Disabled: true,
 		},
 		{
 			Name:     "CreateMany",
 			Func:     b.CreateMany,
 			RunCount: 15,
-			Disabled: false,
+			Disabled: true,
 		},
 		{
 			Name:     "LiveMigrate",
 			Func:     b.LiveMigrate,
-			RunCount: 15,
+			RunCount: 10,
 			Disabled: false,
 		},
 		{
 			Name:     "LiveMigrateMany",
 			Func:     b.LiveMigrateMany,
-			RunCount: 15,
+			RunCount: 10,
 			Disabled: false,
 		},
 		{
 			Name:     "ScaleCluster",
 			Func:     b.ScaleCluster,
-			RunCount: 5,
-			Disabled: true,
+			RunCount: 10,
+			Disabled: false,
 		},
 		{
 			Name:     "ScaleClusterWithVMs",
 			Func:     b.ScaleClusterWithVMs,
-			RunCount: 5,
-			Disabled: true,
+			RunCount: 10,
+			Disabled: false,
 		},
 	}
 }
 
-func RunTests(vmm string, tests []models.TestDefinition, saveTest func(vmm string, result models.TestResult) error) {
+func RunTests(vmm string, tests []models.TestDefinition, afterTest func() error, saveTest func(vmm string, result models.TestResult) error) {
 	results := make(map[string][]models.TestResult)
 
 	for idx, test := range tests {
@@ -85,6 +87,13 @@ func RunTests(vmm string, tests []models.TestDefinition, saveTest func(vmm strin
 				if r.Err != nil {
 					pretty_log.TaskResultBad("[%s] Test %s failed: %s", vmm, r.Name, r.Err.Error())
 				}
+			}
+
+			pretty_log.TaskGroup("[%s] Running After-test callback", vmm)
+			err := afterTest()
+			if err != nil {
+				pretty_log.TaskResultBad("[%s] Failed to run After-test callback: %s", vmm, err.Error())
+				return
 			}
 
 			if _, ok := results[test.Name]; !ok {
@@ -484,6 +493,7 @@ func (b *Benchmark) LiveMigrate() []models.TestResult {
 	// Collect metrics for 10 seconds before starting
 	time.Sleep(10 * time.Second)
 
+	start := time.Now()
 	pretty_log.TaskGroup("[%s] Creating a VM", b.Environment.Name)
 	err = b.VMMS.CreateVM(vm, 0)
 	if err != nil {
@@ -512,6 +522,8 @@ func (b *Benchmark) LiveMigrate() []models.TestResult {
 		return errResp(err)
 	}
 
+	end := time.Now()
+
 	// Collect metrics for 10 seconds after stopping
 	time.Sleep(10 * time.Second)
 
@@ -527,8 +539,10 @@ func (b *Benchmark) LiveMigrate() []models.TestResult {
 			Group:   "live-migrate",
 			Metrics: metrics,
 			Timers: map[string]time.Time{
-				TimerStarted:  migrationStart,
-				TimerFinished: migrationEnd,
+				TimerStarted:        start,
+				TimerFinished:       end,
+				TimerMigrationStart: migrationStart,
+				TimerMigrationEnd:   migrationEnd,
 			},
 		},
 	}
@@ -565,6 +579,8 @@ func (b *Benchmark) LiveMigrateMany() []models.TestResult {
 	wg := sync.WaitGroup{}
 	mut := sync.RWMutex{}
 	var anyErr error
+
+	start := time.Now()
 
 	for _, vm := range vms {
 		wg.Add(1)
@@ -652,6 +668,8 @@ func (b *Benchmark) LiveMigrateMany() []models.TestResult {
 		return errResp(anyErr)
 	}
 
+	end := time.Now()
+
 	// Collect metrics for 10 seconds after stopping
 	time.Sleep(10 * time.Second)
 
@@ -667,8 +685,10 @@ func (b *Benchmark) LiveMigrateMany() []models.TestResult {
 			Group:   "live-migrate",
 			Metrics: metrics,
 			Timers: map[string]time.Time{
-				TimerStarted:  migrationStart,
-				TimerFinished: migrationEnd,
+				TimerStarted:        start,
+				TimerFinished:       end,
+				TimerMigrationStart: migrationStart,
+				TimerMigrationEnd:   migrationEnd,
 			},
 		},
 	}
@@ -678,9 +698,7 @@ func (b *Benchmark) ScaleCluster() []models.TestResult {
 	scaleDownTo := 2
 	scaleUpTo := len(b.Environment.AzureEnvironment.WorkerNodes)
 
-	pretty_log.TaskGroup("[%s] Setting up metrics for scaling cluster", b.Environment.Name)
-	err := b.StartMetricScrapers()
-	if err != nil {
+	errResp := func(err error) []models.TestResult {
 		return []models.TestResult{
 			{
 				Name:  "scale-cluster",
@@ -688,6 +706,12 @@ func (b *Benchmark) ScaleCluster() []models.TestResult {
 				Err:   err,
 			},
 		}
+	}
+
+	pretty_log.TaskGroup("[%s] Setting up metrics for scaling cluster", b.Environment.Name)
+	err := b.StartMetricScrapers()
+	if err != nil {
+		return errResp(err)
 	}
 
 	// Collect for 10 seconds before starting
@@ -698,6 +722,7 @@ func (b *Benchmark) ScaleCluster() []models.TestResult {
 	var anyErr error
 
 	start := time.Now()
+	scaleUpStart := time.Now()
 
 	pretty_log.TaskGroup("[%s] Scaling cluster up to %d nodes", b.Environment.Name, scaleUpTo)
 	for i := scaleDownTo; i < scaleUpTo; i++ {
@@ -717,16 +742,11 @@ func (b *Benchmark) ScaleCluster() []models.TestResult {
 	wg.Wait()
 
 	if anyErr != nil {
-		return []models.TestResult{
-			{
-				Name:  "scale-cluster",
-				Group: "scale-cluster",
-				Err:   anyErr,
-			},
-		}
+		return errResp(err)
 	}
 
-	mid := time.Now()
+	scaleUpEnd := time.Now()
+	scaleDownStart := time.Now()
 
 	pretty_log.TaskGroup("[%s] Scaling cluster down to %d nodes", b.Environment.Name, scaleDownTo)
 	for i := scaleUpTo - 1; i >= scaleDownTo; i-- {
@@ -745,14 +765,10 @@ func (b *Benchmark) ScaleCluster() []models.TestResult {
 	}
 	wg.Wait()
 
+	scaleDownEnd := time.Now()
+
 	if anyErr != nil {
-		return []models.TestResult{
-			{
-				Name:  "scale-cluster",
-				Group: "scale-cluster",
-				Err:   anyErr,
-			},
-		}
+		return errResp(err)
 	}
 
 	end := time.Now()
@@ -763,13 +779,7 @@ func (b *Benchmark) ScaleCluster() []models.TestResult {
 	pretty_log.TaskGroup("[%s] Getting metrics for scaling cluster", b.Environment.Name)
 	metrics, err := b.StopMetricScrapers()
 	if err != nil {
-		return []models.TestResult{
-			{
-				Name:  "scale-cluster",
-				Group: "scale-cluster",
-				Err:   err,
-			},
-		}
+		return errResp(err)
 	}
 
 	return []models.TestResult{
@@ -778,9 +788,12 @@ func (b *Benchmark) ScaleCluster() []models.TestResult {
 			Group:   "scale-cluster",
 			Metrics: metrics,
 			Timers: map[string]time.Time{
-				TimerStarted:  start,
-				TimerScaledUp: mid,
-				TimerFinished: end,
+				TimerStarted:        start,
+				TimerFinished:       end,
+				TimerScaleUpStart:   scaleUpStart,
+				TimerScaleUpEnd:     scaleUpEnd,
+				TimerScaleDownStart: scaleDownStart,
+				TimerScaleDownEnd:   scaleDownEnd,
 			},
 		},
 	}
@@ -814,6 +827,7 @@ func (b *Benchmark) ScaleClusterWithVMs() []models.TestResult {
 	var anyErr error
 
 	start := time.Now()
+	scaleUpStart := time.Now()
 
 	pretty_log.TaskGroup("[%s] Scaling cluster up to %d nodes", b.Environment.Name, scaleUpTo)
 	for i := scaleDownTo; i < scaleUpTo; i++ {
@@ -836,7 +850,7 @@ func (b *Benchmark) ScaleClusterWithVMs() []models.TestResult {
 		return errResp(anyErr)
 	}
 
-	mid := time.Now()
+	scaleUpEnd := time.Now()
 
 	// Create a tiny VM on each worker node
 	pretty_log.TaskGroup("[%s] Creating a tiny VM on each worker node", b.Environment.Name)
@@ -861,6 +875,8 @@ func (b *Benchmark) ScaleClusterWithVMs() []models.TestResult {
 		return errResp(anyErr)
 	}
 
+	scaleDownStart := time.Now()
+
 	pretty_log.TaskGroup("[%s] Scaling cluster down to %d nodes", b.Environment.Name, scaleDownTo)
 	for i := scaleUpTo - 1; i >= scaleDownTo; i-- {
 		wg.Add(1)
@@ -878,8 +894,16 @@ func (b *Benchmark) ScaleClusterWithVMs() []models.TestResult {
 	}
 	wg.Wait()
 
+	scaleDownEnd := time.Now()
+
 	if anyErr != nil {
 		return errResp(anyErr)
+	}
+
+	pretty_log.TaskGroup("[%s] Deleting VMs", b.Environment.Name)
+	err = b.VMMS.DeleteAllVMs()
+	if err != nil {
+		return errResp(err)
 	}
 
 	end := time.Now()
@@ -899,9 +923,12 @@ func (b *Benchmark) ScaleClusterWithVMs() []models.TestResult {
 			Group:   "scale-cluster",
 			Metrics: metrics,
 			Timers: map[string]time.Time{
-				TimerStarted:  start,
-				TimerScaledUp: mid,
-				TimerFinished: end,
+				TimerStarted:        start,
+				TimerFinished:       end,
+				TimerScaleUpStart:   scaleUpStart,
+				TimerScaleUpEnd:     scaleUpEnd,
+				TimerScaleDownStart: scaleDownStart,
+				TimerScaleDownEnd:   scaleDownEnd,
 			},
 		},
 	}

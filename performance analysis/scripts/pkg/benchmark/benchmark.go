@@ -134,7 +134,19 @@ func Run(environments []models.BenchmarkEnvironment) (*models.BenchmarkResult, e
 					return
 				}
 			}
+
+			err = vmms.CleanUp()
+			if err != nil {
+				pretty_log.FailTask(id)
+				mut.Lock()
+				anyError = err
+				mut.Unlock()
+				return
+			}
+
 			pretty_log.CompleteTask(id)
+
+			pretty_log.TaskResult("[%s] Setup complete. Waiting for other to start", environment.Name)
 		}(e)
 	}
 	wg.Wait()
@@ -158,7 +170,7 @@ func Run(environments []models.BenchmarkEnvironment) (*models.BenchmarkResult, e
 
 			pretty_log.TaskGroup("[%s] Running benchmark", environment.Name)
 			timeStart := time.Now()
-			RunTests(environment.Name, NewBenchmark(environment, vmms).AllTests(), SaveResult)
+			RunTests(environment.Name, NewBenchmark(environment, vmms).AllTests(), vmmsMap[environment.Name].CleanUp, SaveResult)
 			timeEnd := time.Now()
 			pretty_log.TaskGroup("[%s] Benchmark complete (%s)", environment.Name, timeEnd.Sub(timeStart).String())
 
@@ -188,7 +200,7 @@ func Run(environments []models.BenchmarkEnvironment) (*models.BenchmarkResult, e
 // SaveResult saves the result of a test to a file.
 // It saves the result to results/{vmm}-{group}-{name}-{date}.json
 func SaveResult(vmm string, result models.TestResult) error {
-	dir := "results"
+	dir := app.Config.OutputDir
 	err := os.MkdirAll(dir, os.ModePerm)
 	if err != nil {
 		return err

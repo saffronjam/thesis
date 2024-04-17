@@ -523,6 +523,7 @@ Hypervisors are a key component of VM management systems, and several studies ha
 \chapter{Performance Analysis}
 As described in the literature study, Paradowski et al.\ present a set of benchmarks used to evaluate CloudStack and OpenStack\ \cite{cs-os-comparison-2013}. This comparison was used as a foundational basis for the performance analysis in this project, employing many of its approaches for evaluating the performance of a VM management system. In this project, however, OpenNebula was compared with KubeVirt. This decision was made to limit the scope to a single VM management system, as well as to ensure that the tests are relevant to Net Insight's current infrastructure. 
 
+\section{Setup}
 The testing process was conducted on Azure using a group of VMs that acted as hosting nodes. This approach was chosen to ensure that the tests are not affected by the underlying hardware and to facilitate reproducibility. 
 
 A set of scripts was created to automate the entire testing process. The scripts automated node creation in Azure, as well as installation and configuration of the VM management system on the nodes. Once the tests were finished, the results were collected by the scripts and the nodes were deleted in Azure. The scripts were thus used to create a complete setup for each system in a consistent manner using a single command.
@@ -608,10 +609,10 @@ The tests performed were divided into three categories: basic, limit testing, an
     \label{table:vm-specs}
 \end{table}
 
-\section*{Building a Framework}
+\section{Building a Framework}
 Evaluating the performance of a VM management system is a complex task that requires a structured approach due to its many components and multi-node setup. For this reason, a framework to form standardized testing environments was created. The framework was designed to be VM management system agnostic, meaning that it can be used to evaluate any VM management system as long as the system supports the set of features defined in the framework. Consequently, this means that the framework can be extended to evaluate any other VM management system, such as OpenStack or CloudStack, and not only OpenNebula and KubeVirt. However, it is important to note that the framework is designed to evaluate VM management systems that can be hosted on-premise since it quantifies the performance of a VM management system by measuring the utilization of nodes hosting the system. As such, the framework does not consider cloud-based VM management systems, such as Amazon EC2, Google Compute Engine or Azure Virtual Machines.
 
-\subsection*{Framework Design}
+\subsection{Framework Design}
 \label{sec:framework-design}
 The framework was designed to be modular and loosely coupled with external libraries. This design choice was made to ensure that the framework can be easily extended and modified and that it does not rely on external dependencies. To interact with a VM management system an interface was created that defines the methods that a VM management system must implement to be compatible. For instance, it defines methods for creating and deleting VMs, migrating VMs between nodes and scaling up and down the number of worker nodes, as well as methods for installing control and worker nodes. Each VM management system implements these methods in their respective packages. The full definition of the interface can be found in the appendix\ \ref{appendix:vmm-interface}. To host each VM management system, the framework created a set of nodes in Azure, which were completely installed and configured before any performance analysis was conducted to form a fair starting point for every VM management system. However, any dependencies required by the VM management system were intentionally left to the installation implementation for the VM management system, as unnecessary dependencies could introduce noise in the measurements. Metrics were collected by running a daemon on each Azure node that collects utilization metrics, including CPU, memory and disk utilization. The daemon operated by fetching metrics every second and storing them in a JSON file locally. However, to only capture metrics when a test was running, the daemon only started collecting metrics when a test was initiated and stopped when the test was finished. This was controlled by placing an empty file called \textit{run} where the daemon was running. The final output file was fetched using \textit{scp} and parsed by the framework to extract the metrics. By having each Azure node produce their output file locally, and only fetching it when a test is finished, it reduced the risk of introducing noise in the measurements. Both the daemon and metrics collector are documented in the appendix\ \ref{appendix:metrics-collector} and an overview of the framework design is illustrated in Figure \ref{fig:framework-design}.
 
@@ -637,14 +638,14 @@ The workflow of the framework was split into four phases to form a structured ap
     \label{fig:framework-workflow}  
 \end{figure}
 
-\subsection*{Implementation}
+\subsection{Implementation}
 The framework was implemented in the programming language Go, a language popular for its performance and concurrency features. Concurrency was a particularly important factor as several tests involved running multiple operations in parallel, such as creating or migrating several VMs at the same time. As such, settling for Go reduced the risk of introducing noise in the measurements and could run each test more efficiently. 
 
 Furthermore, the most important part of the framework was arguably to provide fair and reproducible comparisons. As described previously, each VM management system implemented an interface that defined methods for creating and deleting VMs. While this provided uniform operations from the framework's point of view, it also made the method's implementation crucial: KubeVirt's implementation of creating a VM should be as close to OpenNebula's implementation as possible to ensure that the comparison is fair, and no unnecessary overhead should be introduced. One example of this was that any network-related configuration had to be omitted since network-related metrics were not considered in this project. Another example was that the scheduling configuration had to be edited to ensure that VMs were created in as similar a manner as possible. However, all features that a VM management system offered and that were beneficial for the specific operation were considered. For instance, OpenNebula did not allow a live migration action to be performed on a VM that is not running, while KubeVirt allowed the operation to be requested despite the state of a VM.\ This allowed KubeVirt to omit the waiting time for a VM to be in the correct state before requesting a migration action. 
 \\~\\
 \noindent Below is an extraction of OpenNebula's and KubeVirt's implementations for creating a VM.
 
-\subsection*{KubeVirt}
+\subsubsection*{KubeVirt}
 \begin{lstlisting}[language=yaml]
 kubectl apply -f <<EOF
     apiVersion: kubevirt.io/v1
@@ -688,7 +689,7 @@ kubectl apply -f <<EOF
 EOF
 \end{lstlisting}
 
-\subsection*{OpenNebula}
+\subsubsection*{OpenNebula}
 \begin{lstlisting}[language=bash]
 onetemplate instantiate $TEMPLATE_ID --name $NAME <<EOF
     CPU="0.1"
@@ -705,8 +706,10 @@ The entire framework is open-source and available at \url{INSERT URL HERE}. The 
 
 \chapter{Usability Analysis}
 To accurately measure the usability of KubeVirt, a set of tasks was crafted in cooperation with a system administrator at Net Insight. The tasks were designed to be representative of the tasks that a system administrator would perform when managing VMs. The tasks were designed to be performed using the Kubernetes command line interface (CLI) tool \textit{kubectl} and KubeVirt's complementary CLI tool \textit{virtctl}. This approach was chosen since KubeVirt did not directly offer a graphical user interface (GUI), and using any third-party solution could risk introducing biases in the results. The usability analysis was performed on an Azure Kubernetes cluster (AKS) that was set up solely for the analysis. 
-\\~\\
-\noindent Below is a summary of the tasks and their purpose in the usability analysis:
+
+\section{Task Design}
+The analysis was designed as a step-by-step guide that would take the participants through a set of tasks that were divided into three groups: basic usage, maintenance and debugging. The focus of the analysis was not to evaluate the participant's ability to perform the tasks or their Kubernetes knowledge but rather to expose them to KubeVirt and its workflows. As such, the tasks were designed to be as straightforward as possible, with the exception of a debugging task that was designed to evaluate finding and resolving runtime issues. Moreover, the order of the tasks was designed to gradually increase in complexity to ensure a structured approach and allow the participants to familiarize themselves with KubeVirt. Below is a description of each group of tasks:
+
 \begin{itemize}
     \item\textbf{Basic usage}\\
     This task was designed to act as a starting point for the usability analysis. The participants were asked to create a single VM configured with a \textit{containerDisk}, connect to it using SSH and VNC and then delete it. The purpose of this task was to evaluate how well KubeVirt supports the most basic operations and whether the participants deem the process intuitive. 
@@ -715,13 +718,13 @@ To accurately measure the usability of KubeVirt, a set of tasks was crafted in c
     The second was designed to evaluate how well KubeVirt supports recurring tasks that a system administrator could face when managing VMs and the platform hosting them. The analysis divided this task into two parts: live migration and snapshotting. The participants were first asked to create a single VM and start it on a specific host, then migrate the VM to another host without any downtime. A lightweight VM configured with a \textit{containerDisk} was chosen for this task to keep the focus on the live migration operation. The second part of the task was to create a snapshot of a VM and then restore it. A VM configured with a \textit{DataVolume} disk was chosen for this task since a container disk cannot be snapshotted. Both live migration and snapshotting were included in the usability analysis since they are inherently different in KubeVirt compared to traditional VM management systems due to the declarative nature of Kubernetes, see \ref{sec:kubevirt}. 
 
     \item\textbf{Debugging}\\
-    This task was designed to evaluate how well KubeVirt supports debugging and how intuitive the process of resolving runtime issues is. While KubeVirt does enforce correct specification upon creation with API validation, see \ref{sec:kubevirt}, it is still possible that a VM does not start if the misconfiguration affects the runtime. For this reason, the participants were presented with a VM that was not accessible due to a cloud-init misconfiguration that prevents SSH access to the VM by having invalid password syntax and missing authorized SSH public keys. This means that the participants could solve the issue either by resolving the password formatting issue or supplying a valid SSH public key. The participants were presented with a basic problem statement and were encouraged to use the official documentation if needed. For this task, a lightweight VM configured with a containerDisk was used to keep the focus on the debugging operation.
+    The third task was designed to evaluate how well KubeVirt supports debugging and how intuitive the process of resolving runtime issues is. While KubeVirt does enforce correct specification upon creation with API validation, see \ref{sec:kubevirt}, it is still possible that a VM does not start if the misconfiguration affects the runtime. For this reason, the participants were presented with a VM that was not accessible due to a cloud-init misconfiguration that prevents SSH access to the VM by having invalid password syntax and missing authorized SSH public keys. This means that the participants could solve the issue either by resolving the password formatting issue or supplying a valid SSH public key. The participants were presented with a basic problem statement and were encouraged to use the official documentation if needed. For this task, a lightweight VM configured with a containerDisk was used to keep the focus on the debugging operation.
 \end{itemize}
 
 After each group of tasks was finished, the participants were asked to reflect on the experience and provide feedback on the tasks. The participants were encouraged to use a free-form approach but could use a set of open-ended questions as a reference. 
 
-\section*{Conducting the Usability Analysis}
-The usability analysis was performed together with a group of system administrators at Net Insight. The participants were presented with a set of tasks as described in the previous section. Each participant was given a document containing all the tasks as well as an introduction to KubeVirt and each of the operations they would perform. For each task, the participant was encouraged to use the official KubeVirt documentation to aid them in completing the tasks. Together with the document containing the tasks, each participant was given a \textit{kubeconfig} and the name for their Kubernetes namespace in which they would perform their tasks. They were given separate namespaces to ensure that none of the tasks would interfere with the results of the other participants. Once finished, the reflection and feedback were collected from each participant. Each participant was given two weeks to complete the tasks. While this was a relatively long time, it was chosen to ensure that the participants were given enough time to explore KubeVirt and potentially explore other features that were not part of the given tasks. The entire usability analysis can be found in the appendix\ \ref{appendix:usability-tasks}.
+\section{Conducting the Usability Analysis}
+The usability analysis was performed together with a group of system administrators at Net Insight. The participants were presented with a set of tasks as described in the previous section. Each participant was given a document containing all the tasks as well as an introduction to KubeVirt and each of the operations they would perform. For each task, the participant was encouraged to use the official KubeVirt documentation to aid them in completing the tasks. Together with the document containing the tasks, each participant was given a \textit{kubeconfig} and the name for their Kubernetes namespace in which they would perform their tasks. They were given separate namespaces to ensure that none of the tasks would interfere with the results of the other participants. Once finished, the reflection and feedback were collected from each participant. They were given two weeks to complete the tasks, and while this was a relatively long time, it was chosen to ensure that the participants were given enough time to potentially explore features that were not part of the given tasks. The entire usability analysis can be found in the appendix\ \ref{appendix:usability-tasks}.
 
 \chapter{Results}
 This section contains the results of the performance analysis and usability analysis. Each test in the performance analysis was run 10 times, and the result visualizations were averaged using a rolling mean with a window size of 5\% of the total number of data points. The usability analysis received feedback in different forms, either by answering questions or providing a free-form response. 
@@ -958,7 +961,7 @@ However, participants expressed some confusion when connecting to the VM using S
 KubeVirt's complementary CLI tool \textit{virtctl} was found to be useful when connecting to the VM, as it provided a single tool for both VNC and SSH.
 
 \begin{itemize}
-    \item Participant 2: \textit{Very simple! Simply doing virtctl ssh cirros@my-vm and then typing
+    \item Participant 2: \textit{Very simple! Simply doing virtual ssh cirros@my-vm and then typing
     in the password and then I was in!}
 \end{itemize}
 \subsection*{Maintenance}
@@ -966,7 +969,7 @@ KubeVirt's complementary CLI tool \textit{virtctl} was found to be useful when c
 The maintenance tasks received a broad range of feedback. Some of the participants found the process of live migration to be simple, while other participants deemed the process to be overly complex and non-intuitive. Participant 1 in particular regarded many of the operations as flawed, such as the live migration object not being deleted after the migration was completed, but also that KubeVirt lacked proper documentation around the practical aspects of how to perform a live migration. Similar to the basic usage tasks, the participants experienced issues with connecting to VMs using SSH, as it was not clear which SSH public key was used to connect to the VM.
 
 \begin{itemize}
-    \item Participant 2: \textit{I had to delete the entry from /.ssh/kubevirt\_known\_hosts after each time I restarted the VM because virtctl ssh complained about a key mismatch.}
+    \item Participant 2: \textit{I had to delete the entry from /.ssh/kubevirt\_known\_hosts each time I restarted the VM because virtual ssh complained about a key mismatch.}
 \end{itemize}
 
 \subsection*{Debugging}
@@ -977,7 +980,7 @@ Compared to both the basic tasks and maintenance, the debugging tasks received t
     \item Participant 1: \textit{I did not manage to solve the key mismatch issue as there is very little in the way of debugging virtctl ssh.}
 \end{itemize}
 
-However, while debugging was found to be complex, participant 3 regarded the YAML-files as a positive aspect to debugging.
+However, while debugging was found to be complex, participant 3 regarded the YAML files as a positive aspect of debugging.
 
 \begin{itemize}
     \item Participant 3: \textit{Debugging the issue was easy because the manifest uses standard constructs that are easily googleable.}
@@ -999,7 +1002,7 @@ The feedback to KubeVirt was in general mixed. While the workflow was found to b
 
 \appendix
 
-\chapter{Performance Analysis Component}
+\chapter{Performance Analysis Components}
 \section{VM Management System Interface}
 \label{appendix:vmm-interface}
 \begin{lstlisting}[language=Go]

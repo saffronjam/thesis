@@ -166,7 +166,7 @@ The purpose of this project is to evaluate if Kubernetes, a platform originally 
 This project aims to explore the integration of VMs into Kubernetes environments using KubeVirt. By comparing how VMs are managed using KubeVirt against traditional VM management systems, this project aims to address possible inefficiencies and complexities that arise when managing VMs outside of Kubernetes. The project will investigate the implications of moving into a KubeVirt-based system, such as the benefits and limitations of using KubeVirt, and how it compares to traditional VM management systems.
 
 \section{Research Method}
-This project will use a mixed-methods approach to investigate the research questions. Initially, a literature review will be carried out to understand the current state of the art in VM management systems and the current challenges faced and limitations in managing VMs and containers in separate environments. Following this, both a qualitative and quantitative comparison will be conducted to understand the practical implications of moving into a KubeVirt-based system. The qualitative comparison will be conducted to understand the practical implications of moving into a KubeVirt-based system. It will include collecting feedback by interviewing system administrators and operators with experience in both traditional VM management systems and KubeVirt. The quantitative comparison will be conducted to evaluate measurable performance, scalability, and operational efficiencies that could arise when using Kubernetes with KubeVirt, and will include a set of benchmarks. 
+This project will use a mixed-methods approach to investigate the research questions. Initially, a literature review will be carried out to understand the current state of the art in VM management systems and the current challenges faced and limitations in managing VMs and containers in separate environments. Following this, both a qualitative and quantitative comparison will be conducted to understand the practical implications of moving into a KubeVirt-based system. The qualitative comparison will be conducted to understand the practical implications of moving into a KubeVirt-based system. It will include collecting feedback by having system administrators and operators with experience in both traditional VM management systems and Kubernetes explore Kubevirt. The quantitative comparison will be conducted to evaluate measurable performance, scalability, and operational efficiencies that could arise when using Kubernetes with KubeVirt, and will include a set of benchmarks. 
 
 \section{Limitations}
 \begin{enumerate}
@@ -521,7 +521,7 @@ In terms of network performance, a study conducted by Kolahdouzan investigated t
 Hypervisors are a key component of VM management systems, and several studies have evaluated the performance of hypervisors. A study by Hwang et al.\ evaluated the performance of a range of hypervisors including KVM, Hyper-V and Xen\ \cite{hypervisor-comparion-2010}. The study found that applications and assigned resources had a significant impact on the overhead of the hypervisors. However, the study concluded that no single hypervisor was the silver bullet and that the choice of hypervisor should be based on the specific use case. Reviewing the performance of hypervisors is important when evaluating KubeVirt, as KubeVirt uses KVM as its hypervisor. 
 
 \chapter{Performance Analysis}
-As described in the literature study, Paradowski et al.\ present a set of benchmarks used to evaluate CloudStack and OpenStack\ \cite{cs-os-comparison-2013}. This comparison was used as a foundational basis for the performance analysis in this project, employing many of its approaches for evaluating the performance of a VM management system. In this project, however, OpenNebula was compared with KubeVirt. This decision was made to limit the scope to a single VM management system, as well as to ensure that the tests are relevant to Net Insight's current infrastructure. 
+As described in the literature study, Paradowski et al.\ presented a set of benchmarks used to evaluate CloudStack and OpenStack\ \cite{cs-os-comparison-2013}. This comparison was used as a foundational basis for the performance analysis in this project, employing many of its approaches for evaluating the performance of a VM management system. In this project, however, OpenNebula was compared with KubeVirt. Choosing OpenNebula as the second system was based on its popularity and the fact it is open-source, but also to ensure that the tests were relevant to Net Insight's current infrastructure. 
 
 \section{Setup}
 The testing process was conducted on Azure using a group of VMs that acted as hosting nodes. This approach was chosen to ensure that the tests are not affected by the underlying hardware and to facilitate reproducibility. 
@@ -566,7 +566,7 @@ To quantify the results of the tests, several metrics were collected on each Azu
     \label{table:performance-metrics}
 \end{table}
 
-The tests performed were divided into three categories: basic, limit testing, and scaling. The basic tests were designed to evaluate the basic functionality of the VM management systems, such as creating and deleting VMs. The limit testing tests were designed to evaluate how a VM management operates when the maximum capacity is reached in the worker nodes. The scaling tests were designed to evaluate how a VM management system handles the scale-out and scale-in of worker nodes, both with and without VMs on it (that would need to be migrated). Each test was run 10 times. Table \ref{table:performance-tests} shows an overview of the tests and their purpose.
+The tests performed were divided into three categories: basic, limit testing, and scaling. The basic tests were designed to evaluate the basic functionality of the VM management systems, such as creating and deleting VMs. The limit testing tests were designed to evaluate how a VM management system operates when the maximum capacity is reached in the worker nodes. The scaling tests were designed to evaluate how a VM management system handles the scale-out and scale-in of worker nodes, both with and without VMs on it (that would need to be migrated). Each test was run 10 times. See table \ref{table:performance-tests} for an overview of the tests and their purpose.
 
 \begin{table}
     \centering
@@ -577,15 +577,15 @@ The tests performed were divided into three categories: basic, limit testing, an
         \hline
         Create each type of VM and delete it & Evaluate the basic functionality of the VM management systems without addressing potential load issues.\\
         \hline
-        Create 20 tiny VMs and then delete them & Evaluate how the VM management systems manage a relatively large burst of VMs.\\
+        Create 20 type-1 VMs and then delete them & Evaluate how the VM management systems manage a relatively large burst of VMs.\\
         \hline
-        Live migrate a large VM & Evaluate how well the VM management systems execute a migration operation without addressing potential load issues.\\
+        Live migrate a type-4 VM & Evaluate how well the VM management systems execute a migration operation without addressing potential load issues.\\
         \hline
-        Live migrate 20 tiny VMs & Evaluate how well the VM management systems manage a relatively large burst of migration operations.\\
+        Live migrate 10 type-1 VMs & Evaluate how well the VM management systems manage a relatively large burst of migration operations.\\
         \hline
         Scale up and down 2 to 10 workers without VMs & Evaluate how well the VM management systems scale up and down without any load.\\
         \hline
-        Scale up and down 2 to 10 workers with a tiny VM on each worker & Evaluate how the VM management systems handle scaling operations that incur migration operations.\\
+        Scale up and down 2 to 10 workers with a type-1 VM on each worker & Evaluate how the VM management systems handle scaling operations that incur migration operations.\\
         \hline
     \end{tabular}
     \caption{Performance tests}
@@ -610,11 +610,33 @@ The tests performed were divided into three categories: basic, limit testing, an
 \end{table}
 
 \section{Building a Framework}
-Evaluating the performance of a VM management system is a complex task that requires a structured approach due to its many components and multi-node setup. For this reason, a framework to form standardized testing environments was created. The framework was designed to be VM management system agnostic, meaning that it can be used to evaluate any VM management system as long as the system supports the set of features defined in the framework. Consequently, this means that the framework can be extended to evaluate any other VM management system, such as OpenStack or CloudStack, and not only OpenNebula and KubeVirt. However, it is important to note that the framework is designed to evaluate VM management systems that can be hosted on-premise since it quantifies the performance of a VM management system by measuring the utilization of nodes hosting the system. As such, the framework does not consider cloud-based VM management systems, such as Amazon EC2, Google Compute Engine or Azure Virtual Machines.
+Evaluating the performance of a VM management system is a complex task that requires a structured approach due to its many components and multi-node setup. For this reason, a framework to form standardized testing environments was created. The framework was designed to be VM management system agnostic, meaning that it can be used to evaluate any VM management system as long as the system supports the set of features defined in the framework. Consequently, this means that the framework can be extended to evaluate any other VM management system, such as the previously mentioned OpenStack and CloudStack, and not only OpenNebula and KubeVirt. However, it is important to note that the framework was designed to evaluate VM management systems that can be hosted on-premise since it quantifies the performance of a VM management system by measuring the utilization of nodes hosting the system. As such, the framework does not consider cloud-based VM management systems, such as Amazon EC2, Google Compute Engine or Azure Virtual Machines.
 
 \subsection{Framework Design}
 \label{sec:framework-design}
-The framework was designed to be modular and loosely coupled with external libraries. This design choice was made to ensure that the framework can be easily extended and modified and that it does not rely on external dependencies. To interact with a VM management system an interface was created that defines the methods that a VM management system must implement to be compatible. For instance, it defines methods for creating and deleting VMs, migrating VMs between nodes and scaling up and down the number of worker nodes, as well as methods for installing control and worker nodes. Each VM management system implements these methods in their respective packages. The full definition of the interface can be found in the appendix\ \ref{appendix:vmm-interface}. To host each VM management system, the framework created a set of nodes in Azure, which were completely installed and configured before any performance analysis was conducted to form a fair starting point for every VM management system. However, any dependencies required by the VM management system were intentionally left to the installation implementation for the VM management system, as unnecessary dependencies could introduce noise in the measurements. Metrics were collected by running a daemon on each Azure node that collects utilization metrics, including CPU, memory and disk utilization. The daemon operated by fetching metrics every second and storing them in a JSON file locally. However, to only capture metrics when a test was running, the daemon only started collecting metrics when a test was initiated and stopped when the test was finished. This was controlled by placing an empty file called \textit{run} where the daemon was running. The final output file was fetched using \textit{scp} and parsed by the framework to extract the metrics. By having each Azure node produce their output file locally, and only fetching it when a test is finished, it reduced the risk of introducing noise in the measurements. Both the daemon and metrics collector are documented in the appendix\ \ref{appendix:metrics-collector} and an overview of the framework design is illustrated in Figure \ref{fig:framework-design}.
+The framework was designed to be modular and loosely coupled with external libraries. This design choice was made to ensure that the framework can be easily extended and modified and that it does not rely on external dependencies. To interact with a VM management system an interface was created that defines the methods that a VM management system must implement to be compatible. It defines methods for creating and deleting VMs, migrating VMs between nodes and scaling up and down the number of worker nodes, as well as methods for installing control and worker nodes. Each VM management system implements these methods in their respective packages. The full definition of the interface can be found in the appendix\ \ref{appendix:vmm-interface}. To host each VM management system, the framework created a set of nodes in Azure, which were completely installed and configured before any performance analysis was conducted to form a fair starting point for every VM management system. However, any dependencies required by the VM management system were intentionally left to the installation, as unnecessary dependencies could introduce noise in the measurements. 
+
+Metrics were collected by running a daemon on each Azure node that collects utilization metrics, including CPU, memory and disk utilization. The daemon operated by fetching metrics every second and storing them in a JSON file locally. However, to only capture metrics when a test was running, the daemon only started collecting metrics when a test was initiated and stopped when the test was finished. This was controlled by placing an empty file called \textit{run} where the daemon was running. The daemon checked for the file's existence periodically and started collecting metrics when it noticed the file was present. As such, each node timestamped its metrics locally, which meant that the timestamp of the data points could vary between the nodes. However, this distributed approach was chosen to reduce the number of network requests to a minimum and to ensure that no skew was introduced in the measurements due to network latency. 
+
+The utilization metrics were collected by a set of tools that were installed on each Azure node. Since the tools were required to be installed on every node, they were installed directly after creation. Table \ref{table:metric-tools} shows an overview of the tools used by the daemon. Another important aspect considered was asynchronous execution. Each of the tools used by the daemon was executed in parallel to minimize the time it took to collect the metrics for a given timestamp, essentially allowing shorter intervals between each data point. The structure of the output varied between the tools and was parsed using built-in tools in Linux such as \textit{awk} and \textit{sed} before being stored in a JSON file. The final output file was fetched over SSH using \textit{scp} and parsed by the framework to extract the metrics. The daemon was written in Bash to ensure that it could run on any Linux distribution and did not require any external dependencies. The code for the daemon can be found in the appendix\ \ref{appendix:metrics-collector} and the framework design is visualized in Figure\ \ref{fig:framework-design}.
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{ |p{2cm}||p{2cm}||p{6cm}| }
+        \hline
+        \textbf{Tool} & \textbf{Utilization} & \textbf{Description}\\
+        \hline
+        \hline
+        mpstat & CPU & Reports activities for each available processor\\
+        \hline
+        free & Memory & Displays the total amount of free and used memory in the system\\
+        \hline
+        iostat & Disk & Reports CPU utilization and disk I/O statistics\\
+        \hline
+    \end{tabular}
+    \caption{Tools used by the metrics collector daemon}
+    \label{table:metric-tools}
+\end{table}
 
 \begin{figure}
     \centering
@@ -623,11 +645,11 @@ The framework was designed to be modular and loosely coupled with external libra
     \label{fig:framework-design}
 \end{figure}
 
-The workflow of the framework was split into four phases to form a structured approach that allows for modularity and caching, where each phase was responsible for a specific part of the workflow and, in most cases, independent of each other. For instance, the installation phase can be omitted if the nodes are already installed and configured from a previous run. However, if the teardown phase was executed in one run, the next run after it must start with the setup phase. The design choice of dividing the workflow into phases was made to allow for more efficient testing, both when developing the scripts and when executing them. This was especially important when considering that each test comes with a cost in Azure. The entire workflow is illustrated in Figure \ref{fig:framework-workflow} and is described below:
+The workflow of the framework was split into four phases to form a structured approach that allows for modularity and caching. Each phase was responsible for a specific part of the workflow and, in most cases, independent of each other. For instance, the installation phase can be omitted if the nodes are already installed and configured from a previous run. However, if the teardown phase was executed in one run, the next run after it must start with the setup phase. The design choice of dividing the workflow into phases was made to allow for more efficient testing, both when developing the scripts and when executing them. This was especially important considering that each test came with a cost in Azure. The entire workflow is illustrated in Figure \ref{fig:framework-workflow} and is described below:
 \begin{enumerate}
     \item \textbf{Setup}: The setup phase is responsible for creating the nodes and networking in Azure. It is also responsible for installing base packages that every node requires, such as \textit{sysstat} to collect utilization metrics and \textit{jq} to parse JSON output.
     \item \textbf{Installation}: The installation phase is responsible for installing and configuring the VM management system on the Azure nodes. Each VM management system implements an installation method that is responsible for installing and configuring the system with one control node and two worker nodes such that it can run a VM. The installation method also installs several standby workers that will be used when scaling up and down the number of worker nodes. By having standby workers, the framework can independently measure the cost of scaling up and down without the cost of downloading dependencies. While larger dependencies can be seen as a metric on their own, it is important to note that production environments usually generate OS images with prepared dependencies, rendering the cost of downloading dependencies irrelevant.
-    \item \textbf{Benchmark}: The benchmark phase is responsible for running the performance tests. The tests are described in\ \ref{table:performance-tests} and are designed to evaluate the general performance of the VM management system. Each test is a combination of the methods the VM management system interface offers, such as creating VMs in different sizes, migrating VMs between nodes and scaling up and down the number of worker nodes. 
+    \item \textbf{Benchmark}: The benchmark phase is responsible for running the performance tests. The tests are described in\ \ref{table:performance-tests} and are designed to evaluate the general performance of the VM management system. Each test is a combination of the methods the framework interface offers, such as creating VMs in different sizes, migrating VMs between nodes and scaling up and down the number of worker nodes. This phase generates and saves the results of the tests in a JSON file.
     \item \textbf{Teardown}: The teardown phase is responsible for deleting the Azure nodes and ensuring that no resources are left behind. Having this as a separate phase allows for tests to run sequentially without the time cost of creating and deleting nodes for each test. 
 \end{enumerate}
 
@@ -641,7 +663,7 @@ The workflow of the framework was split into four phases to form a structured ap
 \subsection{Implementation}
 The framework was implemented in the programming language Go, a language popular for its performance and concurrency features. Concurrency was a particularly important factor as several tests involved running multiple operations in parallel, such as creating or migrating several VMs at the same time. As such, settling for Go reduced the risk of introducing noise in the measurements and could run each test more efficiently. 
 
-Furthermore, the most important part of the framework was arguably to provide fair and reproducible comparisons. As described previously, each VM management system implemented an interface that defined methods for creating and deleting VMs. While this provided uniform operations from the framework's point of view, it also made the method's implementation crucial: KubeVirt's implementation of creating a VM should be as close to OpenNebula's implementation as possible to ensure that the comparison is fair, and no unnecessary overhead should be introduced. One example of this was that any network-related configuration had to be omitted since network-related metrics were not considered in this project. Another example was that the scheduling configuration had to be edited to ensure that VMs were created in as similar a manner as possible. However, all features that a VM management system offered and that were beneficial for the specific operation were considered. For instance, OpenNebula did not allow a live migration action to be performed on a VM that is not running, while KubeVirt allowed the operation to be requested despite the state of a VM.\ This allowed KubeVirt to omit the waiting time for a VM to be in the correct state before requesting a migration action. 
+The most important part of the framework was arguably to provide fair and reproducible comparisons. As described previously, each VM management system implemented an interface that defined methods for creating and deleting VMs. While this provided uniform operations from the framework's point of view, it also made the method's implementation crucial: KubeVirt's implementation of creating a VM should be as close to OpenNebula's implementation as possible to ensure that the comparisons are fair and that no unnecessary overhead are introduced. One example of this was that any network-related configuration had to be omitted since network-related metrics were not considered in the project. Another example was that the scheduling configuration had to be edited to ensure that VMs were created in as similar a manner as possible. However, all features that a VM management system offered and that were beneficial for the specific operation were considered. For instance, OpenNebula did not allow a live migration action to be performed on a VM that is not running, while KubeVirt allowed the operation to be requested despite the state of a VM.\ This allowed KubeVirt to omit the waiting time for a VM to be in the correct state before requesting a migration action. 
 \\~\\
 \noindent Below is an extraction of OpenNebula's and KubeVirt's implementations for creating a VM.
 
@@ -705,7 +727,7 @@ EOF
 The entire framework is open-source and available at \url{INSERT URL HERE}. The GitHub repository contains all the code required to run the framework, including documentation on how to set up and run the framework. 
 
 \chapter{Usability Analysis}
-To accurately measure the usability of KubeVirt, a set of tasks was crafted in cooperation with a system administrator at Net Insight. The tasks were designed to be representative of the tasks that a system administrator would perform when managing VMs. The tasks were designed to be performed using the Kubernetes command line interface (CLI) tool \textit{kubectl} and KubeVirt's complementary CLI tool \textit{virtctl}. This approach was chosen since KubeVirt did not directly offer a graphical user interface (GUI), and using any third-party solution could risk introducing biases in the results. The usability analysis was performed on an Azure Kubernetes cluster (AKS) that was set up solely for the analysis. 
+To accurately measure the usability of KubeVirt, a set of tasks was crafted in cooperation with a system administrator at Net Insight. The tasks were designed to be representative of the tasks that a system administrator would perform when managing VMs. The tasks were designed to be performed using the Kubernetes command line interface (CLI) tool \textit{kubectl} and KubeVirt's complementary CLI tool \textit{virtctl}. This approach was chosen since KubeVirt did not directly offer a graphical user interface (GUI), and using any third-party solution could risk introducing biases in the results. The resources required for the usability analysis, including an instance of KubeVirt, were hosted in a Kubernetes cluster in Azure using Azure Kubernetes Service (AKS). 
 
 \section{Task Design}
 The analysis was designed as a step-by-step guide that would take the participants through a set of tasks that were divided into three groups: basic usage, maintenance and debugging. The focus of the analysis was not to evaluate the participant's ability to perform the tasks or their Kubernetes knowledge but rather to expose them to KubeVirt and its workflows. As such, the tasks were designed to be as straightforward as possible, with the exception of a debugging task that was designed to evaluate finding and resolving runtime issues. Moreover, the order of the tasks was designed to gradually increase in complexity to ensure a structured approach and allow the participants to familiarize themselves with KubeVirt. Below is a description of each group of tasks:
@@ -715,7 +737,7 @@ The analysis was designed as a step-by-step guide that would take the participan
     This task was designed to act as a starting point for the usability analysis. The participants were asked to create a single VM configured with a \textit{containerDisk}, connect to it using SSH and VNC and then delete it. The purpose of this task was to evaluate how well KubeVirt supports the most basic operations and whether the participants deem the process intuitive. 
 
     \item\textbf{Maintenance}\\
-    The second was designed to evaluate how well KubeVirt supports recurring tasks that a system administrator could face when managing VMs and the platform hosting them. The analysis divided this task into two parts: live migration and snapshotting. The participants were first asked to create a single VM and start it on a specific host, then migrate the VM to another host without any downtime. A lightweight VM configured with a \textit{containerDisk} was chosen for this task to keep the focus on the live migration operation. The second part of the task was to create a snapshot of a VM and then restore it. A VM configured with a \textit{DataVolume} disk was chosen for this task since a container disk cannot be snapshotted. Both live migration and snapshotting were included in the usability analysis since they are inherently different in KubeVirt compared to traditional VM management systems due to the declarative nature of Kubernetes, see \ref{sec:kubevirt}. 
+    The second task was designed to evaluate how well KubeVirt supports recurring tasks that a system administrator could face when managing VMs and the platform hosting them. The analysis divided this task into two parts: live migration and snapshotting. The participants were first asked to create a single VM and start it on a specific host, then migrate the VM to another host without any downtime. A lightweight VM configured with a \textit{containerDisk} was chosen for this task to keep the focus on the live migration operation. The second part of the task was to create a snapshot of a VM and then restore it. A VM configured with a \textit{DataVolume} disk was chosen for this task since a container disk cannot be snapshotted. Both live migration and snapshotting were included in the usability analysis since they are inherently different in KubeVirt compared to traditional VM management systems due to the declarative nature of Kubernetes, see \ref{sec:kubevirt}. 
 
     \item\textbf{Debugging}\\
     The third task was designed to evaluate how well KubeVirt supports debugging and how intuitive the process of resolving runtime issues is. While KubeVirt does enforce correct specification upon creation with API validation, see \ref{sec:kubevirt}, it is still possible that a VM does not start if the misconfiguration affects the runtime. For this reason, the participants were presented with a VM that was not accessible due to a cloud-init misconfiguration that prevents SSH access to the VM by having invalid password syntax and missing authorized SSH public keys. This means that the participants could solve the issue either by resolving the password formatting issue or supplying a valid SSH public key. The participants were presented with a basic problem statement and were encouraged to use the official documentation if needed. For this task, a lightweight VM configured with a containerDisk was used to keep the focus on the debugging operation.
@@ -724,18 +746,19 @@ The analysis was designed as a step-by-step guide that would take the participan
 After each group of tasks was finished, the participants were asked to reflect on the experience and provide feedback on the tasks. The participants were encouraged to use a free-form approach but could use a set of open-ended questions as a reference. 
 
 \section{Conducting the Usability Analysis}
-The usability analysis was performed together with a group of system administrators at Net Insight. The participants were presented with a set of tasks as described in the previous section. Each participant was given a document containing all the tasks as well as an introduction to KubeVirt and each of the operations they would perform. For each task, the participant was encouraged to use the official KubeVirt documentation to aid them in completing the tasks. Together with the document containing the tasks, each participant was given a \textit{kubeconfig} and the name for their Kubernetes namespace in which they would perform their tasks. They were given separate namespaces to ensure that none of the tasks would interfere with the results of the other participants. Once finished, the reflection and feedback were collected from each participant. They were given two weeks to complete the tasks, and while this was a relatively long time, it was chosen to ensure that the participants were given enough time to potentially explore features that were not part of the given tasks. The entire usability analysis can be found in the appendix\ \ref{appendix:usability-tasks}.
+The usability analysis was performed together with a group of system administrators at Net Insight. The participants were presented with a set of tasks as described in the previous section. Each participant was given a document containing all the tasks as well as an introduction to KubeVirt and each of the operations they would perform. For each task, the participant was encouraged to use the official KubeVirt documentation to aid them in completing the tasks. Together with the document containing the tasks, each participant was given a \textit{kubeconfig} and the name for their Kubernetes namespace in which they would perform their tasks. They were given separate namespaces to ensure that none of the tasks would interfere with the results of the other participants. Once finished, the reflection and feedback were collected from each participant. They were given two weeks to complete the tasks, and while this was a relatively long time, it was chosen to ensure that the participants were given enough time to potentially explore features in KubeVirt that were not part of the given tasks. The entire usability analysis can be found in the appendix\ \ref{appendix:usability-tasks}.
 
 \chapter{Results}
 This section contains the results of the performance analysis and usability analysis. Each test in the performance analysis was run 10 times, and the result visualizations were averaged using a rolling mean with a window size of 5\% of the total number of data points. The usability analysis received feedback in different forms, either by answering questions or providing a free-form response. 
 
 \newpage
 \section{Performance Analysis}
+This section contains the results of the performance analysis with KubeVirt and OpenNebula. Only the most significant results are presented in this section, and the complete list of results can be found in the appendix \ref{appendix:performance-results}.
 % The most significant results are copied from the appendix
 % Create a tiny VM - KubeVirt
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\textwidth]{plt/create-tiny_kubevirt.pdf}
+    \includegraphics[width=0.67\textwidth]{plt/create-tiny_kubevirt.pdf}
     \caption{CPU utilization on the control node when creating a VM type 1 in KubeVirt}
     \label{fig:create-tiny-kubevirt}
 \end{figure}
@@ -743,7 +766,7 @@ This section contains the results of the performance analysis and usability anal
 % Create a tiny VM - OpenNebula
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\textwidth]{plt/create-tiny_opennebula.pdf}
+    \includegraphics[width=0.67\textwidth]{plt/create-tiny_opennebula.pdf}
     \caption{CPU utilization on the control node when creating a VM type 1 in OpenNebula}
     \label{fig:create-tiny-opennebula}
 \end{figure}
@@ -784,7 +807,7 @@ This section contains the results of the performance analysis and usability anal
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{plt/create-many_cpu.pdf}
-    \caption{CPU utilization on the control node when creating many type-1 VMs}
+    \caption{CPU utilization on the control node when creating 20 type-1 VMs}
     \label{fig:create-many-cpu}
 \end{figure}
 
@@ -792,7 +815,7 @@ This section contains the results of the performance analysis and usability anal
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{plt/create-many_cpu_worker.pdf}
-    \caption{CPU utilization among workers nodes when creating many type-1 VMs}
+    \caption{CPU utilization among workers nodes when creating 20 type-1 VMs}
     \label{fig:create-many-cpu-worker}
 \end{figure}
 
@@ -800,7 +823,7 @@ This section contains the results of the performance analysis and usability anal
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{plt/create-many_ram.pdf}
-    \caption{Memory utilization on the control node when creating many type-1 VMs}
+    \caption{Memory utilization on the control node when creating 20 type-1 VMs}
     \label{fig:create-many-memory}
 \end{figure}
 
@@ -808,7 +831,7 @@ This section contains the results of the performance analysis and usability anal
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{plt/create-many_ram_worker.pdf}
-    \caption{Memory utilization among workers nodes when creating many type-1 VMs}
+    \caption{Memory utilization among workers nodes when creating 20 type-1 VMs}
     \label{fig:create-many-memory-worker}
 \end{figure}
 
@@ -816,7 +839,7 @@ This section contains the results of the performance analysis and usability anal
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{plt/create-many_disk.pdf}
-    \caption{Disk utilization on the control node when creating many type-1 VMs}
+    \caption{Disk utilization on the control node when creating 20 type-1 VMs}
     \label{fig:create-many-disk}
 \end{figure}
 
@@ -824,7 +847,7 @@ This section contains the results of the performance analysis and usability anal
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{plt/create-many_disk_worker.pdf}
-    \caption{Disk utilization among workers nodes when creating many type-1 VMs}
+    \caption{Disk utilization among workers nodes when creating 20 type-1 VMs}
     \label{fig:create-many-disk-worker}
 \end{figure}
 
@@ -832,7 +855,7 @@ This section contains the results of the performance analysis and usability anal
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{plt/create-many_duration.pdf}
-    \caption{Duration of creating many type-1 VMs}
+    \caption{Duration of creating 20 type-1 VMs}
     \label{fig:create-many-duration}
 \end{figure}
 
@@ -840,7 +863,7 @@ This section contains the results of the performance analysis and usability anal
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{plt/live-migrate-many_cpu.pdf}
-    \caption{CPU utilization on the control node when live migrating many type-1 VMs}
+    \caption{CPU utilization on the control node when live migrating 10 type-1 VMs}
     \label{fig:migrate-many-cpu}
 \end{figure}
 
@@ -848,7 +871,7 @@ This section contains the results of the performance analysis and usability anal
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{plt/live-migrate-many_ram.pdf}
-    \caption{Memory utilization on the control node when live migrating many type-1 VMs}
+    \caption{Memory utilization on the control node when live migrating 10 type-1 VMs}
     \label{fig:migrate-many-memory}
 \end{figure}
 
@@ -885,7 +908,7 @@ The participants found the process of creating a VM in KubeVirt to be mostly str
     applying it.}
 \end{itemize}
 
-However, participants expressed some confusion when connecting to the VM using SSH, as it was not clear which SSH public key was used to connect to the VM, and that conflicts with previously created VMs could occur. Moreoever, participant 1 in particular found the definition complex, and that the process was not intuitive. 
+However, participants expressed some confusion when connecting to the VM using SSH, as it was not clear which SSH public key was used to connect to the VM, and that conflicts with previously created VMs could occur. Moreover, participant 1, in particular, found the VM manifest definition complex, and that the process of creating it was not intuitive. 
 
 \begin{itemize}
     \item Participant 1: \textit{It would be quite difficult for me to figure out I need to use bus: virtio without having someone else tell me I need to.}
@@ -913,7 +936,7 @@ Compared to both the basic tasks and maintenance, the debugging tasks received t
     \item Participant 1: \textit{I did not manage to solve the key mismatch issue as there is very little in the way of debugging virtctl ssh.}
 \end{itemize}
 
-However, while debugging was found to be complex, participant 3 regarded the YAML files as a positive aspect of debugging.
+However, while debugging the issue presented in the task was found to be complex, participant 3 regarded the YAML files in general as a positive aspect of debugging.
 
 \begin{itemize}
     \item Participant 3: \textit{Debugging the issue was easy because the manifest uses standard constructs that are easily googleable.}
@@ -1030,6 +1053,7 @@ WantedBy=multi-user.target`
 \end{lstlisting}
 
 \chapter{Performance Analysis Results}
+\label{appendix:performance-results}
 \newpage
 % Create a tiny VM - KubeVirt
 \begin{figure}[H]
@@ -1115,7 +1139,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.80\textwidth]{plt/create-many_cpu.pdf}
-    \caption{CPU utilization on the control node when creating many type-1 VMs}
+    \caption{CPU utilization on the control node when creating 20 type-1 VMs}
     \label{appendix:fig:create-many-cpu}
 \end{figure}
 
@@ -1123,7 +1147,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.80\textwidth]{plt/create-many_cpu_worker.pdf}
-    \caption{CPU utilization among workers nodes when creating many type-1 VMs}
+    \caption{CPU utilization among workers nodes when creating 20 type-1 VMs}
     \label{appendix:fig:create-many-cpu-worker}
 \end{figure}
 
@@ -1131,7 +1155,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.80\textwidth]{plt/create-many_ram.pdf}
-    \caption{Memory utilization on the control node when creating many type-1 VMs}
+    \caption{Memory utilization on the control node when creating 20 type-1 VMs}
     \label{appendix:fig:create-many-memory}
 \end{figure}
 
@@ -1139,7 +1163,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.80\textwidth]{plt/create-many_ram_worker.pdf}
-    \caption{Memory utilization among workers nodes when creating many type-1 VMs}
+    \caption{Memory utilization among workers nodes when creating 20 type-1 VMs}
     \label{appendix:fig:create-many-memory-worker}
 \end{figure}
 
@@ -1147,7 +1171,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.80\textwidth]{plt/create-many_disk.pdf}
-    \caption{Disk utilization on the control node when creating many type-1 VMs}
+    \caption{Disk utilization on the control node when creating 20 type-1 VMs}
     \label{appendix:fig:create-many-disk}
 \end{figure}
 
@@ -1155,7 +1179,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.80\textwidth]{plt/create-many_disk_worker.pdf}
-    \caption{Disk utilization among workers nodes when creating many type-1 VMs}
+    \caption{Disk utilization among workers nodes when creating 20 type-1 VMs}
     \label{appendix:fig:create-many-disk-worker}
 \end{figure}
 
@@ -1163,7 +1187,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.80\textwidth]{plt/create-many_duration.pdf}
-    \caption{Duration of creating many type-1 VMs}
+    \caption{Duration of creating 20 type-1 VMs}
     \label{appendix:fig:create-many-duration}
 \end{figure}
 
@@ -1205,7 +1229,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_cpu.pdf}
-    \caption{CPU utilization on the control node when live migrating many type-1 VMs}
+    \caption{CPU utilization on the control node when live migrating 10 type-1 VMs}
     \label{appendix:fig:migrate-many-cpu}
 \end{figure}
 
@@ -1213,7 +1237,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_cpu_worker.pdf}
-    \caption{CPU utilization among workers nodes when live migrating many type-1 VMs}
+    \caption{CPU utilization among workers nodes when live migrating 10 type-1 VMs}
     \label{appendix:fig:migrate-many-cpu-worker}
 \end{figure}
 
@@ -1221,7 +1245,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_ram.pdf}
-    \caption{Memory utilization on the control node when live migrating many type-1 VMs}
+    \caption{Memory utilization on the control node when live migrating 10 type-1 VMs}
     \label{appendix:fig:migrate-many-memory}
 \end{figure}
 
@@ -1229,7 +1253,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_ram_worker.pdf}
-    \caption{Memory utilization among workers nodes when live migrating many type-1 VMs}
+    \caption{Memory utilization among workers nodes when live migrating 10 type-1 VMs}
     \label{appendix:fig:migrate-many-memory-worker}
 \end{figure}
 
@@ -1237,7 +1261,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_disk.pdf}
-    \caption{Disk utilization on the control node when live migrating many type-1 VMs}
+    \caption{Disk utilization on the control node when live migrating 10 type-1 VMs}
     \label{appendix:fig:migrate-many-disk}
 \end{figure}
 
@@ -1245,7 +1269,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_disk_worker.pdf}
-    \caption{Disk utilization among workers nodes when live migrating many type-1 VMs}
+    \caption{Disk utilization among workers nodes when live migrating 10 type-1 VMs}
     \label{appendix:fig:migrate-many-disk-worker}
 \end{figure}
 
@@ -1253,7 +1277,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_duration.pdf}
-    \caption{Duration of live migrating many type-1 VMs}
+    \caption{Duration of live migrating 10 type-1 VMs}
     \label{appendix:fig:migrate-many-duration}
 \end{figure}
 

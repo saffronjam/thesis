@@ -28,7 +28,7 @@ breaklines=true
 
 \makeatletter
 
-% here is a macro expanding to the name of the language
+% Here is a macro expanding to the name of the language
 % (handy if you decide to change it further down the road)
 \newcommand\language@yaml{yaml}
 
@@ -753,144 +753,185 @@ This section contains the results of the performance analysis and usability anal
 
 \newpage
 \section{Performance Analysis}
+
+% First page, figures are slightly smaller due to the title
+\def \figurewidth {0.9}
+\def \labelprefix {fig}
+
 This section contains the results of the performance analysis with KubeVirt and OpenNebula. Only the most significant results are presented in this section, and the complete list of results can be found in the appendix \ref{appendix:performance-results}.
 % The most significant results are copied from the appendix
 % Create a tiny VM - KubeVirt
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.67\textwidth]{plt/create-tiny_kubevirt.pdf}
-    \caption{CPU utilization on the control node when creating a VM type 1 in KubeVirt}
-    \label{fig:create-tiny-kubevirt}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-tiny_kubevirt.pdf}
+    \caption{Resource utilization on the control node when creating a VM type 1 in KubeVirt. CPU and disk utilization follow a similar pattern nearly reaching 20\% while memory utilization remains constant at 12\% for the duration of the test.}
+    \expandafter\label\expandafter{\labelprefix:create-tiny-kubevirt}
 \end{figure}
 
 % Create a tiny VM - OpenNebula
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.67\textwidth]{plt/create-tiny_opennebula.pdf}
-    \caption{CPU utilization on the control node when creating a VM type 1 in OpenNebula}
-    \label{fig:create-tiny-opennebula}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-tiny_opennebula.pdf}
+    \caption{Resource utilization on the control node when creating a VM type 1 in OpenNebula. CPU and disk utilization both increase and peak after half the duration of the test. Memory utilization remains constant below 8\% for the duration of the test.}
+    \expandafter\label\expandafter{\labelprefix:create-tiny-opennebula}
 \end{figure}
+
+% End of first page, figures can be wider
+\def\figurewidth{1}
 
 % Create a large VM - KubeVirt
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{plt/create-large_kubevirt.pdf}
-    \caption{CPU utilization on the control node when creating a VM type 4 in KubeVirt}
-    \label{fig:create-large-kubevirt}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-large_kubevirt.pdf}
+    \caption{Resource utilization on the control node when creating a VM type 4 in KubeVirt. CPU utilization peaks quickly while disk utilization is sporadic. The sporadic behavior is not in line with the operations performed during the test. Memory utilization remains constant at 12\% for the duration of the test.}
+    \expandafter\label\expandafter{\labelprefix:create-large-kubevirt}
 \end{figure}
 
 % Create large VM - OpenNebula
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{plt/create-large_opennebula.pdf}
-    \caption{CPU utilization on the control node when creating a VM type 4 in OpenNebula}
-    \label{fig:create-large-opennebula}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-large_opennebula.pdf}
+    \caption{Resource utilization on the control node when creating a VM type 4 in OpenNebula. CPU utilization is the most prominent among the resources plateauing at nearly 15\% utilization. Memory utilization remains constant at 8\% for the duration of the test.}
+    \expandafter\label\expandafter{\labelprefix:create-large-opennebula}
 \end{figure}
 
 % Create VMs - Duration - KubeVirt
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{plt/create-vms_duration_kubevirt.pdf}
-    \caption{Duration of creating VMs in KubeVirt}
-    \label{fig:create-vms-duration-kubevirt}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-vms_duration_kubevirt.pdf}
+    \caption{Duration of creating VMs in KubeVirt. The duration for all types remains constant for each VM type reaching slightly above 14 seconds}
+    \expandafter\label\expandafter{\labelprefix:create-vms-duration-kubevirt}
 \end{figure}
 
 % Create VMs - Duration - OpenNebula
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{plt/create-vms_duration_opennebula.pdf}
-    \caption{Duration of creating VMs in OpenNebula}
-    \label{fig:create-vms-duration-opennebula}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-vms_duration_opennebula.pdf}
+    \caption{Duration of creating VMs in OpenNebula. The duration for all types remains constant for each VM type reaching nearly 18 seconds.}
+    \expandafter\label\expandafter{\labelprefix:create-vms-duration-opennebula}
 \end{figure}
 
 % Create many - CPU
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{plt/create-many_cpu.pdf}
-    \caption{CPU utilization on the control node when creating 20 type-1 VMs}
-    \label{fig:create-many-cpu}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_cpu.pdf}
+    \caption{CPU utilization on the control node when creating 20 type-1 VMs. The CPU utilization peaks quickly for both KubeVirt and OpenNebula due to the burst of requests. KubeVirt reaches a slightly lower peak than OpenNebula and subsides significantly faster. OpenNebula does not manage to return to a utilization level of an idle state within the duration of the test, as evidenced by the utilization not reaching base utilization in the end.}
+    \expandafter\label\expandafter{\labelprefix:create-many-cpu}
 \end{figure}
 
 % Create many - CPU - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{plt/create-many_cpu_worker.pdf}
-    \caption{CPU utilization among workers nodes when creating 20 type-1 VMs}
-    \label{fig:create-many-cpu-worker}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_cpu_worker.pdf}
+    \caption{Cumulative CPU utilization among worker nodes when creating 20 type-1 VMs. The CPU utilization among the worker nodes is vastly different between KubeVirt and OpenNebula, where KubeVirt experiences a short-lived large burst of CPU utilization while OpenNebula barely reaches a cumulative 20\% utilization. }
+    \expandafter\label\expandafter{\labelprefix:create-many-cpu-worker}
 \end{figure}
 
 % Create many - RAM
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{plt/create-many_ram.pdf}
-    \caption{Memory utilization on the control node when creating 20 type-1 VMs}
-    \label{fig:create-many-memory}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_ram.pdf}
+    \caption{Memory utilization on the control node when creating 20 type-1 VMs. KubeVirt experiences a burst of memory utilization in the beginning, while OpenNeubla has a more gradual increase before spiking quickly toward the end of the test. While KubeVirt has a larger base memory utilization, OpenNebula experiences a larger induced load from the test, as evidenced by its longer slopes.}
+    \expandafter\label\expandafter{\labelprefix:create-many-memory}
 \end{figure}
 
 % Create many - RAM - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{plt/create-many_ram_worker.pdf}
-    \caption{Memory utilization among workers nodes when creating 20 type-1 VMs}
-    \label{fig:create-many-memory-worker}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_ram_worker.pdf}
+    \caption{Cumulative memory utilization among worker nodes when creating 20 type-1 VMs. While KubeVirt experiences a larger memory utilization due to a larger base, both systems have a similar magnitude of the induced load, albeit KubeVirt's load is more short-lived. }
+    \expandafter\label\expandafter{\labelprefix:create-many-memory-worker}
 \end{figure}
 
 % Create many - disk
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{plt/create-many_disk.pdf}
-    \caption{Disk utilization on the control node when creating 20 type-1 VMs}
-    \label{fig:create-many-disk}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_disk.pdf}
+    \caption{Disk utilization on the control node when creating 20 type-1 VMs. KubeVirt experiences a larger burst of disk utilization than OpenNebula, while OpenNebula maintains a steady disk utilization throughout the test.}
+    \expandafter\label\expandafter{\labelprefix:create-many-disk}
 \end{figure}
 
 % Create many - disk - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{plt/create-many_disk_worker.pdf}
-    \caption{Disk utilization among workers nodes when creating 20 type-1 VMs}
-    \label{fig:create-many-disk-worker}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_disk_worker.pdf}
+    \caption{Cumulative disk utilization among worker nodes when creating 20 type-1 VMs. KubeVirt experiences a larger burst of disk utilization than OpenNebula, while OpenNebula maintains a low and steady disk utilization throughout the test.}
+    \expandafter\label\expandafter{\labelprefix:create-many-disk-worker}
 \end{figure}
 
 % Create many - duration
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{plt/create-many_duration.pdf}
-    \caption{Duration of creating 20 type-1 VMs}
-    \label{fig:create-many-duration}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_duration.pdf}
+    \caption{Duration of creating 20 type-1 VMs. KubeVirt is significantly faster to create 20 type-1 VMs than OpenNebula, taking 67 seconds compared to OpenNebula's 192 seconds.}
+    \expandafter\label\expandafter{\labelprefix:create-many-duration}
 \end{figure}
+
+\newpage
 
 % Migrate many - CPU
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{plt/live-migrate-many_cpu.pdf}
-    \caption{CPU utilization on the control node when live migrating 10 type-1 VMs}
-    \label{fig:migrate-many-cpu}
+    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate-many_cpu.pdf}
+    \caption{CPU utilization on the control node when live migrating 10 type-1 VMs. Both systems follow a similar pattern where KubeVirt has a slightly larger base utilization than OpenNebula, but the induced load is larger for OpenNebula.}
+    \expandafter\label\expandafter{\labelprefix:migrate-many-cpu}
+\end{figure}
+
+% Migrate many - CPU - workers
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate-many_cpu_worker.pdf}
+    \caption{Cumulative CPU utilization among worker nodes when live migrating 10 type-1 VMs. Both systems experience a similar load for the first half of the test, but KubeVirt experiences a significantly larger load in the second half of the test.}
+    \expandafter\label\expandafter{\labelprefix:migrate-many-cpu-worker}
 \end{figure}
 
 % Migrate many - RAM
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{plt/live-migrate-many_ram.pdf}
-    \caption{Memory utilization on the control node when live migrating 10 type-1 VMs}
-    \label{fig:migrate-many-memory}
+    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate-many_ram.pdf}
+    \caption{Memory utilization on the control node when live migrating 10 type-1 VMs. KubeVirt has a larger base memory utilization than OpenNebula, but the induced load is more than double for OpenNebula.}
+    \expandafter\label\expandafter{\labelprefix:migrate-many-memory}
 \end{figure}
 
-\newpage
+% Migrate many - RAM - workers
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate-many_ram_worker.pdf}
+    \caption{Cumulative memory utilization among worker nodes when live migrating 10 type-1 VMs. KubeVirt has a larger base memory utilization than OpenNebula, but both systems experience a similar induced load. OpenNebula returns to an idle state faster than KubeVirt.}
+    \expandafter\label\expandafter{\labelprefix:migrate-many-memory-worker}
+\end{figure}
 
 % Scale cluster - RAM
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{plt/scale-cluster_ram.pdf}
-    \caption{Memory utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes}
-    \label{appendix:fig:scale-cluster-memory}
+    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster_ram.pdf}
+    \caption{Memory utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes. KubeVirt experiences a significantly larger memory utilization than OpenNebula. OpenNebula's memory utilization is barely affected by the scaling operation.}
+    \expandafter\label\expandafter{\labelprefix:scale-cluster-memory}
 \end{figure}
 
 % Scale cluster - disk
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{plt/scale-cluster_disk.pdf}
-    \caption{Disk utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes}
-    \label{appendix:fig:scale-cluster-disk}
+    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster_disk.pdf}
+    \caption{Disk utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes. KubeVirt experiences a rapid increase in disk utilization, reaching a peak of over 70\% utilization. OpenNebula has a less aggressive increase reaching barely 30\% utilization.}
+    \expandafter\label\expandafter{\labelprefix:scale-cluster-disk}
+\end{figure}
+
+% Scale cluster with VMs - CPU
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_cpu.pdf}
+    \caption{CPU utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt experiences an initial burst of CPU utilization for the scale-up operation, but a significantly lower utilization for the scale-down operation.
+     OpenNebula was unable to complete the test.}
+    \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-cpu}
+\end{figure}
+
+% Scale cluster with VMs - RAM
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_ram.pdf}
+    \caption{Memory utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt experiences a large burst of memory utilization for the scale-up operation, but a significantly lower utilization for the scale-down operation that gradually decreases towards the end. OpenNebula was unable to complete the test.}
+    \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-memory}
 \end{figure}
 
 \newpage
@@ -954,6 +995,7 @@ The goal of the performance analysis was to find factual and provable claims reg
 \section{Kubernetes Overhead}
 The results of the performance analysis 
 
+\section{Jagged Disk Utilization}
 
 % Write about this
 % The duration metric is dependent on the test case and is aimed at measuring how long a specific operation takes. However, each of the metrics is not conclusive on its own since a short burst of CPU utilization might be preferable over a long period of medium CPU utilization. As such, the metrics will be used in conjunction to provide an accurate representation of the performance of the VM management systems.
@@ -1053,142 +1095,145 @@ WantedBy=multi-user.target`
 \end{lstlisting}
 
 \chapter{Performance Analysis Results}
+\def\figurewidth{1}
+\def\labelprefix{appendix:fig}
+
 \label{appendix:performance-results}
 \newpage
 % Create a tiny VM - KubeVirt
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/create-tiny_kubevirt.pdf}
-    \caption{CPU utilization on the control node when creating a VM type 1 in KubeVirt}
-    \label{fig:create-tiny-kubevirt}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-tiny_kubevirt.pdf}
+    \caption{Resource utilization on the control node when creating a VM type 1 in KubeVirt. CPU and disk utilization follow a similar pattern nearly reaching 20\% while memory utilization remains constant at 12\% for the duration of the test.}
+    \expandafter\label\expandafter{\labelprefix:create-tiny-kubevirt}
 \end{figure}
 
 % Create a tiny VM - OpenNebula
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/create-tiny_opennebula.pdf}
-    \caption{CPU utilization on the control node when creating a VM type 1 in OpenNebula}
-    \label{appendix:fig:create-tiny-opennebula}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-tiny_opennebula.pdf}
+    \caption{Resource utilization on the control node when creating a VM type 1 in OpenNebula. CPU and disk utilization both increase and peak after half the duration of the test. Memory utilization remains constant below 8\% for the duration of the test.}
+    \expandafter\label\expandafter{\labelprefix:create-tiny-opennebula}
 \end{figure}
 
 % Create a small VM - KubeVirt
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/create-small_kubevirt.pdf}
-    \caption{CPU utilization on the control node when creating a VM type 2 in KubeVirt}
-    \label{appendix:fig:create-small-kubevirt}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-small_kubevirt.pdf}
+    \caption{Resource utilization on the control node when creating a VM type 2 in KubeVirt. The disk utilization is the most prominent among the resources, reaching over 20\% utilization. Memory utilization remains constant at 12\% for the duration of the test.}
+    \expandafter\label\expandafter{\labelprefix:create-small-kubevirt}
 \end{figure}
 
 % Create a small VM - OpenNebula
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/create-small_opennebula.pdf}
-    \caption{CPU utilization on the control node when creating a VM type 2 in OpenNebula}
-    \label{appendix:fig:create-small-opennebula}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-small_opennebula.pdf}
+    \caption{Resource utilization on the control node when creating a VM type 2 in OpenNebula. Disk utilization plateaus quickly reaching just above 10\% utilization while CPU utilization peaks just below 15\%. Memory utilization remains constant at 8\% for the duration of the test.}
+    \expandafter\label\expandafter{\labelprefix:create-small-opennebula}
 \end{figure}
 
 % Create medium VM - KubeVirt
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/create-medium_kubevirt.pdf}
-    \caption{CPU utilization on the control node when creating a VM type 3 in KubeVirt}
-    \label{appendix:fig:create-medium-kubevirt}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-medium_kubevirt.pdf}
+    \caption{Resource utilization on the control node when creating a VM type 3 in KubeVirt. CPU and disk utilization initially follow a similar pattern, but disk utilization remains high for the duration of the test. Memory utilization remains constant at 12\% for the duration of the test.}
+    \expandafter\label\expandafter{\labelprefix:create-medium-kubevirt}
 \end{figure}
 
 % Create medium VM - OpenNebula
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/create-medium_opennebula.pdf}
-    \caption{CPU utilization on the control node when creating a VM type 3 in OpenNebula}
-    \label{appendix:fig:create-medium-opennebula}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-medium_opennebula.pdf}
+    \caption{Resource utilization on the control node when creating a VM type 3 in OpenNebula. CPU utilization is the most prominent among the resources reaching nearly 15\% utilization. Memory utilization remains constant at 8\% for the duration of the test.}
+    \expandafter\label\expandafter{\labelprefix:create-medium-opennebula}
 \end{figure}
 
 % Create a large VM - KubeVirt
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/create-large_kubevirt.pdf}
-    \caption{CPU utilization on the control node when creating a VM type 4 in KubeVirt}
-    \label{appendix:fig:create-large-kubevirt}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-large_kubevirt.pdf}
+    \caption{Resource utilization on the control node when creating a VM type 4 in KubeVirt. CPU utilization peaks quickly while disk utilization is sporadic. The sporadic behavior is not in line with the operations performed during the test. Memory utilization remains constant at 12\% for the duration of the test.}
+    \expandafter\label\expandafter{\labelprefix:create-large-kubevirt}
 \end{figure}
 
 % Create large VM - OpenNebula
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/create-large_opennebula.pdf}
-    \caption{CPU utilization on the control node when creating a VM type 4 in OpenNebula}
-    \label{appendix:fig:create-large-opennebula}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-large_opennebula.pdf}
+    \caption{Resource utilization on the control node when creating a VM type 4 in OpenNebula. CPU utilization is the most prominent among the resources plateauing at nearly 15\% utilization. Memory utilization remains constant at 8\% for the duration of the test.}
+    \expandafter\label\expandafter{\labelprefix:create-large-opennebula}
 \end{figure}
 
 % Create VMs - Duration - KubeVirt
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/create-vms_duration_kubevirt.pdf}
-    \caption{Duration of creating VMs in KubeVirt}
-    \label{appendix:fig:create-vms-duration-kubevirt}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-vms_duration_kubevirt.pdf}
+    \caption{Duration of creating VMs in KubeVirt. The duration for all types remains constant for each VM type reaching slightly above 14 seconds}
+    \expandafter\label\expandafter{\labelprefix:create-vms-duration-kubevirt}
 \end{figure}
 
 % Create VMs - Duration - OpenNebula
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/create-vms_duration_opennebula.pdf}
-    \caption{Duration of creating VMs in OpenNebula}
-    \label{appendix:fig:create-vms-duration-opennebula}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-vms_duration_opennebula.pdf}
+    \caption{Duration of creating VMs in OpenNebula. The duration for all types remains constant for each VM type reaching nearly 18 seconds.}
+    \expandafter\label\expandafter{\labelprefix:create-vms-duration-opennebula}
 \end{figure}
 
 % Create many - CPU
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/create-many_cpu.pdf}
-    \caption{CPU utilization on the control node when creating 20 type-1 VMs}
-    \label{appendix:fig:create-many-cpu}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_cpu.pdf}
+    \caption{CPU utilization on the control node when creating 20 type-1 VMs. The CPU utilization peaks quickly for both KubeVirt and OpenNebula due to the burst of requests. KubeVirt reaches a slightly lower peak than OpenNebula and subsides significantly faster. OpenNebula does not manage to return to a utilization level of an idle state within the duration of the test, as evidenced by the utilization not reaching base utilization in the end.}
+    \expandafter\label\expandafter{\labelprefix:create-many-cpu}
 \end{figure}
 
 % Create many - CPU - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/create-many_cpu_worker.pdf}
-    \caption{CPU utilization among workers nodes when creating 20 type-1 VMs}
-    \label{appendix:fig:create-many-cpu-worker}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_cpu_worker.pdf}
+    \caption{Cumulative CPU utilization among worker nodes when creating 20 type-1 VMs. The CPU utilization among the worker nodes is vastly different between KubeVirt and OpenNebula, where KubeVirt experiences a short-lived large burst of CPU utilization while OpenNebula barely reaches a cumulative 20\% utilization. }
+    \expandafter\label\expandafter{\labelprefix:create-many-cpu-worker}
 \end{figure}
 
 % Create many - RAM
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/create-many_ram.pdf}
-    \caption{Memory utilization on the control node when creating 20 type-1 VMs}
-    \label{appendix:fig:create-many-memory}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_ram.pdf}
+    \caption{Memory utilization on the control node when creating 20 type-1 VMs. KubeVirt experiences a burst of memory utilization in the beginning, while OpenNeubla has a more gradual increase before spiking quickly toward the end of the test. While KubeVirt has a larger base memory utilization, OpenNebula experiences a larger induced load from the test, as evidenced by its longer slopes.}
+    \expandafter\label\expandafter{\labelprefix:create-many-memory}
 \end{figure}
 
 % Create many - RAM - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/create-many_ram_worker.pdf}
-    \caption{Memory utilization among workers nodes when creating 20 type-1 VMs}
-    \label{appendix:fig:create-many-memory-worker}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_ram_worker.pdf}
+    \caption{Cumulative memory utilization among worker nodes when creating 20 type-1 VMs. While KubeVirt experiences a larger memory utilization due to a larger base, both systems have a similar magnitude of the induced load, albeit KubeVirt's load is more short-lived. }
+    \expandafter\label\expandafter{\labelprefix:create-many-memory-worker}
 \end{figure}
 
 % Create many - disk
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/create-many_disk.pdf}
-    \caption{Disk utilization on the control node when creating 20 type-1 VMs}
-    \label{appendix:fig:create-many-disk}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_disk.pdf}
+    \caption{Disk utilization on the control node when creating 20 type-1 VMs. KubeVirt experiences a larger burst of disk utilization than OpenNebula, while OpenNebula maintains a steady disk utilization throughout the test.}
+    \expandafter\label\expandafter{\labelprefix:create-many-disk}
 \end{figure}
 
 % Create many - disk - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/create-many_disk_worker.pdf}
-    \caption{Disk utilization among workers nodes when creating 20 type-1 VMs}
-    \label{appendix:fig:create-many-disk-worker}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_disk_worker.pdf}
+    \caption{Cumulative disk utilization among worker nodes when creating 20 type-1 VMs. KubeVirt experiences a larger burst of disk utilization than OpenNebula, while OpenNebula maintains a low and steady disk utilization throughout the test.}
+    \expandafter\label\expandafter{\labelprefix:create-many-disk-worker}
 \end{figure}
 
 % Create many - duration
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/create-many_duration.pdf}
-    \caption{Duration of creating 20 type-1 VMs}
-    \label{appendix:fig:create-many-duration}
+    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_duration.pdf}
+    \caption{Duration of creating 20 type-1 VMs. KubeVirt is significantly faster to create 20 type-1 VMs than OpenNebula, taking 67 seconds compared to OpenNebula's 192 seconds.}
+    \expandafter\label\expandafter{\labelprefix:create-many-duration}
 \end{figure}
 
 \newpage
@@ -1196,89 +1241,113 @@ WantedBy=multi-user.target`
 % Migrate one - CPU
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/live-migrate_cpu.pdf}
-    \caption{CPU utilization on the control node when live migrating a type-4 VM}
-    \label{appendix:fig:migrate-one-cpu}
+    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate_cpu.pdf}
+    \caption{CPU utilization on the control node when live migrating a type-4 VM. KubeVirt has a slightly larger base utilization than OpenNebula, but the induced load is slightly larger for OpenNebula than KubeVirt. They follow a similar pattern peaking at 16\% and 14\% respectively.}
+    \expandafter\label\expandafter{\labelprefix:migrate-one-cpu}
+\end{figure}
+
+% Migrate one - CPU - workers
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate_cpu_worker.pdf}
+    \caption{Cumulative CPU utilization among worker nodes when live migrating a type-4 VM. Both systems follow a similar pattern where OpenNebula experiences a slightly lower utilization than KubeVirt. The induced load is shifted towards the end of the test for KubeVirt since it executes the operation more slowly.}
+    \expandafter\label\expandafter{\labelprefix:migrate-one-cpu-worker}
 \end{figure}
 
 % Migrate one - RAM
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/live-migrate_ram.pdf}
-    \caption{Memory utilization on the control node when live migrating a type-4 VM}
-    \label{appendix:fig:migrate-one-memory}
+    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate_ram.pdf}
+    \caption{Cumulative memory utilization on the control node when live migrating a type-4 VM. While KubeVirt has a larger base memory utilization than OpenNebula, the induced load is non-existent for both systems.}
+    \expandafter\label\expandafter{\labelprefix:migrate-one-memory}
+\end{figure}
+
+% Migrate one - RAM -workers
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate_ram_worker.pdf}
+    \caption{Cumulative memory utilization among worker nodes when live migrating a type-4 VM. The load is similar for the two systems, where the load is shifted between the two workers over time. The overlap of the peaks between the workers shows that the migration process affects both workers simultaneously during a short period.}
+    \expandafter\label\expandafter{\labelprefix:migrate-one-memory-worker}
 \end{figure}
 
 % Migrate one - disk
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/live-migrate_disk.pdf}
-    \caption{Disk utilization on the control node when live migrating a type-4 VM}
-    \label{appendix:fig:migrate-one-disk}
+    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate_disk.pdf}
+    \caption{Disk utilization on the control node when live migrating a type-4 VM. KubeVirt experiences a larger disk utilization than OpenNebula for the entirety of the test. However, the disk usage is sporadic and many peaks are not in line with the operations performed during the test.}
+    \expandafter\label\expandafter{\labelprefix:migrate-one-disk}
+\end{figure}
+
+% Migrate one - disk - workers
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate_disk_worker.pdf}
+    \caption{Cumulative disk utilization among worker nodes when live migrating a type-4 VM. Both KubeVirt and OpenNebula reach a similar peak cumulative disk utilization. However, OpenNebula experiences a shorter plateau of disk utilization than KubeVirt.}
+    \expandafter\label\expandafter{\labelprefix:migrate-one-disk-worker}
 \end{figure}
 
 % Migrate one - duration
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/live-migrate_duration.pdf}
-    \caption{Duration of live migrating a type-4 VM}
-    \label{appendix:fig:migrate-one-duration}
+    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate_duration.pdf}
+    \caption{Duration of live migrating a type-4 VM. KubeVirt is slower than OpenNebula, taking on average 7 seconds longer to complete. The duration is consistent for both systems.}
+    \expandafter\label\expandafter{\labelprefix:migrate-one-duration}
 \end{figure}
 
 % Migrate many - CPU
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_cpu.pdf}
-    \caption{CPU utilization on the control node when live migrating 10 type-1 VMs}
-    \label{appendix:fig:migrate-many-cpu}
+    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate-many_cpu.pdf}
+    \caption{CPU utilization on the control node when live migrating 10 type-1 VMs. Both systems follow a similar pattern where KubeVirt has a slightly larger base utilization than OpenNebula, but the induced load is larger for OpenNebula.}
+    \expandafter\label\expandafter{\labelprefix:migrate-many-cpu}
 \end{figure}
 
 % Migrate many - CPU - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_cpu_worker.pdf}
-    \caption{CPU utilization among workers nodes when live migrating 10 type-1 VMs}
-    \label{appendix:fig:migrate-many-cpu-worker}
+    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate-many_cpu_worker.pdf}
+    \caption{Cumulative CPU utilization among worker nodes when live migrating 10 type-1 VMs. Both systems experience a similar load for the first half of the test, but KubeVirt experiences a significantly larger load in the second half of the test.}
+    \expandafter\label\expandafter{\labelprefix:migrate-many-cpu-worker}
 \end{figure}
 
 % Migrate many - RAM
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_ram.pdf}
-    \caption{Memory utilization on the control node when live migrating 10 type-1 VMs}
-    \label{appendix:fig:migrate-many-memory}
+    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate-many_ram.pdf}
+    \caption{Memory utilization on the control node when live migrating 10 type-1 VMs. KubeVirt has a larger base memory utilization than OpenNebula, but the induced load is more than double for OpenNebula.}
+    \expandafter\label\expandafter{\labelprefix:migrate-many-memory}
 \end{figure}
 
 % Migrate many - RAM - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_ram_worker.pdf}
-    \caption{Memory utilization among workers nodes when live migrating 10 type-1 VMs}
-    \label{appendix:fig:migrate-many-memory-worker}
+    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate-many_ram_worker.pdf}
+    \caption{Cumulative memory utilization among worker nodes when live migrating 10 type-1 VMs. KubeVirt has a larger base memory utilization than OpenNebula, but both systems experience a similar induced load. OpenNebula returns to an idle state faster than KubeVirt.}
+    \expandafter\label\expandafter{\labelprefix:migrate-many-memory-worker}
 \end{figure}
 
 % Migrate many - disk
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_disk.pdf}
-    \caption{Disk utilization on the control node when live migrating 10 type-1 VMs}
-    \label{appendix:fig:migrate-many-disk}
+    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate-many_disk.pdf}
+    \caption{Disk utilization on the control node when live migrating 10 type-1 VMs. KubeVirt has an overall larger disk utilization than OpenNebula. However, the disk utilization has sporadic peaks that are not in line with the operations performed during the test.}
+    \expandafter\label\expandafter{\labelprefix:migrate-many-disk}
 \end{figure}
 
 % Migrate many - disk - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_disk_worker.pdf}
-    \caption{Disk utilization among workers nodes when live migrating 10 type-1 VMs}
-    \label{appendix:fig:migrate-many-disk-worker}
+    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate-many_disk_worker.pdf}
+    \caption{Cumulative disk utilization among worker nodes when live migrating 10 type-1 VMs. KubeVirt has both a larger base utilization and cumulative disk utilization than OpenNebula. Both systems show a clear pattern of the disk utilization being shifted to a second worker node after half the duration of the test. However, KubeVirt takes a longer time to return to an idle state of the first worker node than OpenNebula.}
+    \expandafter\label\expandafter{\labelprefix:migrate-many-disk-worker}
 \end{figure}
 
 % Migrate many - duration
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/live-migrate-many_duration.pdf}
-    \caption{Duration of live migrating 10 type-1 VMs}
-    \label{appendix:fig:migrate-many-duration}
+    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate-many_duration.pdf}
+    \caption{Duration of live migrating 10 type-1 VMs. KubeVirt is slightly slower than OpenNebula, taking on average 3 seconds longer to complete, 87 seconds compared to OpenNebula's 84 seconds.}
+    \expandafter\label\expandafter{\labelprefix:migrate-many-duration}
 \end{figure}
 
 \newpage
@@ -1286,57 +1355,116 @@ WantedBy=multi-user.target`
 % Scale cluster - CPU
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/scale-cluster_cpu.pdf}
-    \caption{CPU utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes}
-    \label{appendix:fig:scale-cluster-cpu}
+    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster_cpu.pdf}
+    \caption{CPU utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes. Both systems are initially identical in CPU utilization, but KubeVirt subsides faster than OpenNebula. }
+    \expandafter\label\expandafter{\labelprefix:scale-cluster-cpu}
 \end{figure}
 
 % Scale cluster - CPU - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/scale-cluster_cpu_worker.pdf}
-    \caption{CPU utilization among workers nodes when scaling the cluster from 2 worker nodes to 10 worker nodes}
-    \label{appendix:fig:scale-cluster-cpu-worker}
+    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster_cpu_worker.pdf}
+    \caption{Cumulative CPU utilization among worker nodes when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes. Both the base utilization and induced load are similar between the two systems. However, OpenNebula is slightly faster to complete the scaling operation than KubeVirt.}
+    \expandafter\label\expandafter{\labelprefix:scale-cluster-cpu-worker}
 \end{figure}
 
 % Scale cluster - RAM
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/scale-cluster_ram.pdf}
-    \caption{Memory utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes}
-    \label{appendix:fig:scale-cluster-memory}
+    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster_ram.pdf}
+    \caption{Memory utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes. KubeVirt experiences a significantly larger memory utilization than OpenNebula. OpenNebula's memory utilization is barely affected by the scaling operation.}
+    \expandafter\label\expandafter{\labelprefix:scale-cluster-memory}
 \end{figure}
 
 % Scale cluster - RAM - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/scale-cluster_ram_worker.pdf}
-    \caption{Memory utilization among workers nodes when scaling the cluster from 2 worker nodes to 10 worker nodes}
-    \label{appendix:fig:scale-cluster-memory-worker}
+    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster_ram_worker.pdf}
+    \caption{Cumulative memory utilization among worker nodes when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes. KubeVirt experiences a slightly larger base memory utilization than OpenNebula, as well as a larger induced load from the scaling operation. }
+    \expandafter\label\expandafter{\labelprefix:scale-cluster-memory-worker}
 \end{figure}
 
 % Scale cluster - disk
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/scale-cluster_disk.pdf}
-    \caption{Disk utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes}
-    \label{appendix:fig:scale-cluster-disk}
+    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster_disk.pdf}
+    \caption{Disk utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes. KubeVirt experiences a rapid increase in disk utilization, reaching a peak of over 70\% utilization. OpenNebula has a less aggressive increase reaching barely 30\% utilization.}
+    \expandafter\label\expandafter{\labelprefix:scale-cluster-disk}
 \end{figure}
 
 % Scale cluster - disk - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/scale-cluster_disk_worker.pdf}
-    \caption{Disk utilization among workers nodes when scaling the cluster from 2 worker nodes to 10 worker nodes}
-    \label{appendix:fig:scale-cluster-disk-worker}
+    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster_disk_worker.pdf}
+    \caption{Cumulative disk utilization among worker nodes when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes. KubeVirt experiences a significantly larger disk utilization than OpenNebula with a burst of disk utilization whereas OpenNebula has a more gradual increase.}
+    \expandafter\label\expandafter{\labelprefix:scale-cluster-disk-worker}
 \end{figure}
 
 % Scale cluster - duration
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{plt/scale-cluster_duration.pdf}
-    \caption{Duration of scaling the cluster}
-    \label{appendix:fig:scale-cluster}
+    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster_duration.pdf}
+    \caption{Duration of scaling the cluster. KubeVirt is slightly slower than OpenNebula, taking on average 3 seconds longer to complete, 33 seconds compared to OpenNebula's 30 seconds.}
+    \expandafter\label\expandafter{\labelprefix:scale-cluster}
+\end{figure}
+
+\newpage
+
+% Scale cluster with VMs - CPU
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_cpu.pdf}
+    \caption{CPU utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt experiences an initial burst of CPU utilization for the scale-up operation, but a significantly lower utilization for the scale-down operation.
+     OpenNebula was unable to complete the test.}
+    \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-cpu}
+\end{figure}
+
+% Scale cluster with VMs - CPU - workers
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_cpu_worker.pdf}
+    \caption{Cumulative CPU utilization among worker nodes when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt maintains utilization with periodic peaks throughout the test. OpenNebula was unable to complete the test.}
+    \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-cpu-worker}
+\end{figure}
+
+% Scale cluster with VMs - RAM
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_ram.pdf}
+    \caption{Memory utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt experiences a large burst of memory utilization for the scale-up operation, but a significantly lower utilization for the scale-down operation that gradually decreases towards the end. OpenNebula was unable to complete the test.}
+    \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-memory}
+\end{figure}
+
+% Scale cluster with VMs - RAM - workers
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_ram_worker.pdf}
+    \caption{Cumulative memory utilization among worker nodes when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt maintains a steady memory utilization throughout the test. OpenNebula was unable to complete the test.}
+    \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-memory-worker}
+\end{figure}
+
+% Scale cluster with VMs - disk
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_disk.pdf}
+    \caption{Disk utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt experiences a large initial burst of disk utilization that gradually subsides toward the end of the test. OpenNebula was unable to complete the test.}
+    \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-disk}
+\end{figure}
+
+% Scale cluster with VMs - disk - workers
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_disk_worker.pdf}
+    \caption{Cumulative disk utilization among worker nodes when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt experiences large periodic peaks of disk utilization throughout the test. OpenNebula was unable to complete the test.}
+    \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-disk-worker}
+\end{figure}
+
+% Scale cluster with VMs - duration
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_duration.pdf}
+    \caption{Duration of scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt completes the test in just below 70 seconds. OpenNebula was unable to complete the test.}
+    \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms}
 \end{figure}
 
 \newpage

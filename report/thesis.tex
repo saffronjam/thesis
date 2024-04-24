@@ -112,8 +112,8 @@ In parallel with the evolution of VMs, containers have emerged as an alternative
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=1\textwidth]{img/vm_container_virtualization.pdf}
-    \caption{Overview of VMs and containers}
+    \includegraphics[width=0.9\textwidth]{img/vm_container_virtualization.pdf}
+    \caption{Overview of VMs and containers. The virtualization layer is placed on a lower level for VMs than for containers, illustrating the difference in their respective virtualization techniques.}
     \label{fig:container-vm-architecture}
 \end{figure}
 
@@ -123,8 +123,8 @@ Due to their different use cases, VMs and containers have traditionally been man
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=1\textwidth]{img/vm_management_system.pdf}
-    \caption{Overview of a VM management system}
+    \includegraphics[width=0.9\textwidth]{img/vm_management_system.pdf}
+    \caption{Brief overview of a monolithic VM management system where clients communicate with a management node through a set of interfaces to manage VMs distributed across several hosts. The indirect communication allows a client to manage VMs without having to interact with the hosts directly.} 
     \label{fig:vm-management-system}
 \end{figure}
 
@@ -132,15 +132,14 @@ Kubernetes, originally designed to manage containerized applications at scale, h
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=1\textwidth]{img/container_vm_with_kubevirt.pdf}
-    \caption{Overview of VMs and containers managed by using KubeVirt}
+    \includegraphics[width=0.9\textwidth]{img/container_vm_with_kubevirt.pdf}
+    \caption{Overview of VMs and containers managed by using KubeVirt. The figure illustrates how VMs and containers communicate natively in a single unified environment.}
     \label{fig:container-vm-kubevirt-architecture}
 \end{figure}
 
 The approach of incorporating VMs in Kubernetes not only benefits from the flexible, scalable and mature infrastructure that Kubernetes provides but also from tools and processes that are designed to integrate with or manage the life cycle of Kubernetes resources. This means by using KubeVirt, VMs can be managed similarly to containers, creating a more cloud-native approach to VM management\ \cite{cloud-native}. Furthermore, consolidating the management of VMs and containers into a single platform could offer benefits in terms of reduced architectural complexity and simpler hardware management, but also practical aspects such as reduced required skill set in an organization\ \cite{kubevirt-cncf, kubevirt-storware}. 
 
 The integration of VM management into Kubernetes through KubeVirt represents a significant milestone toward a more agile, efficient, and unified IT infrastructure\ \cite{kubevirt-storware}. However, KubeVirt's practicality in a real-world scenario is yet to be fully assessed. As such, this project aims to evaluate Kubernetes with KubeVirt as a VM management system and compare it with traditional approaches to understand its practicality and limitations.
-
 
 \section{Research Questions}
 \noindent\textit{What performance, scalability, and operational efficiencies can be gained by integrating VMs in Kubernetes?}
@@ -195,7 +194,7 @@ Depending on the required level of abstraction, virtualization can be achieved i
 \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{img/hardware_os_virtualization.pdf}
-    \caption{Overview of the different layers of virtualization}
+    \caption{Overview of the different layers of virtualization for hardware-level and OS-level virtualization. The figure illustrates how hardware virtualization inhibits several internal OSes from running on the same hardware, while OS virtualization keeps a single OS for each process.}
     \label{fig:hardware-os-virtualization}
 \end{figure}
 
@@ -222,7 +221,7 @@ Hypervisors can be categorized into two types, \textit{type 1} and \textit{type 
 \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{img/type1_type2_hypervisor.pdf}
-    \caption{Overview of type 1 and type 2 hypervisors}
+    \caption{Overview of type 1 and type 2 hypervisors. The figure illustrates how a type 1 hypervisor does not use an underlying OS and instead runs directly on the hardware, while a type 2 hypervisor relies on an intermediary OS to manage the underlying hardware.}
     \label{fig:hypervisor-types}
 \end{figure}
 
@@ -234,7 +233,7 @@ In the realm of hypervisors, the concept of \textit{security rings} is often use
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{img/hypervisor_security_rings.pdf}
-    \caption{Overview of security rings in a hypervisor}
+    \caption{Overview of security rings in a hypervisor. The figure illustrates how the inner rings have higher privilege than the outer rings.}
     \label{fig:hypervisor-security-rings}
 \end{figure}
 
@@ -264,7 +263,7 @@ Scalability involves technologies to ensure resources can manage an increase or 
 \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{img/availability_zones.pdf}
-    \caption{Overview of availability zones}
+    \caption{Overview of availability zones with several API gateways and databases operating in the same logical environment but in different availability zones to provide redundancy and fault tolerance.}
     \label{fig:availability-zones}
 \end{figure}
 
@@ -276,7 +275,7 @@ Other cloud service models include Platform as a Service (PaaS) and Software as 
 \begin{figure}
     \centering
     \includegraphics[width=0.9\textwidth]{img/cloud_service_models.pdf}
-    \caption{Overview of cloud service models}
+    \caption{Overview of cloud service models. The figure is designed as a pyramid to illustrate the hierarchical relationship between the different cloud service models that allows a higher-level service to be built using a lower-level service.}
     \label{fig:cloud-service-models}
 \end{figure}
 
@@ -343,13 +342,13 @@ Containers are often used in conjunction with a container orchestration platform
 
 \subsection{Containers Explained}
 \label{containers}
-Containers are a form of virtualization that offers a lightweight alternative to VMs. Unlike VMs, containers do not require a hypervisor to run and instead run on top of an OS and share the OS kernel with other containers. By not requiring a hypervisor, containers can run with less overhead than VMs, making their life cycle relatively fast and efficient compared to VMs\ \cite{container-vm-overview, container-k8s-benchmark}. The differences between container and hypervisor virtualization are visualized in figure \ref{fig:container-vm-difference}.
+Containers are a form of virtualization that offers a lightweight alternative to VMs. Unlike VMs, containers do not require a hypervisor to run and instead run on top of an OS and share the OS kernel with other containers. By not requiring a hypervisor, containers can run with less overhead than VMs, making their life cycle relatively fast and efficient compared to VMs\ \cite{container-vm-overview, container-k8s-benchmark}. The differences between container and hypervisor virtualization are visualized in figure \ref{fig:container-vm-architecture-2}.
 
-\begin{figure}
+\begin{figure}[h]
     \centering
-    \includegraphics[width=1\textwidth]{img/vm_container_virtualization.pdf}
-    \caption{Overview of container and hypervisor virtualization}
-    \label{fig:container-vm-difference}
+    \includegraphics[width=0.9\textwidth]{img/vm_container_virtualization.pdf}
+    \caption{Overview of VMs and containers. The virtualization layer is placed on a lower level for VMs than for containers, illustrating the difference in their respective virtualization techniques.}
+    \label{fig:container-vm-architecture-2}
 \end{figure}
 
 A container is created from a container image, which is a lightweight executable software package that can run a specific application including dependencies and data files. By encapsulating an application and its dependencies in a single package, the container image becomes portable and independent allowing for the container to run consistently across different environments. A container image is created by describing its parent image, such as an OS image, and the steps to install and configure the application and its dependencies in a file, such as a Dockerfile. A parent image can itself have a parent image, creating a chain of dependencies. Furthermore, to enable caching and efficient storage, a container image can be divided into a series of steps referred to as layers. Each layer represents a change to the parent image, such as adding a file or installing a package. As such, layers act as checkpoints and allow for incremental builds where only the necessary layers are rebuilt when a change is made to the image\ \cite{container-docker-layers, container-dockerfile, container-docker-reproducibility}. Figure\ \ref{fig:container-image-layers} visualizes the concept of container image layers, where each operation represents a change to the parent image. 
@@ -357,7 +356,7 @@ A container is created from a container image, which is a lightweight executable
 \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{img/container_image_layers.pdf}
-    \caption{Overview of container image layers}
+    \caption{Overview of container image layers where each operation in a Dockerfile represents a layer that can be cached and reused. The layers are stacked on top of each other and appended to the parent image to form the final container image.}
     \label{fig:container-image-layers}
 \end{figure}
 
@@ -380,7 +379,7 @@ Figure \ref{fig:k8s-overview} presents a brief overview of the Kubernetes abstra
 \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{img/kubernetes_overview.pdf}
-    \caption{Overview of Kubernetes abstractions}
+    \caption{Brief overview of Kubernetes abstractions including many of the core components. The figure illustrates the communication between the different components and how storage is managed in Kubernetes.}
     \label{fig:k8s-overview}
 \end{figure}
  
@@ -412,8 +411,8 @@ Overcommitment is a technique used to improve packing efficiency, often referred
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.9\textwidth]{img/memory_ballooning.pdf}
-    \caption{Overview of memory ballooning}
+    \includegraphics[width=1\textwidth]{img/memory_ballooning.pdf}
+    \caption{Overview of memory ballooning in two stages. The figure illustrates the memory of a VM is shrunk by the hypervisor (deflation) and then reused by another VM (inflation).}
     \label{fig:memory-ballooning}
 \end{figure}
 
@@ -425,7 +424,7 @@ The choice between containers and VMs depends on the specific use case, and ther
 
 Security is a key factor when deciding between containers and VMs. Using containers means sharing the OS kernel, which implies that a vulnerability in the OS kernel could affect all containers running on the same host. Containers are thus, from an attack-surface perspective, more prone to some vulnerabilities than VMs, making VMs more suitable in scenarios that require a higher level of isolation. For instance when an application manages sensitive or confidential data\ \cite{container-vm-decision-redhat}. Moreover, sandboxing is a security mechanism that is used to restrict an execution environment such that it can safely run untrusted code without affecting the rest of the system. For instance, when analyzing the effect of malware a sandbox environment ensures that the malware is not able to escape the restricted environment. Sandboxing is done in multiple layers, including limiting the resources a process can access, such as memory and CPU, and limiting the system calls a process can make. As such, a sandbox environment requires a high level of isolation, which makes VMs a natural fit\ \cite{vm-decision-kong, sandboxing}.
 
-Configuration drift is another aspect to consider regarding security. It is a phenomenon that arises when the configuration of a system changes over time due to several factors including manual intervention and software updates, and can lead to an undefined state in a system that could create security holes\ \cite{configuration-drift-tripwire, configuration-drift-wiz}. Containers, as described in\ \ref{container-vm-live-migration}, are often run in a stateless manner using a single configuration file to describe the container, such as a Dockerfile. By being able to discard the state and recreate a container from a configuration file, the risk of configuration drift is reduced. As such, containers can provide a more consistent environment than VMs. Moreover, containers represent a more standardized and portable environment, using layers of dependencies, see Fig. By standardizing the environment, external tools are more easily able to provide security features such as vulnerability scanning\ \cite{container-vm-decision}.  
+Configuration drift is another aspect to consider regarding security. It is a phenomenon that arises when the configuration of a system changes over time due to several factors including manual intervention and software updates, and can lead to an undefined state in a system that could create security holes\ \cite{configuration-drift-tripwire, configuration-drift-wiz}. Containers, as described in\ \ref{container-vm-live-migration}, are often run in a stateless manner using a single configuration file to describe the container, such as a Dockerfile. By being able to discard the state and recreate a container from a configuration file, the risk of configuration drift is reduced. As such, containers can provide a more consistent environment than VMs. Moreover, containers represent a more standardized and portable environment, using layers of dependencies, see figure \ref{fig:container-image-layers}. By standardizing the environment, external tools are more easily able to provide security features such as vulnerability scanning\ \cite{container-vm-decision}.  
 
 When deciding between containers and VMs scalability is an important factor. One of the main benefits of containers is their ability to share the underlying OS. However, as described in\ \ref{container-vm-isolation}, this also means that containers are more prone to the noisy neighbor problem, where co-located applications can cause performance interference. While this issue is related to isolation and security, it is more prominent in larger-scale environments, especially in multi-tenant environments\ \cite{container-vm-scale, container-vm-decision}.
 
@@ -447,7 +446,7 @@ In summary, Firecracker stands out among the three since it does not use contain
 \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{img/secure_containers_overview.pdf}
-    \caption{Overview of gVisor and Kata Containers}
+    \caption{Overview of gVisor and Kata Containers and their approach to providing a more secure execution environment for containers. The figure illustrates the different approaches where gVisor operates as a proxy for system calls and file access, while Kata Containers wraps the container in a VM.}
     \label{fig:secure-containers-overview}
 \end{figure}
 
@@ -472,7 +471,7 @@ KubeVirt consists of four main components to enable the running of VMs in Kubern
 \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{img/kubevirt_components.pdf}
-    \caption{Overview of KubeVirt components}
+    \caption{Overview of KubeVirt components, their logical place in the Kubernetes ecosystem and how they interact with each other. The green components represent the KubeVirt internal components.}
     \label{fig:kubevirt-components}
 \end{figure}
 
@@ -544,7 +543,7 @@ Each test case used a setup of three Azure nodes, one management node and two wo
         Scale-up Workers 3-10 (Azure D4v3) & 4 & 16GB & 100GB  \\
         \hline
     \end{tabular}
-    \caption{Node specifications}
+    \caption{Node specifications used for the nodes hosting the VM management systems.}
     \label{table:node-specs}
 \end{table}
 
@@ -562,7 +561,7 @@ To quantify the results of the tests, several metrics were collected on each Azu
         Task duration & s & The duration of a specific task\\
         \hline
     \end{tabular}
-    \caption{Performance metrics}
+    \caption{Performance metrics that were used to quantify the results of the tests.}
     \label{table:performance-metrics}
 \end{table}
 
@@ -588,7 +587,7 @@ The tests performed were divided into three categories: basic, limit testing, an
         Scale up and down 2 to 10 workers with a type-1 VM on each worker & Evaluate how the VM management systems handle scaling operations that incur migration operations.\\
         \hline
     \end{tabular}
-    \caption{Performance tests}
+    \caption{Performance tests that were used when evaluating the VM management systems. During each test, metrics were collected for each node.}
     \label{table:performance-tests}
 \end{table}
 
@@ -605,14 +604,14 @@ The tests performed were divided into three categories: basic, limit testing, an
         Type 4 & 4 & 4GB & 20GB \\
         \hline
     \end{tabular}
-    \caption{VM specifications}
+    \caption{VM specifications for the different types of VMS that were used in the tests.}
     \label{table:vm-specs}
 \end{table}
 
 \section{Building a Framework}
 Evaluating the performance of a VM management system is a complex task that requires a structured approach due to its many components and multi-node setup. For this reason, a framework to form standardized testing environments was created. The framework was designed to be VM management system agnostic, meaning that it can be used to evaluate any VM management system as long as the system supports the set of features defined in the framework. Consequently, this means that the framework can be extended to evaluate any other VM management system, such as the previously mentioned OpenStack and CloudStack, and not only OpenNebula and KubeVirt. However, it is important to note that the framework was designed to evaluate VM management systems that can be hosted on-premise since it quantifies the performance of a VM management system by measuring the utilization of nodes hosting the system. As such, the framework does not consider cloud-based VM management systems, such as Amazon EC2, Google Compute Engine or Azure Virtual Machines.
 
-\subsection{Framework Design}
+\subsection{Design}
 \label{sec:framework-design}
 The framework was designed to be modular and loosely coupled with external libraries. This design choice was made to ensure that the framework can be easily extended and modified and that it does not rely on external dependencies. To interact with a VM management system an interface was created that defines the methods that a VM management system must implement to be compatible. It defines methods for creating and deleting VMs, migrating VMs between nodes and scaling up and down the number of worker nodes, as well as methods for installing control and worker nodes. Each VM management system implements these methods in their respective packages. The full definition of the interface can be found in the appendix\ \ref{appendix:vmm-interface}. To host each VM management system, the framework created a set of nodes in Azure, which were completely installed and configured before any performance analysis was conducted to form a fair starting point for every VM management system. However, any dependencies required by the VM management system were intentionally left to the installation, as unnecessary dependencies could introduce noise in the measurements. 
 
@@ -634,14 +633,14 @@ The utilization metrics were collected by a set of tools that were installed on 
         iostat & Disk & Reports CPU utilization and disk I/O statistics\\
         \hline
     \end{tabular}
-    \caption{Tools used by the metrics collector daemon}
+    \caption{Tools used by the metrics collector daemon. Each tool was installed on each Azure node during the installation phase.}
     \label{table:metric-tools}
 \end{table}
 
 \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{img/framework_design.pdf}
-    \caption{Framework design}
+    \caption{Overview of the framework designed with a framework communicating with the VM management systems through SSH. The metric collector was installed on each node to collect utilization metrics. The green VM figure represents the VM management system control node and the orange VM figures represent the worker nodes.}
     \label{fig:framework-design}
 \end{figure}
 
@@ -656,7 +655,7 @@ The workflow of the framework was split into four phases to form a structured ap
 \begin{figure}
     \centering
     \includegraphics[width=0.75\textwidth]{img/framework_workﬂow.pdf}
-    \caption{Framework workflow}
+    \caption{Overview of the workflow of the framework. The framework was divided into four phases that were responsible for different parts of the workflow. Each phase could be run independently of each other and disabled if not needed.}
     \label{fig:framework-workflow}  
 \end{figure}
 
@@ -688,9 +687,6 @@ kubectl apply -f <<EOF
                     - disk:
                         bus: virtio
                         name: emptydisk
-                    interfaces:
-                    - name: default
-                        masquerade: {}
                     resources:
                     requests:
                         cpu: 100m
@@ -698,9 +694,6 @@ kubectl apply -f <<EOF
                     limits:
                         cpu: $CPU_CORES
                         memory: $MEMORYMi
-            networks:
-            - pod: {}
-                name: default
             volumes:
             - name: emptydisk
                 emptyDisk:
@@ -727,10 +720,13 @@ EOF
 The entire framework is open-source and available at \url{INSERT URL HERE}. The GitHub repository contains all the code required to run the framework, including documentation on how to set up and run the framework. 
 
 \chapter{Usability Analysis}
-To accurately measure the usability of KubeVirt, a set of tasks was crafted in cooperation with a system administrator at Net Insight. The tasks were designed to be representative of the tasks that a system administrator would perform when managing VMs. The tasks were designed to be performed using the Kubernetes command line interface (CLI) tool \textit{kubectl} and KubeVirt's complementary CLI tool \textit{virtctl}. This approach was chosen since KubeVirt did not directly offer a graphical user interface (GUI), and using any third-party solution could risk introducing biases in the results. The resources required for the usability analysis, including an instance of KubeVirt, were hosted in a Kubernetes cluster in Azure using Azure Kubernetes Service (AKS). 
+To accurately measure the usability of KubeVirt, a set of tasks was crafted in cooperation with a system administrator at Net Insight. The tasks were designed to be representative of the tasks that a system administrator would perform when managing VMs. The tasks were designed to be performed using the Kubernetes command line interface (CLI) tool \textit{kubectl} and KubeVirt's complementary CLI tool \textit{virtctl}. This approach was chosen since KubeVirt did not directly offer a graphical user interface (GUI), and using any third-party solution could risk introducing biases in the results. 
+
+\section{Setup}
+To host an environment that was easily accessible to the participants, an AKS cluster was set up. Alternatives included installing a Kubernetes cluster locally using tools such as \textit{Minicube} or \textit{k3d}, but this approach was deemed less suitable since it could be time-consuming and require more resources from the participants. Moreover, a cloud-based solution ensured that the participants could access the environment anywhere reducing possible barriers to participation. AKS specifically was chosen since it included preinstalled storage classes that enabled plug-and-play persistent storage functionality. KubeVirt's snapshot-restore API required a CSI storage class, which made AKS a suitable choice. Similar to the performance analysis, the cluster included one control-plane node and two worker nodes to ensure that the participants could perform the tasks without any issues. Having two worker nodes was crucial for the live migration task, as it required moving a VM between two nodes. Separating the control node from the worker nodes was not necessary for the tests, but it is a common practice since it allows workers to be recreated without affecting the cluster's control components.
 
 \section{Task Design}
-The analysis was designed as a step-by-step guide that would take the participants through a set of tasks that were divided into three groups: basic usage, maintenance and debugging. The focus of the analysis was not to evaluate the participant's ability to perform the tasks or their Kubernetes knowledge but rather to expose them to KubeVirt and its workflows. As such, the tasks were designed to be as straightforward as possible, with the exception of a debugging task that was designed to evaluate finding and resolving runtime issues. Moreover, the order of the tasks was designed to gradually increase in complexity to ensure a structured approach and allow the participants to familiarize themselves with KubeVirt. Below is a description of each group of tasks:
+The analysis was designed as a step-by-step guide that would take the participants through a set of tasks that were divided into three groups: basic usage, maintenance and debugging. The focus of the analysis was not to evaluate the participant's ability to perform the tasks or their Kubernetes knowledge but rather to expose them to KubeVirt and its workflows. As such, the tasks were designed to be as straightforward as possible, except for a debugging task that was designed to evaluate finding and resolving runtime issues. Moreover, the order of the tasks was designed to gradually increase in complexity to ensure a structured approach and allow the participants to familiarize themselves with KubeVirt. Below is a description of each group of tasks:
 
 \begin{itemize}
     \item\textbf{Basic usage}\\
@@ -755,8 +751,8 @@ This section contains the results of the performance analysis and usability anal
 \section{Performance Analysis}
 
 % First page, figures are slightly smaller due to the title
-\def \figurewidth {0.9}
-\def \labelprefix {fig}
+\def\figurewidth{0.9}
+\def\labelprefix{fig}
 
 This section contains the results of the performance analysis with KubeVirt and OpenNebula. Only the most significant results are presented in this section, and the complete list of results can be found in the appendix \ref{appendix:performance-results}.
 % The most significant results are copied from the appendix
@@ -917,12 +913,14 @@ This section contains the results of the performance analysis with KubeVirt and 
     \expandafter\label\expandafter{\labelprefix:scale-cluster-disk}
 \end{figure}
 
+\def\figurewidth{0.8}
+
 % Scale cluster with VMs - CPU
 \begin{figure}[H]
     \centering
     \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_cpu.pdf}
     \caption{CPU utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt experiences an initial burst of CPU utilization for the scale-up operation, but a significantly lower utilization for the scale-down operation.
-     OpenNebula was unable to complete the test.}
+     OpenNebula required manual intervention to complete the test due to VMs ending up in bad states, which caused it to be disqualified.}
     \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-cpu}
 \end{figure}
 
@@ -930,7 +928,7 @@ This section contains the results of the performance analysis with KubeVirt and 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_ram.pdf}
-    \caption{Memory utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt experiences a large burst of memory utilization for the scale-up operation, but a significantly lower utilization for the scale-down operation that gradually decreases towards the end. OpenNebula was unable to complete the test.}
+    \caption{Memory utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt experiences a large burst of memory utilization for the scale-up operation, but a significantly lower utilization for the scale-down operation that gradually decreases towards the end. OpenNebula required manual intervention to complete the test due to VMs ending up in bad states, which caused it to be disqualified.}
     \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-memory}
 \end{figure}
 
@@ -989,16 +987,28 @@ The feedback to KubeVirt was in general mixed. While the workflow was found to b
 \chapter{Discussion}
 The research questions involved investigating potential efficiencies that could be gained by integrating VMs in Kubernetes using KubeVirt. This project has evaluated KubeVirt using two different approaches: a performance analysis and a usability analysis. The discussion aims to explore deeper into the results of the project to provide insight into how feasible KubeVirt is as a VM management system.
 
-\section{Intepreting Performance Results}
-The goal of the performance analysis was to find factual and provable claims regarding the performance of a VM management system. This included creating a framework that could be used to craft environments that were both reusable and fair among the systems being evaluated. The framework also provided a common interface for which an implementation was created per VM management system. By definition, such a system is only as good as the implementations are, which is why the implementations were designed to be as similar as possible to ensure a fair comparison. However, certain features and settings were not able to be tuned in the same way, such as the scheduling configuration where OpenNebula provides only a single option for scheduling: the number of VMs that can be dispatched concurrently. Not being able to accurately configure the systems identically in every aspect leaves the interpretation of the results open for discussion. This project has chosen the approach where if the system does not provide a specific feature to be tuned, the system is considered to be as optimized as possible. This approach was chosen as it favors the VM management system that provides the most features and flexibility, and as such, the results should be interpreted with this in mind. Having this aspect in mind is particularly important when interpreting the \textit{Create Many Type-1 VMs} tests, see figures\ \ref{fig:create-many-cpu},\ \ref{fig:create-many-memory},\ \ref{fig:create-many-disk} and\ \ref{fig:create-many-duration}. KubeVirt, using the scheduler built into Kubernetes, was able to create 20 type-1 VMs in 67 seconds, while it took OpenNebula 192 seconds on average. However, the results also suggest that KubeVirt is more resource-intensive, as the utilization of CPU, memory and disk was significantly higher than OpenNebula, which can viewed as a trade-off between speed and resource utilization. It is important to note, though, that KubeVirt does not reach 100\% utilization.
+\section{Limited Features and Result Intepretation}
+The goal of the performance analysis was to find factual and provable claims regarding the performance of a VM management system. This included creating a framework that could be used to craft environments that were both reusable and fair among the systems being evaluated. The framework also provided a common interface for which an implementation was created per VM management system. By definition, such a system is only as good as the implementations are, which is why the implementations were designed to be as similar as possible to ensure a fair comparison. However, certain features and settings were not able to be tuned in the same way, such as the scheduling configuration where OpenNebula provides only a single option for scheduling: the number of VMs that can be dispatched concurrently. Not being able to accurately configure the systems identically in every aspect leaves the interpretation of the results open for discussion. This project has chosen the approach where if the system does not provide a specific feature to be tuned, the system is considered to be as optimized as possible. This approach was chosen as it favors the VM management system that provides the most features and flexibility, and as such, the results should be interpreted with this in mind. Having this aspect in mind is particularly important when interpreting the \textit{Create Many Type-1 VMs} tests, see figures\ \ref{fig:create-many-cpu},\ \ref{fig:create-many-memory},\ \ref{fig:create-many-disk} and\ \ref{fig:create-many-duration}. KubeVirt, using the scheduler built into Kubernetes, was able to create 20 type-1 VMs in 67 seconds, while it took OpenNebula 192 seconds on average. However, the results also suggest that KubeVirt is more resource-intensive, as the utilization of CPU, memory and disk was significantly higher than OpenNebula, which can viewed as a trade-off between the duration to complete a task and the resources required to complete it. This project has chosen the duration to be the more important metric, as it indicates that the system is capable of handling a burst of requests efficiently and using its allocated resources to its fullest potential. 
 
-\section{Kubernetes Overhead}
-The results of the performance analysis 
+It is not always the case that KubeVirt's larger resource utilization is short-lived compared to OpenNebula, where some results suggest that KubeVirt has a significantly larger disk utilization than OpenNeubla for a similar period. This is particularly evident in figure\ \ref{fig:scale-cluster-disk} where KubeVirt and OpenNebula follow a similar characteristic when scaling the cluster but KubeVirt disk utilization is significantly more intense. For this specific test, the result suggests that KubeVirt does not provide a trade-off between the duration to complete the task and the resources required to complete it. This could be due to the way KubeVirt implements adding additional nodes to the cluster, which could be a resource-intensive operation. Another explanation could be that the specific Kubernetes distribution used in the tests is not optimized for scaling the cluster. However, exploring solutions for this is outside the scope of this project.
+
+The final test used in this project included scaling the cluster with VMs running on each node. It involved scaling the cluster from 2 worker nodes up to 10 worker nodes, then creating a type-1 VM on each worker node before scaling it down to 2 worker nodes. This caused the VM management system to migrate the VMs to available nodes. This test posed a challenge for the scheduler of both systems since a VM might be scheduled to the wrong host if the scale-down operation was not handled immediately. The test was also an extension to the \textit{Scale Cluster} test that involved the same steps but without the VMs. The result shows that OpenNebula was not able to complete the test due to some VMs not being migrated to the correct host, and instead remained on the host that was requested to be removed. Since the test was designed to disconnect the worker and then wait for each host to be empty, the OpenNebula implementation hung indefinitely. A possible explanation for this could be that OpenNebula attempted to move a VM from a host that disconnected to another host that was just about to disconnect, but hadn't yet, and could cause the receiving host to end up in a bad state. Another explanation could be that OpenNebula requires additional control plane nodes to handle such bursts for migration operation since the test environment only provided a single control plane node to reduce the cost of the test since the nodes were hosted in Azure. However, this is purely speculative and exploring the cause of the issue is outside the scope of this project. The issue of VMs stuck on hosts could be resolved by manual intervention, but since this was deemed unfair to the other system, OpenNebula was disqualified from the scale-with-VMs test. As such, the result for scaling with VMs was omitted for OpenNebula and only KubeVirt was evaluated for this test.
+
+\section{Kubernetes Overhead and Induced Load}
+The results of the performance analysis indicate that both KubeVirt and OpenNebula have a consistent overhead and that it differs between the systems. Having a larger overhead implies the system has more ongoing computational work in the background while not performing a requested operation. This is particularly evident in the tests creating different VM-types, see figures\ \ref{fig:create-tiny-kubevirt},\ \ref{fig:create-tiny-opennebula},\ \ref{fig:create-large-kubevirt} and\ \ref{fig:create-large-opennebula}. KubeVirt CPU utilization hovers around 4\% with a memory utilization of just below 12\%. OpenNebula, on the other hand, has a CPU utilization just above 2\% and a RAM utilization of 8\%. This suggests that OpenNebula has a lower required overhead to maintain the system compared to KubeVirt. The overhead is also evident in the tests including live migration, see\ \ref{fig:migrate-many-memory}. OpenNebula starts the test utilizing just above 8\% of the available memory while KubeVirt uses over 13\%. However, while this would suggest that KubeVirt is less resource-efficient than OpenNebula, it is important to first consider the surrounding factors. Firstly, since
+Kubernetes was originally designed to manage containers, it has a different set of requirements compared to a traditional VM management system such as OpenNebula. Certain operations enabling container orchestration might not be necessary for a VM management system, which could manifest as an overhead. Secondly, the overhead shown in the results is not necessarily connected to KubeVirts implementation but rather Kubernetes itself, which could in turn be tied to the specific Kubernetes distribution used in the tests. However, exploring possible optimizations to reduce such overhead or the source of the overhead is outside the scope of this project. Lastly, as described in\ \ref{sec:kubevirt-technical-overview}, KubeVirt achieves VM hosting in Kubernetes by using custom resource and controllers that wraps a VM instance inside a Pod. While this approach allows for seamless integration of VMs in Kubernetes, it also introduces an unavoidable overhead. In conclusion, the overhead is a trade-off for the flexibility and features that KubeVirt provides, and the results suggest that KubeVirt is more resource-intensive than OpenNebula when not performing operations.
+
+The flip side of this is that many of the results suggest the opposite regarding induced load. Induced load is the added load on the system when performing a specific operation and is calculated as the difference between the total utilization and the base utilization. This can be difficult to interpret since a large induced load over a short period is not necessarily worse than a small induced load over a longer period. However, this project has chosen a short-lived burst of utilization to be favorable over a longer period of low to medium utilization since it suggests that the system is capable of using its allocated resources to its fullest extent. The results suggest that KubeVirt has a lower induced load in general than OpenNebula, where in many cases the induced load is more than double for OpenNebula compared to KubeVirt. This is particularly evident in figure \ref{fig:create-many-cpu} where OpenNebula both take twice as long to complete the test and have twice as large induced load from the operation, around 6\% compared to KubeVirt's 3\%. The difference in induced load is further illustrated in figure\ \ref{fig:migrate-many-cpu}. Not only does it show that OpenNebula reaches an induced load of 76\% while KubeVirt reaches just above 50\%, but also that induced load is more prominent in the total utilization for both systems. This suggests that induced load is a more significant factor when evaluating the performance of VM management systems and, as such, should be considered when interpreting the results. Figure\ \ref{fig:migrate-many-memory-induced} further illustrates this point where for OpenNebula, the induced load is a significant part of the total utilization. Having a smaller induced load suggests that the system is better at scale while having a smaller base overhead suggests that the system is more efficient when the system is idle or performing few operations. However, whether this is true for all operations a VM management system offers remains to be investigated. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{plt/live-migrate-many_ram_induced.pdf}
+    \caption{Induced memory utilization on the control node when live migrating 10 type-1 VMs. The induced load is a more significant part of the total utilization for OpenNebula than for KubeVirt. The figure is based on the results from figure\ \ref{fig:migrate-many-memory}.}
+    \label{fig:migrate-many-memory-induced}
+\end{figure}
 
 \section{Jagged Disk Utilization}
-
-% Write about this
-% The duration metric is dependent on the test case and is aimed at measuring how long a specific operation takes. However, each of the metrics is not conclusive on its own since a short burst of CPU utilization might be preferable over a long period of medium CPU utilization. As such, the metrics will be used in conjunction to provide an accurate representation of the performance of the VM management systems.
+Throughout the results, there is a recurring and notable pattern specifically tied to disk utilization. The disk utilization graphs are jagged and, in many cases, do not follow the expected pattern of the specific operation performed in the test. This is particularly evident in the \textit{Create VM Type 4} tests, see figures \ref{fig:create-large-kubevirt} and \ref{fig:create-large-opennebula}. The disk utilization for both Kubevirt and OpenNebula is initially larger than expected and does not return to the same state after the test is finished. Since the tests were run multiple times in no particular order, noise was likely introduced in the measurement that caused each test to generate data points in different ranges. When the induced disk utilization was low for a particular test, background disk utilization such as OS-level operation was more prominent in the results. By then applying a rolling mean smoothing function to the dataset, the noise was reduced, but due to the variability, some jagged features remained. This is further supported by the fact that the disk utilization is less jagged for tests with a larger expected disk utilization, such as the \textit{Create Many Type-1 VMs} tests since these tests generate a larger induced load. While the jagged disk utilization is not a problem in itself, it is important to consider when interpreting the results, especially those where disk utilization is small, as it could introduce bias unrelated to the operation performed.
 
 \chapter{Conclusions and Future Work}
 
@@ -1091,7 +1101,7 @@ WorkingDirectory=/home/user
 ExecStart=/bin/bash /home/user/metrics.sh
 Restart=always
 [Install]
-WantedBy=multi-user.target`
+WantedBy=multi-user.target
 \end{lstlisting}
 
 \chapter{Performance Analysis Results}
@@ -1410,12 +1420,14 @@ WantedBy=multi-user.target`
 
 \newpage
 
+\def\figurewidth{0.85}
+
 % Scale cluster with VMs - CPU
 \begin{figure}[H]
     \centering
     \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_cpu.pdf}
     \caption{CPU utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt experiences an initial burst of CPU utilization for the scale-up operation, but a significantly lower utilization for the scale-down operation.
-     OpenNebula was unable to complete the test.}
+     OpenNebula required manual intervention to complete the test due to VMs ending up in bad states, which caused it to be disqualified.}
     \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-cpu}
 \end{figure}
 
@@ -1423,7 +1435,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_cpu_worker.pdf}
-    \caption{Cumulative CPU utilization among worker nodes when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt maintains utilization with periodic peaks throughout the test. OpenNebula was unable to complete the test.}
+    \caption{Cumulative CPU utilization among worker nodes when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt maintains utilization with periodic peaks throughout the test. OpenNebula required manual intervention to complete the test due to VMs ending up in bad states, which caused it to be disqualified.}
     \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-cpu-worker}
 \end{figure}
 
@@ -1431,7 +1443,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_ram.pdf}
-    \caption{Memory utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt experiences a large burst of memory utilization for the scale-up operation, but a significantly lower utilization for the scale-down operation that gradually decreases towards the end. OpenNebula was unable to complete the test.}
+    \caption{Memory utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt experiences a large burst of memory utilization for the scale-up operation, but a significantly lower utilization for the scale-down operation that gradually decreases towards the end. OpenNebula required manual intervention to complete the test due to VMs ending up in bad states, which caused it to be disqualified.}
     \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-memory}
 \end{figure}
 
@@ -1439,7 +1451,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_ram_worker.pdf}
-    \caption{Cumulative memory utilization among worker nodes when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt maintains a steady memory utilization throughout the test. OpenNebula was unable to complete the test.}
+    \caption{Cumulative memory utilization among worker nodes when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt maintains a steady memory utilization throughout the test. OpenNebula required manual intervention to complete the test due to VMs ending up in bad states, which caused it to be disqualified.}
     \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-memory-worker}
 \end{figure}
 
@@ -1447,7 +1459,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_disk.pdf}
-    \caption{Disk utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt experiences a large initial burst of disk utilization that gradually subsides toward the end of the test. OpenNebula was unable to complete the test.}
+    \caption{Disk utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt experiences a large initial burst of disk utilization that gradually subsides toward the end of the test. OpenNebula required manual intervention to complete the test due to VMs ending up in bad states, which caused it to be disqualified.}
     \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-disk}
 \end{figure}
 
@@ -1455,7 +1467,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_disk_worker.pdf}
-    \caption{Cumulative disk utilization among worker nodes when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt experiences large periodic peaks of disk utilization throughout the test. OpenNebula was unable to complete the test.}
+    \caption{Cumulative disk utilization among worker nodes when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt experiences large periodic peaks of disk utilization throughout the test. OpenNebula required manual intervention to complete the test due to VMs ending up in bad states, which caused it to be disqualified.}
     \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-disk-worker}
 \end{figure}
 
@@ -1463,7 +1475,7 @@ WantedBy=multi-user.target`
 \begin{figure}[H]
     \centering
     \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_duration.pdf}
-    \caption{Duration of scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt completes the test in just below 70 seconds. OpenNebula was unable to complete the test.}
+    \caption{Duration of scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 VM running on each node. KubeVirt completes the test in just below 70 seconds. OpenNebula required manual intervention to complete the test due to VMs ending up in bad states, which caused it to be disqualified.}
     \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms}
 \end{figure}
 

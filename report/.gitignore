@@ -11,3 +11,4 @@
 *.synctex.gz
 out/*
 !out/thesis.pdf
+buildfiles/

@@ -120,7 +120,7 @@ breaklines=true
 \printglossary[type=\acronymtype, title=List of Abbreviations, toctitle=List of Abbreviations, nonumberlist]
 
 \chapter{Introduction}
-Virtualization is a technique that either splits or combines computing resources into one or more operating environments by creating a software layer that surrounds or underlies existing hardware or software. This enables the creation of virtualized resources that are decoupled from the underlying hardware. Virtualization can occur in various forms including the virtualization of storage, networks and servers. Virtualizing networks and storage is achieved by creating an abstraction layer on top of the physical network and storage resources, respectively, to provide a more flexible and scalable environment for other resources to interact with. Server virtualization, on the other hand, is used to create virtual computing environments that are decoupled from the underlying computing resources. By combining virtualized resources into a single operating environment, virtualization allows heterogeneous hardware resources to be used homogeneously and thus it improves resource utilization and flexibility\ \cite{virtualization-history, virtualization-basics, virtualization-trends}. 
+Virtualization is a technique that either splits or combines computing resources into one or more operating environments by creating a software layer that surrounds or underlies existing hardware or software. This enables the creation of virtualized resources that are decoupled from the underlying hardware. Virtualization can occur in various forms including the virtualization of storage, networks and servers. Virtualizing networks and storage is achieved by creating an abstraction layer on top of the physical network and storage resources, respectively, to provide a more flexible and scalable environment for other resources to interact with. Server virtualization, on the other hand, is used to create virtual computing environments that are decoupled from the underlying computing resources. By combining virtualized resources into a single operating environment, virtualization allows heterogeneous hardware resources to be used homogeneously and thus it improves resource utilization and flexibility\ \cite{virtualization-history, virtualization-basics, virtualization-trends}.
 
 To enable server virtualization and manage virtual computing environments, a hypervisor is used. A hypervisor is a software layer that operates between the hardware and the \Gls{os} and is responsible for creating virtual computing environments called virtual machines (\Glspl{vm})\ \cite{virtualization-trends, virtualization-ibm, hypervisor-survey}. \Glspl{vm} are emulations of physical computers that are perceived as real computers by applications running inside them. They provide a complete and independent environment by virtualizing an \Gls{os}, rendering them suitable for a wide range of applications, including legacy applications and applications that require a high level of isolation. For this reason, \Glspl{vm} have long been the core part of IT infrastructure, serving as foundational components in system architecture\ \cite{virtualization-history, virtualization-basics}. 
 
@@ -998,7 +998,13 @@ However, while debugging the issue presented in the task was found to be complex
 \end{itemize}
 
 \subsection*{Overall}
-The feedback to KubeVirt was in general mixed. While the workflow was found to be intuitive due to its similarities with ordinary Kubernetes resources, it was also found to be complex with a steep learning curve. The documentation was found to be lacking practical examples of how to get started outside the scope of the given tasks and instead focused more on the operational aspects of KubeVirt. 
+The feedback to KubeVirt was in general mixed. While the workflow was found to be intuitive due to its similarities with ordinary Kubernetes resources. This was particularly highlighted by Partcipant 4 who already mangaged other Kubernetes manifests in Git.
+
+\begin{itemize}
+    \item Participant 4: \textit{It is primarily because I'm already storing all my Kubernetes manifest in Git and have the CI setup for that, so why not also create virtual machines in a similar way.}
+\end{itemize}
+
+Being similar to Kubernetes resources was also found to be a negative aspect as it leads to a steep learning curve. The documentation was found to be lacking practical examples of how to get started outside the scope of the given tasks and instead focused more on the operational aspects of KubeVirt. 
 
 \chapter{Discussion}
 The research questions involved investigating potential efficiencies that could be gained by integrating \Glspl{vm} in Kubernetes using KubeVirt. This project has evaluated KubeVirt using two different approaches: a performance analysis and a usability analysis. The discussion aims to explore deeper into the results of the project to provide insight into how feasible KubeVirt is as a \Gls{vm} management system.
@@ -2027,7 +2033,12 @@ Getting VNC to work on Mac was a bit tricky, but I downloaded Tiger VNC and save
 \item \textbf{Karl}
     
 Everything was smooth sailing (except when I didn't read the instructions properly and missed the provided password). This process for managing \Glspl{vm} is much more direct, transparent and reproducible than using a UI-based tool.
-    
+
+\item \textbf{Sai}
+
+Personally, from having worked with older virtualization platforms and Kubernetes, I'd prefer to use KubeVirt as my virtualization platform.
+It is primarily because I'm already storing all my Kubernetes manifest in Git and have the CI setup for that, so why not also create virtual machines in a similar way.
+
 \end{itemize}
 
 \section{Task 2/3}
@@ -2171,6 +2182,13 @@ Great! I want more!
 For developers with previous Kubernetes experience, it looks to be a very intuitive way to handle virtual machines. In an environment where Kubernetes clusters are already part of the workflow, it is obvious how aspects such as automation and access control can be transferred to apply also to the \Gls{vm} infrastructure.
  
 Since I was just trying it out, I haven't had any real issues that I need to debug yet.
+
+\item \textbf{Sai}
+
+I've been using KubeVirt for several months and I like it.
+Specifically, the cloud native approach where everything is API accessible, which makes it easier to build tooling around and the community has done a great job of that as expected. Due to the fact it's APIs first, it opens up many approaches to manage virtual machines. Personally, from having worked with older virtualization platforms and Kubernetes, I'd prefer to use KubeVirt as my virtualization platform.
+
+I'd say I like this relatively new take on how to deal with virtual machines. At the same time, it may not be for everyone. In the end, it depends on what problems you are trying to solve and the need. 
 
 \end{itemize}
 

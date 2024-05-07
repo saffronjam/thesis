@@ -113,6 +113,8 @@ k8s-docs-statefulsets https://kubernetes.io/docs/concepts/workloads/controllers/
 k8s-docs-kubeproxy https://kubernetes.io/docs/reference/command-line-tools-reference/kube-proxy/
 k8s-docs-kubelet https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/
 k8s-docs-controllers https://kubernetes.io/docs/concepts/architecture/controller/
+k8s-docs-sidecars https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/
+k8s-docs-components https://kubernetes.io/docs/concepts/overview/components/
 k8s-crds https://link.springer.com/chapter/10.1007/978-981-19-5292-0_29
 k8s-it-administration https://link.springer.com/article/10.1007/s11227-021-03982-3
 k8s-kubectl https://link.springer.com/chapter/10.1007/978-1-4842-5519-3_4
@@ -123,8 +125,10 @@ container-registries https://link.springer.com/chapter/10.1007/978-1-4842-5519-3
 container-registries-redhat https://www.redhat.com/en/topics/cloud-native-apps/what-is-a-container-registry
 container-kata-security https://ieeexplore.ieee.org/abstract/document/8939164
 
+
 ### Containers vs VMs
 
+gh-selfhost-runner-sec https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners#self-hosted-runner-security
 container-vm-overview https://sciendo.com/abstract/journals/acss/23/1/article-p21.xml
 container-vm-comparison https://dl.acm.org/doi/pdf/10.1145/2988336.2988337
 vm-overcommitment https://www.cs.umd.edu/~ishan/files/memoc.pdf
@@ -162,7 +166,7 @@ kubevirt-virtctl https://kubevirt.io/user-guide/operations/virtctl_client_tool/
 kubevirt-live-migration https://kubevirt.io/user-guide/operations/live_migration/
 kubevirt-gitops https://kubevirt.io/user-guide/operations/gitops/
 gitops-evolution https://ieeexplore.ieee.org/abstract/document/9565152
-
+kubevirt-vmi https://kubevirt.io/user-guide/virtual_machines/virtual_machine_instances/
 
 # Method
 kubevirt-docs-disks https://kubevirt.io/user-guide/virtual_machines/disks_and_volumes/

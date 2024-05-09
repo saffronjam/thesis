@@ -148,16 +148,16 @@ However, with the evolution of virtualization, an alternative to \Glspl{vm} was 
 
 However, the benefits of a container does not come without a cost. Due to the fact containers share the underlying \Gls{os} kernel, it opens up a larger attack surface, which increases the risk of a security vulnerability. Some technologies have been created to mitigate this issue, such as Firecracker, Kata Containers and gVisor, but none of them has gained significant traction due to the trade-off they impose with additional overhead. This means the decision of using a \Gls{vm} or a container remains a use-case question\ \cite{container-runtimes-overview, container-as-vm-comparison}. 
 
-Due to their different use cases, \Glspl{vm} and containers have traditionally been managed separately. There exists a wider range of management systems for \Glspl{vm} than for containers since they have existed for a longer time. \Glspl{vm} are often managed by a \Gls{vm} management system that provides tools to aid in life-cycle management. Many such systems are designed with a set of control nodes and worker nodes, where control nodes instruct the worker nodes with \Gls{vm}-related tasks, such as creating a \Gls{vm}. This means that the \Gls{vm} management system can be seen as a hypervisor on a larger scale, which is illustrated in Figure\ \ref{fig:vm-management-system}. Examples of such systems include OpenStack\ \cite{openstack-website}, CloudStack\ \cite{cloudstack-website}, and OpenNebula\ \cite{opennebula-website}. Furthermore, a management system for a container is similar to that of a \Gls{vm}. It also provides a set of tools for life-cycle management and is commonly structured with control and worker nodes. However, a system that manages containers also includes certain operations that are not as applicable to \Glspl{vm}, such as auto-scaling. This has led to these systems being referred to as an orchestration system, rather than just management. Examples include Kubernetes\ \cite{k8s-website}, Nomad\ \cite{nomad-website} and Docker Swarm\ \cite{docker-swarm-website}, with the former being the most widely adopted \cite{k8s-it-administration}. As such, while VMs and containers have their respective use cases, they also share many aspects regarding how they provide virtual computing environments. For this reason, there has been an ongoing convergence in how \Glspl{vm} and containers are managed\ \cite{vm-cloud}. 
+Due to their different use cases, \Glspl{vm} and containers have traditionally been managed separately. There exists a wider range of management systems for \Glspl{vm} than for containers since they have existed for a longer time. \Glspl{vm} are often managed by a \Gls{vm} management system that provides tools to aid in life-cycle management. Many such systems are designed with a set of control nodes and worker nodes, where control nodes instruct the worker nodes with \Gls{vm}-related tasks, such as creating a \Gls{vm}. A \Gls{vm} management system can thus be seen as a hypervisor distributed across several nodes, which is illustrated in Figure\ \ref{fig:vm-management-system}. Examples of such systems include OpenStack\ \cite{openstack-website}, CloudStack\ \cite{cloudstack-website}, and OpenNebula\ \cite{opennebula-website}. Furthermore, a management system for a container is similar to that of a \Gls{vm}. It also provides a set of tools for life-cycle management and is commonly structured with control and worker nodes. However, a system that manages containers also includes certain operations that are not as applicable to \Glspl{vm}, such as auto-scaling. This has led to these systems being referred to as an orchestration system, rather than just management. Examples include Kubernetes\ \cite{k8s-website}, Nomad\ \cite{nomad-website} and Docker Swarm\ \cite{docker-swarm-website}, where the former is the most widely adopted in the industry \cite{k8s-it-administration}. As such, while VMs and containers have their respective use cases, they also share many aspects regarding how they provide virtual computing environments. For this reason, there has been an ongoing convergence in how \Glspl{vm} and containers are managed\ \cite{vm-cloud}. 
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.9\textwidth]{img/vm_management_system.pdf}
-    \caption{Brief overview of a monolithic \Gls{vm} management system where clients communicate with a management node through a set of interfaces to manage \Glspl{vm} distributed across several hosts. The indirect communication allows a client to manage \Glspl{vm} without having to interact with the hosts directly.} 
+    \caption{A brief overview of a \Gls{vm} management system built in a monolithic fashion, where clients can send \Gls{vm}-related instructions to a centralized location.} 
     \label{fig:vm-management-system}
 \end{figure}
 
-Kubernetes, which was originally designed to manage containers, was recently extended to also support \Gls{vm} management through the KubeVirt project. KubeVirt is a novel project that aims to fill a gap in how virtualized resources are managed, more specifically unifying the management of \Glspl{vm} and container into a single platform. Running both \Glspl{vm} and container in the same platform enables traffic to flow natively between the two resources, which is illustrated in Figure\ \ref{fig:container-vm-kubevirt-architecture}. How this is achieved on a technical level is discussed later in \ref{sec:kubevirt-technical-overview}. 
+Recently, Kubernetes was extended to accommodate \Glspl{vm} through KubeVirt. It is a novel project that aims to fill a gap in how virtualized resources are managed, more specifically unifying the management of \Glspl{vm} and container into a single platform. Running both \Glspl{vm} and container in the same platform enables traffic to flow natively between the two resources, which is illustrated in Figure\ \ref{fig:container-vm-kubevirt-architecture}. How this is achieved on a technical level is discussed later in \ref{sec:kubevirt-technical-overview}. 
 
 \begin{figure}[h]
     \centering
@@ -166,7 +166,7 @@ Kubernetes, which was originally designed to manage containers, was recently ext
     \label{fig:container-vm-kubevirt-architecture}
 \end{figure}
 
-The approach of managing \Glspl{vm} as a Kubernetes resource comes with many benefits. Not only does it mean that \Glspl{vm} can be managed in a cloud-native manner using Kubernetes workflows, but also that \Glspl{vm} can integrate with tools that previously only supported containers\ \cite{cloud-native}. Additionally, managing both \Glspl{vm} and containers in the same platform reduces architectural complexity since only one platform is needed, as well as reducing the required skillset among the personnel\ \cite{kubevirt-cncf, kubevirt-storware}. 
+The approach of managing \Glspl{vm} as a Kubernetes resource comes with many benefits. A \Gls{vm} can now be managed in a more cloud-native manner through Kubernetes workflows, but it can also integrate with tools that previously only supported containers\ \cite{cloud-native}. Additionally, managing both \Glspl{vm} and containers in the same platform reduces architectural complexity since only one platform is needed, as well as reducing the required skillset among the personnel\ \cite{kubevirt-cncf, kubevirt-storware}. 
 
 The integration of \Glspl{vm} into Kubernetes using KubeVirt represents a significant milestone toward a more efficient and unified IT infrastructure\ \cite{kubevirt-storware}. However, KubeVirt's practicality in the real world is not yet fully explored. As such, this project aims to evaluate Kubernetes with KubeVirt as a \Gls{vm} management system and compare it with traditional approaches to understand its practicality and limitations.
 
@@ -185,7 +185,7 @@ This is focused on the practical implications of using KubeVirt and Kubernetes i
 
 
 \section{Problem}
-\Glspl{vm} and containers both represent virtualization technologies that can create a virtual computing environment. However, the technologies were created at different times, which has led to one being adopted before the other. For this reason, they have been managed in separate management systems, which has led to a fragmented infrastructure and a larger required skillset among operators. Additionally, many traditional \Gls{vm} management systems do not integrate well with modern toolkits. This means that by not using a modern management system such as Kubernetes, these benefits might not be fully utilized. 
+\Glspl{vm} was the first technology that offered virtual computing environments that could be used to host various applications. This led to a widespread adoption of \Gls{vm} and many management systems were developed. With the evolution of \Glspl{vm}, containers were created as a lightweight alternative. However, this led to separate management systems being created for the two technologies, even though they are often used in a similar, if not the same, context. This has led to duplicate implementations of mechanisms created, even though they could have been shared, but also to more fragmented and architecturally complex environments.
 
 \section{Purpose}
 The purpose of this project is to evaluate whether Kubernetes with KubeVirt is a viable option for \Gls{vm} management. This evaluation is important in the field of cloud computing since it can provide insight into how an existing system could benefit from integrating \Glspl{vm} management in Kubernetes, as well as by consolidating the management of \Glspl{vm} and containers to a single platform.
@@ -194,16 +194,12 @@ The purpose of this project is to evaluate whether Kubernetes with KubeVirt is a
 The goal of this project is to provide a transparent evaluation with quantifiable results regarding the applicability of managing \Glspl{vm} inside the Kubernetes ecosystem. The results could be used as a fundamental argument for or against Kubernetes as a management platform. Results that argue for the use of KubeVirt in terms of performance could be used as an argument for future research regarding sustainability.
 
 \section{Research Method}
-This project will use a mixed-methods approach to investigate the research questions. A literature study will initially be conducted to thoroughly explore what led up too KubeVirt being created, as well as the current challenges regarding \Gls{vm} management. To evaluate KubeVirt itself, both a quantitative and qualitative analysis will be conducted. The quantitative analysis will be based on a performance analysis that compares KubeVirt against a traditional approach and benchmarks the performance of the system when performing tasks such as creating \Glspl{vm}. The qualitative aspects will be based on a usability analysis, which involves having system administrators perform certain common tasks using KubeVirt. Together, these methods aim to capture an overall image of KubeVirt for managing \Glspl{vm}.  
+This project will use a mixed-methods approach to investigate the research questions. A literature study will initially be conducted to thoroughly explore what led up to KubeVirt being created, as well as the current challenges regarding \Gls{vm} management. To evaluate KubeVirt itself, both a quantitative and qualitative analysis will be conducted. The quantitative analysis will be based on a performance analysis that compares KubeVirt against a traditional approach and benchmarks the performance of the system when performing tasks such as creating \Glspl{vm}. The qualitative aspects will be based on a usability analysis, which involves having system administrators perform certain common tasks using KubeVirt. Together, these methods aim to capture an overall image of KubeVirt for managing \Glspl{vm}.  
 
 \section{Limitations}
 \begin{enumerate}
-    \item This project will not investigate any solutions for shortcomings in KubeVirt itself, such as finding alternatives for features that exist in existing virtual machine management systems but not in KubeVirt. As such, this project acknowledges that KubeVirt might not be a complete replacement for traditional virtual machine management tools since it might not offer all the features of an \Gls{iaas} system. Therefore, only features that exist in KubeVirt and the compared system will be considered when testing. 
-    \item This project will primarily focus on the practical implications of moving into a KubeVirt-based system. For this, there are mainly two scenarios that will be considered:
-    \begin{itemize}
-        \item \textbf{Replacement}: A system uses only a traditional virtual management system. By using KubeVirt, the system will be replaced by a Kubernetes-based system.
-        \item \textbf{Unifying}: A system uses both traditional management and Kubernetes. By using KubeVirt, the system will be unified into a single platform for both \Glspl{vm} and containers.
-    \end{itemize}
+    \item This project only investigates what is available in KubeVirt, and does not account for possible features that exist in a system that it is being compared to. This means that this project acknowledges that KubeVirt itself might not be a complete replacement for a traditional \Gls{vm} management system, but rather form a complete alternative in conjunction with Kubernetes tools and integrations.
+    \item This project primarily focuses on the practical implications of moving into a KubeVirt-based system. However, it does not investigate or explore processes regarding the installation and configuration of a KubeVirt-based system.
 \end{enumerate}
 
 \section{Structure of the thesis}
@@ -223,7 +219,7 @@ Virtualization is the technology that enables hardware to be split or grouped in
 
 A virtual computing environment, more commonly referred to as a \Gls{vm}, is a complete system that operates as an isolated environment. The environment is perceived as if it were an ordinary computer from the perspective of the application running inside it, even though the physical resources are shared with other \Glspl{vm} running on the same host. Being a complete system is particularly useful when running legacy applications that are dependent on a certain \Gls{os} or driver version. This could be taken a step further where a piece of hardware could be emulated to suit the needs of a legacy application. Additionally, the isolated environments are suitable for scenarios where there are strict security requirements for the application running inside it\ \cite{virtualization-basics, virtualization-trends}.
 
-Virtualization can be achieved in different layers depending on the required level of abstraction. The three major levels are hardware level, \Gls{os}-level and application level. For instance, storage and network virtualization both fall under the hardware level category since they create an abstraction layer on top of the physical resources. However, in other scenarios, virtualization is not required to be as low-level. Application virtualization is concerned with encapsulating an application in a more lightweight environment, such that the application thinks it is executed on a specific platform. A common example is \gls{jvm} that enables programs written in the programming language Java to be run on multiple operating systems\ \cite{application-virtualization}. Figure \ref{fig:hardware-os-virtualization} illustrates this as an overview of the differences between the two more common layers of virtualization; hardware and \Gls{os} virtualization. It is important to note that the virtualization layers are not mutually exclusive and that using them in combination leads to a unique use case. For instance, a guest process (\Gls{os} level) can run in a guest \Gls{os} (hardware level). This specific use case is referred to as nested virtualization\ \cite{virtualization-basics}.
+The three major levels for virtualizations are hardware level, \Gls{os}-level and application level. For instance, storage and network virtualization both fall under the hardware level category since they create an abstraction layer on top of the physical resources. However, in other scenarios, virtualization is not required to be as low-level. Application virtualization is concerned with encapsulating an application in a more lightweight environment, such that the application thinks it is executed on a specific platform. A common example is \gls{jvm} that enables programs written in the programming language Java to be run on multiple operating systems\ \cite{application-virtualization}. Figure \ref{fig:hardware-os-virtualization} illustrates this as an overview of the differences between the two more common layers of virtualization; hardware and \Gls{os} virtualization. It is important to note that the virtualization layers are not mutually exclusive and that using them in combination leads to a unique use case. For instance, a guest process (\Gls{os} level) can run in a guest \Gls{os} (hardware level). This specific use case is referred to as nested virtualization\ \cite{virtualization-basics}.
 
 \begin{figure}
     \centering
@@ -232,7 +228,7 @@ Virtualization can be achieved in different layers depending on the required lev
     \label{fig:hardware-os-virtualization}
 \end{figure}
 
-Virtualization can be divided into two categories, full virtualization and paravirtualization. Full virtualization is the older and traditional approach where the entire underlying hardware is virtualized to its core. This creates an image of the virtual system that is indistinguishable from a real one from the perspective of the application running inside it. As such, full virtualization allows the \Gls{vm} to be completely decoupled from the underlying hardware and for the guest \Gls{os} to run without any modifications.\ \cite{virtualization-basics, xen-virtualization, hypervisor-xen}. However, while virtualizing on such as low level is practical due to the flexibility it provides, it comes with a cost of performance. For this reason, paravirtualization was created to reduce the number of resources that are virtualized, effectively raising the level of abstraction slightly. With paravirtualization, a \Gls{vm} is presented with an image that is similar, but not identical, to the underlying hardware, and thus the guest \Gls{os} is aware it is running inside a \Gls{vm}\ \cite{xen-virtualization, hypervisor-xen}.
+So far, virtualization has been described as being able to contain an entire environment virtually. However, this is not always a feasible solution. For this reason, virtualization was divided into two categories, full virtualization and paravirtualization. Full virtualization is what has been described so far, and is the older and traditional approach where the entire underlying hardware is virtualized to its core. This allows a \Gls{vm} to portray any specifications to the application running inside it. This means the application has no way of knowing it is being run in a virtual environment rather than a physical one. While this provides the most flexibility, it also comes with a cost of performance\ \cite{virtualization-basics, xen-virtualization, hypervisor-xen}. For this reason, paravirtualization was created to reduce the number of resources that are virtualized, effectively raising the level of abstraction slightly. With paravirtualization, a \Gls{vm} is presented with an image that is similar, but not identical, to the underlying hardware, and thus the guest \Gls{os} is aware it is running inside a \Gls{vm}\ \cite{xen-virtualization, hypervisor-xen}.
 
 \subsection*{Benefits and Challenges}
 Many of the benefits of virtualization stem from the fact that there exists an abstraction layer above the physical hardware. The abstraction layer decouples software from hardware, allowing for the use of vendors with different I/O in the same environment. This creates a more flexible and scalable computing environment as a whole where hardware is turned into a simple pool of computing resources\ \cite{virtualization-trends}. As such, there are numerous benefits of virtualization, a few of which are listed below.
@@ -1555,22 +1551,22 @@ WantedBy=multi-user.target
 The following is a replicated version of what was given to the participants for the usability analysis formatted for the appendix. The original version was provided as a separate document to the participants.
 
 \section*{Introduction}
-This is a usability analysis of KubeVirt that involves performing a set of tasks and then reflecting on the experience, where the goal is to evaluate how well KubeVirt works in practice. By participating in the usability analysis you provide valuable feedback and insight that can be used to improve KubeVirt. Your answers will be included as-is in the appendix of the project report. Upon request, the answers can be anonymized.
+This is a usability analysis that aims to evaluate KubeVirt by performing a set of tasks and then reflecting on the experience. Your answers will be used as a base to evaluate the usability of KubeVirt.
 
-The following is a brief introduction to KubeVirt, its most relevant features and how it compares to previous \Gls{vm} management systems. If you are already familiar with KubeVirt and its machinery, you can skip this section.
+The following is a brief introduction to KubeVirt. If you are already familiar with KubeVirt or feel brave enough, you can skip this part.
 \\~\\
-KubeVirt is an extension to Kubernetes that allows for the creation of virtual machines (\Glspl{vm}) and is designed to provide a similar experience to managing any other resource in Kubernetes, such as Pods or Deployments. This means that \Glspl{vm} are defined in YAML files and integrate with the command line tool \textit{kubectl}. KubeVirt defines its resources as a \textit{Custom Resource Definition} (CRD) in Kubernetes, where the most prominent resources are \textit{VirtualMachine} and \textit{VirtualMachineInstance}. The relationship between them is comparable to that of a Deployment and a Pod, where the Deployment defines a desired state and a Pod represents the running state. See References below for more information. 
+KubeVirt can be seen as an extension to Kubernetes that allows \Glspl{vm} to run alongside containers. This means \Glspl{vm} can be treated as any other Kubernetes resource with its own manifests and configuration. 
 
-Certain \Gls{vm} operations are not possible using kubectl, such as accessing the \Gls{vm} using SSH or VNC. For this reason, KubeVirt provides a complementary \Gls{cli} tool called \textit{virtctl}.
+Certain \Gls{vm} operations are not possible using kubectl, such as accessing the \Gls{vm} using SSH or VNC, so KubeVirt provides a complementary \Gls{cli} tool called \textit{virtctl}.
 
-Being built on top of Kubernetes allows the \Glspl{vm} to integrate with other resources, including the Service and PersistentVolume resources. For instance, a \Gls{vm} can be exposed to the network using a LoadBalancer Service or manage storage dynamically using a persistent storage provisioner. However, since a \Gls{vm} requires a disk image (such as a QCOW2 image), it means that a PersistentVolume must point to a folder with a disk image in it. For this reason, manually creating a PersistentVolume for a \Gls{vm} can be tedious. Instead, KubeVirt primarily provides two alternatives for managing disks that are presented below. See the References section for more information.
+Since KubeVirt is built on top of Kubernetes, it allows \Glspl{vm} to integrate with other resources, such as Services. For instance, a \Gls{vm} can be exposed to the network using a LoadBalancer Service. However, disk management is a bit different for \Glspl{vm} than for containers, where two examples are listed below. 
 \begin{itemize}
-    \item \textbf{containerDisk}: A disk that is created at every boot. It is not persistent and is similar to a container.
-    \item \textbf{DataVolume}: A disk that is persistent and initialized when the \Gls{vm} is created. It uses PersistentVolumeClaim and a PersistentVolume under the hood where it injects a disk image. 
+    \item \textbf{containerDisk}: This disk is created at every boot and makes the \Gls{vm} mimic a container.
+    \item \textbf{DataVolume}: This disk rerpesent a persistent disk, meaning it survives between reboots. It can be created using templates in the \Gls{vm} manifest.
 \end{itemize}
 
 \section*{Basic usage (Task 1/3)}
-The first task is about creating a \Gls{vm} using KubeVirt. You will need to create a \Gls{vm} and then access it using SSH or VNC. You can use a containerDisk for simplicity.
+The first task is about creating a \Gls{vm} using KubeVirt. You will need to create a \Gls{vm} and then access it using \Gls{ssh} or \Gls{vnc}. You can use a containerDisk for simplicity.
 
 \subsection*{Manifests}
 Below is a minimal manifest for creating the \Gls{vm} using a containerDisk. The credentials for the Cirros image are user \textbf{cirros} and password \textbf{gocubsgo}.
@@ -1629,22 +1625,12 @@ Below is a minimal manifest for creating the \Gls{vm} using a containerDisk. The
 \end{lstlisting}
 \end{enumerate}
 
-\subsubsection*{Questions}
-After you have finished the tasks, reflect on the experience. You may use the following questions as a guide, but feel free to elaborate with your own thoughts.
-\begin{itemize}
-    \item How intuitive was the process of creating and deleting a \Gls{vm}?
-    \item How straightforward was it to access the \Gls{vm} using SSH and VNC?
-    \item Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?
-\end{itemize}
-
 \section*{Maintenance (Task 2/3)}
-The second task is related to maintenance, where you will create a snapshot of a \Gls{vm} and then restore it. You will also perform a live migration on a \Gls{vm} to move it from one node to another without shutting it down. 
+The second task is related to maintenance, where you will create a snapshot of a \Gls{vm} and then restore it. You will also perform a live migration on a \Gls{vm} to move it between two nodes. 
 
-Both snapshots and live migrations are treated as a resource by KubeVirt, meaning that the operation will take place in the background after a VirtualMachineSnapshot resource or a VirtalMachineInstanceMigration resource is created. See the References section for more information.
+A live migration is a resource, like any other resource in Kubernetes, however, it does not move a \Gls{vm} by itself, and instead only tells the scheduler it is ready to move. See the References section for more information. For this use case, we want to force a move between two nodes, however, the Kubernetes scheduler is sophisticated and supports a wide range of scheduling strategies. This means we need to "cheat" a bit. We can force a move between two nodes by using the \textit{spec.template.spec.nodeSelector} in the \Gls{vm} and editing the labels of the worker nodes in the cluster. 
 
-A live migration resource in KubeVirt does not move resources itself and instead uses the Kubernetes scheduler to decide where to place the \Gls{vm}. This means that a LiveMigration resource only tells the scheduler that the \Gls{vm} can be moved but not where to move it. See the References section for more information. The Kubernetes scheduler is sophisticated and supports a wide range of scheduling strategies, but for this task, we can force a move between two nodes by using the \textit{spec.template.spec.nodeSelector} in the \Gls{vm} and editing the labels of the worker nodes in the cluster. To not interfere with other participants, you should create a unique label for you. 
-
-A snapshot in KubeVirt works similarly to a snapshot in other \Gls{vm} management systems, where it captures the state of the \Gls{vm} at a specific point in time. However, the snapshot uses Kubernetes VolumeSnapshot, which is a Kubernetes \Gls{api} for taking snapshots of PersistentVolumes. This means that a \Gls{vm} with a containerDisk cannot be snapshotted. Instead, you should use a \Gls{vm} with a DataVolume. See the References section for more information.
+The snapshot operation, is simmilar to the live migration operation, done using Kubernetes resource. However, the catch here is that containerDisks cannot be snapshotted since they don't represent a persistent storage. Instead you will use a DataVolume.
 
 \subsection*{Live Migration Manifests}
 The following is a minimal manifest for creating a \Gls{vm} that runs on a node with label \textbf{name: worker-1}. The credentials for the Cirros image are user \textbf{cirros} and password \textbf{gocubsgo}.
@@ -1852,16 +1838,8 @@ kubectl delete vm my-vm
 \end{lstlisting}
 \end{enumerate}
 
-\subsection*{Questions}
-After you have finished the tasks, reflect on the experience. You may use the following questions as a guide, but feel free to elaborate with your own thoughts.
-\begin{itemize}
-    \item How intuitive was the process of migrating a \Gls{vm} from one node to another?
-    \item How straightforward was it to create and restore a snapshot of a \Gls{vm}?
-    \item Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?
-\end{itemize}
-
 \section*{Debugging (Task 3/3)}
-The third task is about debugging a \Gls{vm} that is not accessible through SSH. You will be presented with a \Gls{vm} manifest which, if deployed, will result in a \Gls{vm} that is running but cannot be accessed through SSH. Since the \Gls{vm} is running, you can access it through VNC using virtctl. You can use a containerDisk since the task is not related to persistent storage.
+The third an final tasks is related to finding errors with your \Gls{vm} and resolving them. You will be given a \Gls{vm} manifest that successfully creates a KubeVirt \Gls{vm} but that is not accessible over \Gls{ssh}. You can find alternative way to enter the machine, such as through \Gls{vnc}, or go your own way. 
 
 \subsection*{Manifests}
 The following is a manifest for creating a Ubuntu \Gls{vm} that is not accessible through SSH. Credentials for the Ubuntu image should be user \textbf{cloud} and password \textbf{cloud}.
@@ -1935,49 +1913,21 @@ kubectl delete vm my-vm
 \end{lstlisting}
 \end{enumerate}
 
-
-\subsubsection*{Questions}
-After you have finished the task, reflect on the experience. You may use the following questions as a guide, but feel free to add comparisons with other \Gls{vm} management systems you have used.
-\begin{itemize}
-    \item How easy was it to debug and find the issue?
-    \item How easy was it to fix the issue?
-    \item Does the debug process differ from debugging a traditional \Gls{vm} management system?
-    \item Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?
-\end{itemize}
-
-\section*{Summary}
-After you have completed the tasks, reflect on the overall experience of using KubeVirt. You may use the following questions as a guide, but feel free to discuss and compare them with other \Gls{vm} management systems you have used. 
-
-\begin{itemize}
-    \item How would you compare the experience of using KubeVirt with other \Gls{vm} management systems you have used?
-    \item How intuitive is the workflow of KubeVirt? Can you use it without reading the documentation?
-    \item How would you describe the overall experience of using KubeVirt?
-\end{itemize}
-
 Thank you for participating in the usability analysis of KubeVirt!
-
-
-\section*{References}
-\begin{itemize}
-    \item \textbf{VirtualMachineInstance}: \url{https://kubevirt.io/user-guide/virtual_machines/virtual_machine_instances/}
-    \item \textbf{Disks}: \url{https://kubevirt.io/user-guide/virtual_machines/disks_and_volumes}
-    \item \textbf{Snapshots}: \url{https://kubevirt.io/user-guide/operations/snapshot_restore_api/}
-    \item \textbf{Live Migration}: \url{https://kubevirt.io/user-guide/operations/live_migration/}
-\end{itemize}
 
 \chapter{Usability Analysis Answers}
 \label{appendix:usability-analysis-answers}
 
 \section{Participants}
 \begin{itemize}
-    \item Participant 1: Linus
-    \item Participant 2: Osvald
-    \item Participant 3: Karl
-    \item Participant 4: Sai
+    \item Participant 1: Linus Wallgren, Net Insight AB
+    \item Participant 2: Osvald Ivarsson, Net Insight AB
+    \item Participant 3: Karl Böhlmark, Net Insight AB
+    \item Participant 4: Sai Man Wong, Net Insight AB
 \end{itemize}
 
 \section{Task 1/3}
-\noindent \textbf{How intuitive was the process of creating and deleting a \Gls{vm}?}
+\noindent \textbf{How would you describe the processes of creating and deleting a \Gls{vm} with KubeVirt?}
 \begin{itemize}
 
 \item \textbf{Linus}
@@ -2025,7 +1975,7 @@ Very easy! I like that it's as simple as creating a YAML file and then applying 
 
 \end{itemize}
 
-\noindent \textbf{How straightforward was it to access the \Gls{vm} using SSH and VNC?}
+\noindent \textbf{How would you describe KubeVirt's approach to connecting to a \Gls{vm}? (\Gls{ssh} and \Gls{vnc})}
 \begin{itemize}
 
 \item \textbf{Linus}
@@ -2038,7 +1988,7 @@ Also, I find \textit{virtctl console} nicer than VNC.
 Very simple! Simply doing \textit{virtctl ssh cirros@my-vm} and then typing in the password and then I was in!
 \end{itemize}
 
-\noindent \textbf{Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?}
+\noindent \textbf{Descrbie any potential issues you stumbled upon when performing this task. If any, were they related to KubeVirt, its documentation or something else?}
 \begin{itemize}
 
 \item \textbf{Linus}
@@ -2065,7 +2015,7 @@ It is primarily because I'm already storing all my Kubernetes manifest in Git an
 \end{itemize}
 
 \section{Task 2/3}
-\noindent \textbf{How intuitive was the process of migrating a \Gls{vm} from one node to another?}
+\noindent \textbf{How would you describe the live migration operation compared to what you have used before?}
 \begin{itemize}
 \item \textbf{Linus}
 
@@ -2079,7 +2029,7 @@ Very simple! I once again really like that you just edit YAML files and apply la
 
 \end{itemize}
 
-\noindent \textbf{Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?}
+\noindent \textbf{Descrbie any potential issues you stumbled upon when performing this task. If any, were they related to KubeVirt, its documentation or something else?}
 \begin{itemize}
 \item \textbf{Linus}
 
@@ -2106,7 +2056,7 @@ Once again this is also a bit strange, that I have to remove the migration resou
 \end{itemize}
 
 \section{Task 3/3}
-\noindent \textbf{How easy was it to debug and find the issue?}
+\noindent \textbf{How would you describe the debugging process compared to what you used before?}
 \begin{itemize}
 \item \textbf{Linus}
 
@@ -2130,7 +2080,7 @@ Two of the issues were easy to fix, I appreciated that \textit{virtctl restart} 
 Very easy, I just generated a new password.
 \end{itemize}
 
-\noindent \textbf{Does the debug process differ from debugging a traditional \Gls{vm} management system?}
+\noindent \textbf{How would you say the debugging process differs between KubeVirt and a traditional \Gls{vm} management system?}
 \begin{itemize}
 \item \textbf{Linus}
 
@@ -2141,7 +2091,7 @@ I'm not sure what a traditional \Gls{vm} management system refers to. It is quit
 I've used IPMI which is similar to the VNC session in this case.
 \end{itemize}
 
-\noindent \textbf{Describe, if any, the issues you encountered during the task. Were the issues related to KubeVirt, documentation, or other?}
+\noindent \textbf{Descrbie any potential issues you stumbled upon when performing this task. If any, were they related to KubeVirt, its documentation or something else?}
 \begin{itemize}
 \item \textbf{Linus}
 
@@ -2164,7 +2114,7 @@ Debugging the issue was easy because the manifest uses standard constructs that 
 \end{itemize}
 
 \section{Summary}
-\noindent \textbf{How would you compare the experience of using KubeVirt with other \Gls{vm} management systems you have used?}
+\noindent \textbf{How would you describe KubeVirt with previous \Gls{vm} management systems?}
 \begin{itemize}
 \item \textbf{Linus}
 
@@ -2177,7 +2127,7 @@ The documentation is also very lacking. The fact that you manage the system with
 It seems to be much easier to deploy and manage machines! I want to start using this in production for our build pipelines and internal clusters.
 \end{itemize}
 
-\noindent \textbf{How intuitive is the workflow of KubeVirt? Can you use it without reading the documentation?}
+\noindent \textbf{How would you describe KubeVirt's workflow? Meaning the steps required to do a task. Is it possible to use without resorting too much to the documentation?}
 \begin{itemize}
 \item \textbf{Linus}
 
@@ -2188,7 +2138,7 @@ Not at all. I would not have been able to use it without the documentation. I co
 Well, I had the example files you provided which were simple. But the \Gls{cli} tools also gave good help.
 \end{itemize}
 
-\noindent \textbf{How would you describe the overall experience of using KubeVirt?}
+\noindent \textbf{How would you describe KubeVirt as a whole?}
 \begin{itemize}
 \item \textbf{Linus}
 

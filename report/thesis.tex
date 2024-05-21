@@ -114,7 +114,7 @@ breaklines=true
 \titlepage%
 
 \begin{abstract}
-    \Glspl{vm} and containers are technologies that offer virtual computing environments, with their respective benefits of having strong isolation and being lightweight. For this reason, they are often used in similar, if not the same, contexts. However, due to them being created at different points in time, they have traditionally been managed in separate management environments. This has led to a fragmented infrastructure for organizations that use both \Glspl{vm} and containers, but also to certain technologies and mechanisms having duplicate implementations, even though their implementations could have been shared. To remedy this issue, KubeVirt was created to unify the management of \Glspl{vm} and containers by integrating \Glspl{vm} into Kubernetes, a widely adopted platform originally designed for container orchestration. 
+    \Glspl{vm} and containers are technologies that offer virtual computing environments, with their respective benefits of having strong isolation and being lightweight. For this reason, they are often used in similar, if not the same, contexts. However, since containers have only recently grown in popularity and \Glspl{vm} have been used since the early 1990s, they have traditionally been managed in separate management environments. This has led to a fragmented infrastructure for organizations that use both \Glspl{vm} and containers, but also to certain technologies and mechanisms having duplicate implementations, even though their implementations could have been shared. To remedy this issue, KubeVirt was created to unify the management of \Glspl{vm} and containers by integrating \Glspl{vm} into Kubernetes, a widely adopted platform originally designed for container orchestration. 
     
     This project aims to evaluate the applicability of managing \Glspl{vm} in Kubernetes, how it compares with traditional approaches and the implications of moving into a Kubernetes-based environment for \Gls{vm} management. A mixed-methods approach is used, including a literature study, a qualitative comparison in the form of a usability analysis and a quantitative comparison in the form of a performance analysis. 
     
@@ -141,7 +141,7 @@ breaklines=true
 \printglossary[type=\acronymtype, title=List of Abbreviations, toctitle=List of Abbreviations, nonumberlist]
 
 \chapter{Introduction}
-The earliest usage of virtualization goes back several decades when larger computers were split into smaller units. This gave multiple users simultaneous access to a computer and allowed for more efficient use of hardware resources. However, it would not be until the late 1990s that virtualization would take off when commodity servers grew in popularity. This time, virtualization allowed companies to run a variety of applications on a wide range of \Glspl{os}\ \cite{virtualization-history}. This image of virtualization has led to its widespread adoption that is seen today, and nowadays virtualization forms the base for cloud computing, providing virtual environments that can be used for various workloads, including compute, network and storage\ \cite{virtualization-basics, virtualization-trends}.
+The earliest usage of virtualization goes back several decades, when larger computers were split into smaller units. This gave multiple users simultaneous access to a computer and allowed for more efficient use of hardware resources. However, it would not be until the late 1990s that virtualization would take off when commodity servers grew in popularity. This time, virtualization allowed companies to run a variety of applications on a wide range of \Glspl{os}\ \cite{virtualization-history}. This image of virtualization has led to its widespread adoption that is seen today, and nowadays virtualization forms the base for cloud computing, providing virtual environments that can be used for various workloads, including compute, network and storage\ \cite{virtualization-basics, virtualization-trends}.
 
 The key enabler for virtualization is the hypervisor, which is a software layer that operates between the hardware and the \Gls{os} and is responsible for creating virtual computing environments called virtual machines (\Glspl{vm})\ \cite{virtualization-trends, virtualization-ibm, hypervisor-survey}. \Glspl{vm} are emulations of physical computers that provide a complete system with its own \Gls{os}. This means a \Gls{vm} is self-sufficient and can be isolated from its outside environment. This is particularly useful when running legacy applications and applications that require a high level of isolation. For these reasons, \Glspl{vm} have become the core part of IT infrastructure\ \cite{virtualization-history, virtualization-basics}. 
 
@@ -149,18 +149,18 @@ However, with the evolution of virtualization, an alternative to \Glspl{vm} was 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.9\textwidth]{img/vm_container_virtualization.pdf}
+    \includegraphics[scale=0.85]{img/vm_container_virtualization.pdf}
     \caption{Overview of \Glspl{vm} and containers. The virtualization layer is placed on a lower level for \Glspl{vm} than for containers, illustrating the difference in their respective virtualization techniques.}
     \label{fig:container-vm-architecture}
 \end{figure}
 
-However, the benefits of a container does not come without a cost. Due to the fact containers share the underlying \Gls{os} kernel, it opens up a larger attack surface, which increases the risk of a security vulnerability. Some technologies have been created to mitigate this issue, such as Firecracker, Kata Containers and gVisor, but none of them has gained significant traction due to the trade-off they impose with additional overhead. This means the decision of using a \Gls{vm} or a container remains a use-case question\ \cite{container-runtimes-overview, container-as-vm-comparison}. 
+However, the benefits of a container do not come without a cost. Due to the fact containers share the underlying \Gls{os} kernel, it opens up a larger attack surface, which increases the risk of a security vulnerability. Some technologies have been created to mitigate this issue, such as Firecracker, Kata Containers and gVisor, but none of them has gained significant traction due to the trade-off they impose with additional overhead. This means the decision of using a \Gls{vm} or a container remains a use-case question\ \cite{container-runtimes-overview, container-as-vm-comparison}. 
 
 Due to their different use cases, \Glspl{vm} and containers have traditionally been managed separately. There exists a wider range of management systems for \Glspl{vm} than for containers since they have existed for a longer time. \Glspl{vm} are often managed by a \Gls{vm} management system that provides tools to aid in life-cycle management. Many such systems are designed with a set of control nodes and worker nodes, where control nodes instruct the worker nodes with \Gls{vm}-related tasks, such as creating a \Gls{vm}. A \Gls{vm} management system can thus be seen as a hypervisor distributed across several nodes, which is illustrated in Figure\ \ref{fig:vm-management-system}. Examples of such systems include OpenStack\ \cite{openstack-website}, CloudStack\ \cite{cloudstack-website}, and OpenNebula\ \cite{opennebula-website}. Furthermore, a management system for a container is similar to that of a \Gls{vm}. It also provides a set of tools for life-cycle management and is commonly structured with control and worker nodes. However, a system that manages containers also includes certain operations that are not as applicable to \Glspl{vm}, such as auto-scaling. This has led to these systems being referred to as an orchestration system, rather than just management. Examples include Kubernetes\ \cite{k8s-website}, Nomad\ \cite{nomad-website} and Docker Swarm\ \cite{docker-swarm-website}, where the former is the most widely adopted in the industry \cite{k8s-it-administration}. As such, while VMs and containers have their respective use cases, they also share many aspects regarding how they provide virtual computing environments. For this reason, there has been an ongoing convergence in how \Glspl{vm} and containers are managed\ \cite{vm-cloud}. 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.9\textwidth]{img/vm_management_system.pdf}
+    \includegraphics[scale=1]{img/vm_management_system.pdf}
     \caption{A brief overview of a \Gls{vm} management system built in a monolithic fashion, where clients can send \Gls{vm}-related instructions to a centralized location.} 
     \label{fig:vm-management-system}
 \end{figure}
@@ -169,7 +169,7 @@ Recently, Kubernetes was extended to accommodate \Glspl{vm} through KubeVirt. It
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.9\textwidth]{img/container_vm_with_kubevirt.pdf}
+    \includegraphics[scale=0.8]{img/container_vm_with_kubevirt.pdf}
     \caption{Overview of \Glspl{vm} and containers managed by using KubeVirt. The figure illustrates how \Glspl{vm} and containers communicate natively in a single environment.}
     \label{fig:container-vm-kubevirt-architecture}
 \end{figure}
@@ -177,6 +177,15 @@ Recently, Kubernetes was extended to accommodate \Glspl{vm} through KubeVirt. It
 The approach of managing \Glspl{vm} as a Kubernetes resource comes with many benefits. A \Gls{vm} can now be managed in a more cloud-native manner through Kubernetes workflows, but it can also integrate with tools that previously only supported containers\ \cite{cloud-native}. Additionally, managing both \Glspl{vm} and containers in the same platform reduces architectural complexity since only one platform is needed, as well as reducing the required skillset among the personnel\ \cite{kubevirt-cncf, kubevirt-storware}. 
 
 The integration of \Glspl{vm} into Kubernetes using KubeVirt represents a significant milestone toward a more efficient and unified IT infrastructure\ \cite{kubevirt-storware}. However, KubeVirt's practicality in the real world is not yet fully explored. As such, this project aims to evaluate Kubernetes with KubeVirt as a \Gls{vm} management system and compare it with traditional approaches to understand its practicality and limitations.
+
+\section{Problem}
+\Glspl{vm} was the first technology that offered virtual computing environments that could be used to host various applications. This led to a widespread adoption of \Glspl{vm} and many management systems were since developed. With the evolution of \Glspl{vm}, containers were created as a lightweight alternative. However, this led to separate management systems being created for the two technologies, even though they are often used in a similar, if not the same, context. This means that duplicate implementations of mechanisms have been required, even though they could have been shared, but also that environments are more architecturally complex.
+
+\section{Purpose}
+The purpose of this project is to evaluate whether Kubernetes with KubeVirt is a viable option for \Gls{vm} management. This evaluation is important in the field of cloud computing since it can provide insight into how an existing system could benefit from integrating \Glspl{vm} management in Kubernetes, as well as by consolidating the management of \Glspl{vm} and containers to a single platform.
+
+\section{Goals}
+The goal of this project is to provide a transparent evaluation with quantifiable results regarding the applicability of managing \Glspl{vm} inside the Kubernetes ecosystem. The results could be used as a fundamental argument for or against Kubernetes as a management platform. Results that argue for the use of KubeVirt in terms of performance could be used as an argument for future research regarding sustainability.
 
 \section{Research Questions}
 \noindent\textit{What performance, scalability, and operational efficiencies can be gained by integrating \Glspl{vm} in Kubernetes?}
@@ -191,18 +200,8 @@ This is concerned with scenarios in which a traditional \Gls{vm} management syst
 \\\\
 This is focused on the practical implications of using KubeVirt and Kubernetes instead of traditional \Gls{vm} management systems. For instance, the number of steps required to deploy a \Gls{vm}.
 
-
-\section{Problem}
-\Glspl{vm} was the first technology that offered virtual computing environments that could be used to host various applications. This led to a widespread adoption of \Glspl{vm} and many management systems were since developed. With the evolution of \Glspl{vm}, containers were created as a lightweight alternative. However, this led to separate management systems being created for the two technologies, even though they are often used in a similar, if not the same, context. This means that duplicate implementations of mechanisms have been required, even though they could have been shared, but also that environments are more architecturally complex.
-
-\section{Purpose}
-The purpose of this project is to evaluate whether Kubernetes with KubeVirt is a viable option for \Gls{vm} management. This evaluation is important in the field of cloud computing since it can provide insight into how an existing system could benefit from integrating \Glspl{vm} management in Kubernetes, as well as by consolidating the management of \Glspl{vm} and containers to a single platform.
-
-\section{Goals}
-The goal of this project is to provide a transparent evaluation with quantifiable results regarding the applicability of managing \Glspl{vm} inside the Kubernetes ecosystem. The results could be used as a fundamental argument for or against Kubernetes as a management platform. Results that argue for the use of KubeVirt in terms of performance could be used as an argument for future research regarding sustainability.
-
 \section{Research Method}
-This project will use a mixed-methods approach to investigate the research questions. A literature study will initially be conducted to thoroughly explore what led up to KubeVirt being created, as well as the current challenges regarding \Gls{vm} management. To evaluate KubeVirt itself, both a quantitative and qualitative analysis will be conducted. The quantitative analysis will be based on a performance analysis that compares KubeVirt against a traditional approach and benchmarks the performance of the system when performing tasks such as creating \Glspl{vm}. The qualitative aspects will be based on a usability analysis that involves having system administrators perform certain common tasks using KubeVirt. Together, these methods aim to capture an overall image of KubeVirt for managing \Glspl{vm}.  
+This project uses a mixed-methods approach to investigate the research questions. Initially, a literature study is conducted to explore what led up to KubeVirt being created, as well as the current challenges regarding \Gls{vm} management. Following this, both a quantitative and qualitative analysis are conducted to evaluate KubeVirt itself. The quantitative analysis is comprised of a performance analysis that compares KubeVirt against a traditional approach and benchmarks the performance of the systems when performing tasks such as creating \Glspl{vm}. The qualitative analysis, on the other hand, is based on a usability analysis where system administrators perform common tasks using KubeVirt. Together, these methods capture an overall image of KubeVirt for managing \Glspl{vm}.  
 
 \section{Limitations}
 \begin{enumerate}
@@ -231,7 +230,7 @@ The three major levels for virtualizations are hardware level, \Gls{os}-level an
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{img/hardware_os_virtualization.pdf}
+    \includegraphics[scale=1]{img/hardware_os_virtualization.pdf}
     \caption{Overview of the different layers of virtualization for hardware-level and \Gls{os}-level virtualization. The figure illustrates how hardware virtualization inhibits several internal \Glspl{os} from running on the same hardware, while \Gls{os} virtualization keeps a single \Gls{os} for each process.}
     \label{fig:hardware-os-virtualization}
 \end{figure}
@@ -262,7 +261,7 @@ Hypervisors can be used in primarily two ways, either by having it manage its \G
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{img/type1_type2_hypervisor.pdf}
+    \includegraphics[scale=1]{img/type1_type2_hypervisor.pdf}
     \caption{An overview of type 1 and type 2 hypervisors illustrating how a type 2 hypervisor requires an underlying \Gls{os}, while a type 1 runs directly on top of the hardware.}
     \label{fig:hypervisor-types}
 \end{figure}
@@ -273,7 +272,7 @@ The concept of \textit{security rings} is often used to describe the level of pr
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.7\textwidth]{img/hypervisor_security_rings.pdf}
+    \includegraphics[scale=1]{img/hypervisor_security_rings.pdf}
     \caption{Overview of security rings in a hypervisor. The figure illustrates how the inner rings have higher privileges than the outer rings.}
     \label{fig:hypervisor-security-rings}
 \end{figure}
@@ -307,7 +306,7 @@ Scalability is a concept that is not directly tied to the \Glspl{vm} themselves,
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{img/availability_zones.pdf}
+    \includegraphics[scale=1]{img/availability_zones.pdf}
     \caption{Overview of availability zones with several \Gls{api} gateways and databases operating in the same logical environment but in different availability zones to provide redundancy and fault tolerance.}
     \label{fig:availability-zones}
 \end{figure}
@@ -320,7 +319,7 @@ In IT infrastructure, \Glspl{vm} are not the only component required, and \Gls{v
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.9\textwidth]{img/cloud_service_models.pdf}
+    \includegraphics[scale=1]{img/cloud_service_models.pdf}
     \caption{An overview of the relationship between cloud server models, where a \Gls{saas} platform can be built on top of a \Gls{paas} platform, which in turn can be built on top of an \Gls{iaas} platform}
     \label{fig:cloud-service-models}
 \end{figure}
@@ -385,7 +384,7 @@ Containers are a form of virtualization that offers a lightweight alternative to
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.9\textwidth]{img/vm_container_virtualization.pdf}
+    \includegraphics[scale=1]{img/vm_container_virtualization.pdf}
     \caption{Overview of \Glspl{vm} and containers. The virtualization layer is placed on a lower level for \Glspl{vm} than for containers, illustrating the difference in their respective virtualization techniques.}
     \label{fig:container-vm-architecture-2}
 \end{figure}
@@ -397,7 +396,7 @@ To enable caching, a container image can be divided into a series of layers. Eac
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{img/container_image_layers.pdf}
+    \includegraphics[scale=1]{img/container_image_layers.pdf}
     \caption{Overview of container image layers where each operation in a Dockerfile represents a layer that can be cached and reused. The layers are stacked on top of each other and appended to the parent image to form the final container image.}
     \label{fig:container-image-layers}
 \end{figure}
@@ -424,7 +423,7 @@ Figure \ref{fig:k8s-overview} presents a brief overview of the Kubernetes abstra
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{img/kubernetes_overview.pdf}
+    \includegraphics[scale=1]{img/kubernetes_overview.pdf}
     \caption{Brief overview of Kubernetes abstractions including many of the core components. The figure illustrates the communication between the different components and how storage is managed in Kubernetes.}
     \label{fig:k8s-overview}
 \end{figure}
@@ -453,7 +452,7 @@ Overcommitment refers to a mechanism that allocates more virtual resources than 
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{img/memory_ballooning.pdf}
+    \includegraphics[scale=1]{img/memory_ballooning.pdf}
     \caption{Overview of memory ballooning in two stages. The figure illustrates the memory of a \Gls{vm} is shrunk by the hypervisor (deflation) and then reused by another \Gls{vm} (inflation).}
     \label{fig:memory-ballooning}
 \end{figure}
@@ -485,7 +484,7 @@ In summary, these three technologies provide different approaches to the same pr
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{img/secure_containers_overview.pdf}
+    \includegraphics[scale=1]{img/secure_containers_overview.pdf}
     \caption{A overview of how gVisor and Kata Containers approaches container isolation differently by either using a proxy for system calls and file access or wrapping the container in a \Gls{vm}.}
     \label{fig:secure-containers-overview}
 \end{figure}
@@ -508,7 +507,7 @@ KubeVirt can be split into four core components: \textit{virt-controller}, \text
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{img/kubevirt_components.pdf}
+    \includegraphics[scale=1]{img/kubevirt_components.pdf}
     \caption{Overview of KubeVirt components, their logical place in the Kubernetes ecosystem and how they interact with each other. The green components represent the KubeVirt internal components.}
     \label{fig:kubevirt-components}
 \end{figure}
@@ -555,7 +554,7 @@ In terms of network performance, a study conducted by Kolahdouzan investigated t
 So far, only related work that evaluated higher-level systems has been presented. However, several studies have evaluated the performance of hypervisors. A study by Hwang et al.\ evaluated the performance of a range of hypervisors including \Gls{kvm}, Hyper-V and Xen\ \cite{hypervisor-comparion-2010}. The study did not manage to draw any conclusions on which hypervisor was most performant and instead concluded that it depended on the specific use case. This conclusion is interesting as it suggests that the performance of a hypervisor could be an obsolete factor when deciding which one to use. Either way, reviewing hypervisors is important when evaluating KubeVirt, as KubeVirt uses \Gls{kvm} as its hypervisor. 
 
 \chapter{Performance Analysis}
-As described in the literature study, Paradowski et al.\ presented a set of benchmarks used to evaluate CloudStack and OpenStack\ \cite{cs-os-comparison-2013}. This study was used as a base when designing the performance analysis used in this project. Instead of comparing CloudStack with OpenStack, this project evaluated OpenNebula and KubeVirt. Choosing OpenNebula as the second system was based on its popularity and the fact it is open-source. OpenNebula also happened to be the current installation at Net Insight, which provided a production-ready environment when needed.
+As described in the literature study, Paradowski et al.\ presented a set of benchmarks used to evaluate CloudStack and OpenStack\ \cite{cs-os-comparison-2013}. This study was used as a base when designing the performance analysis used in this project. However, instead of comparing CloudStack with OpenStack, this project evaluates OpenNebula and KubeVirt. Choosing OpenNebula as the second system was based on its popularity and the fact it is open-source. OpenNebula also happened to be the current installation at Net Insight, which provided a production-ready environment when needed.
 
 \section{Setup}
 The testing process was conducted on Microsoft Azure, both due to its availability when tests could be run at any time, and also to reduce the risk of noise in the measurements that could be more prominent in a local setup. The performance analysis was thus hosted on a group of \Glspl{vm} in the cloud platform. 
@@ -573,10 +572,10 @@ Each test was run on three hosting nodes, one management node and two worker nod
         \textbf{Role} & \textbf{CPU} & \textbf{RAM} & \textbf{Disk}\\
         \hline
         \hline
-        Control Plane (Azure D4v3) & 4 & 16GB & 100GB  \\
-        Worker 1 (Azure D4v3) & 4 & 16GB & 100GB  \\
-        Worker 2 (Azure D4v3) & 4 & 16GB & 100GB  \\
-        Scale-up Workers 3-10 (Azure D4v3) & 4 & 16GB & 100GB  \\
+        Control Plane (Azure D4v3) & 4 & 16\ GB & 100\ GB  \\
+        Worker 1 (Azure D4v3) & 4 & 16\ GB & 100\ GB  \\
+        Worker 2 (Azure D4v3) & 4 & 16\ GB & 100\ GB  \\
+        Scale-up Workers 3-10 (Azure D4v3) & 4 & 16\ GB & 100\ GB  \\
         \hline
     \end{tabular}
     \caption{Node specifications used for the nodes hosting the \Gls{vm} management systems.}
@@ -602,7 +601,7 @@ Several metrics were collected on each hosting node to capture the utilization b
     \label{table:performance-metrics}
 \end{table}
 
-The tests were designed for three different purposes: basic, limit testing and scaling. Basic tests were designed to evaluate the core functionality of a \Gls{vm} management system, such as creating and deleting \Glspl{vm}. These were the initial tests since the following tests were partially based on them. A limit testing category was added since the study by Paradowski did not consider this factor. These tests are designed to evaluate how a management system handles a burst of operations, such as creating many small \Glspl{vm}. Finally, scaling tests were designed to manage operations unrelated to \Gls{vm} creation and instead focused on how well the management system itself can scale. See table\ \ref{table:performance-tests} for an overview of the tests and their purpose.
+The tests were designed for three different purposes: basic, limit testing and scaling. Basic tests were designed to evaluate the core functionality of a \Gls{vm} management system, such as creating and deleting \Glspl{vm}. These were the initial tests since the following tests were partially based on them. A limit testing category was added since the study by Paradowski did not consider this factor. These tests are designed to evaluate how a management system handles a burst of operations, such as creating many small \Glspl{vm}. Finally, scaling tests were designed to manage operations unrelated to \Gls{vm} creation and instead focused on how well the management system itself can scale. See Table\ \ref{table:performance-tests} for an overview of the tests and their purpose.
 
 \begin{table}
     \centering
@@ -636,10 +635,10 @@ The tests were designed for three different purposes: basic, limit testing and s
         \textbf{Type} & \textbf{CPU} & \textbf{RAM} & \textbf{Disk Size}\\ 
         \hline
         \hline
-        Type 1 & 1 & 128MB & 1GB \\
-        Type 2 & 1 & 1GB & 5GB \\
-        Type 3 & 2 & 2GB & 10GB \\
-        Type 4 & 4 & 4GB & 20GB \\
+        Type 1 & 1 & 128\ MB & 1\ GB \\
+        Type 2 & 1 & 1\ GB & 5\ GB \\
+        Type 3 & 2 & 2\ GB & 10\ GB \\
+        Type 4 & 4 & 4\ GB & 20\ GB \\
         \hline
     \end{tabular}
     \caption{\Gls{vm} specifications for the different types of \Gls{vm}S that were used in the tests.}
@@ -647,15 +646,17 @@ The tests were designed for three different purposes: basic, limit testing and s
 \end{table}
 
 \section{Building a Framework}
-A \Gls{vm} management system is often comprised of multiple services often running on separate nodes, and this project is no different since it uses a multi-node setup for the tests. This means that to accurately evaluate the performance of a \Gls{vm} management system, all nodes should be considered. This was deemed to be a tedious task if done manually, and thus a framework was created that automates the entire process of installing a management system. This included installing and configuring the management system, running the tests and cleaning up. It was designed to be \Gls{vm} management system agnostic, meaning any management system that supports the functionality defined in an interface could be evaluated using the framework. Consequently, this means the framework in theory could evaluate any other locally installable \Gls{vm} management systems, such as CloudStack and OpenStack. However, this would require adding an implementation for these in code. 
+A \Gls{vm} management system is often comprised of multiple services often running on separate nodes, and this project is no different since it uses a multi-node setup for the tests. This means that to accurately evaluate the performance of a \Gls{vm} management system, all nodes should be considered. This is a tedious task if done manually, and thus a framework was created that automates the entire process of installing a management system. This includes installing and configuring the management system, running the tests and cleaning up. The framework was designed to be \Gls{vm} management system agnostic, meaning any management system that supports the functionality defined in an interface can be evaluated using the framework. Consequently, this means the framework in theory can evaluate any locally installed \Gls{vm} management systems, such as CloudStack and OpenStack.
 
 \subsection{Design}
 \label{sec:framework-design}
-Modularity and loose coupling were the two most important factors when designing the framework. This meant the framework was self-sufficient and did not depend on external libraries, which led to the framework being easily installable and the test could be reproduced with little to no effort. Moreover, the framework defined an interface that specified a set of operations that each test could depend on. By restricting the operations to the ones defined in the interface, the tests became more consistent and fair among the \Gls{vm} management system evaluated. Each implementation was given a state of the hosting nodes, including metadata such as name and IP address, to execute the operation. This meant each implementation could communicate with the hosting nodes however desired. The implementations added for KubeVirt and OpenNebula both used \Gls{ssh} as a base, by sending commands to the control node over a \Gls{ssh} tunnel. The full definition of the interface can be found in the appendix\ \ref{appendix:vmm-interface}
+Modularity and loose coupling are core aspects of the framework's design and make the framework self-sufficient. By not being dependent on external libraries and tools, the framework is easily installable and tests can be run with little to no effort. However, it is important to note that since the framework relies on computing resources hosted in Azure, running any number of tests can incur a cost. One of the components that enables loose coupling is an interface that defines a set of operations that \Gls{vm} management systems implement and that tests can use. By restricting the operations to those defined in the interface, the tests become more consistent and fair. 
 
-As previously described, metrics were collected before, during and after the test is completed. This posed a challenge where a bad implementation could introduce noise in the measurements. To minimize the effect of the metrics collector itself, a daemon process was installed on every node. A daemon is a service that acts like a detached process, running as long as its host does. However, metrics were not needed all the time, and only when a test was active. This control was ensured by placing an empty file called \textit{run} in a specific directory. The daemon simply checked for the existence of the file and started collecting metrics accordingly. The metrics were collected locally on each hosting node, where the daemon placed a \Gls{json} with all its collected metrics in a predefined format. After each test was finished, the framework simply stopped the daemon from collecting metrics and then downloaded its output file. This approach reduced the number of required interactions with each hosting node to zero since the metrics are collected after the test is finished. 
+Each implementation is given a state consisting of metadata for hosting nodes, such as name and IP address, to execute the operation. This means each implementation can communicate with the hosting nodes however desired. The implementations for KubeVirt and OpenNebula both use \Gls{ssh} as a base and send commands to the control node over a \Gls{ssh} tunnel. The full definition of the interface is found in the Appendix\ \ref{appendix:vmm-interface}
 
-On a technical level, the metrics were collected using a set of tools installed on each hosting node. These tools were installed before any test was conducted. The choice of tools was based on how standardized they were, as well as general availability to ensure future attempts to reproduce the results are possible. Table \ref{table:metric-tools} shows an overview of the tools used by the daemon. A design consideration that was required was to run them asynchronously since each tool imposed a delay that, summarized among the tools, was substantial. Additionally, each tool produced an output with its unique format, which required the use of system commands such as \textit{awk} and \textit{grep} to extract the needed information. The daemon was written in Bash to ensure that it could run on any Linux distribution and did not require any external dependencies. The code for the daemon can be found in the appendix\ \ref{appendix:metrics-collector} and the framework design is visualized in Figure\ \ref{fig:framework-design}.
+As previously described, metrics are collected before, during and after the test is completed. This poses a challenge where a bad implementation of a metrics collector can introduce noise in the measurements. To minimize the effect of the metrics collector itself, the framework relies on a daemon running locally on each hosting node. A daemon is a service that acts like a detached process, running as long as its host does. However, to reduce unnecessary burden on the hosting nodes, metrics are only collected when a test is active. This is controlled by placing an empty file called \textit{run} in a specific directory. The daemon simply checks for the existence of the file and starts collecting metrics accordingly. The metrics are collected on each hosting node by the daemon that stores a \Gls{json} file locally with all its collected data in a predefined format. After each test is finished, the framework simply stops the daemon from collecting metrics and then downloads its output file. This approach reduces the number of required interactions with each hosting node to zero since the metrics are collected after the test is finished. 
+
+On a technical level, the metrics are collected using a set of tools installed on each hosting node, which are installed before any test is conducted. The choice of tools was based on how standardized they are, as well as general availability to ensure future attempts to reproduce the results are possible. Table\ \ref{table:metric-tools} shows an overview of tools the daemon uses. Furthermore, since the cumulative delay among the tools was substantial, the daemon fetches metrics from each tool asynchronously. Additionally, since each tool produces an output with its unique format, some additional tools are used to parse the outputs, such as \textit{awk} and \textit{grep}. The daemon is written in Bash to ensure that it can run on any Linux distribution and does not require any external dependencies. The code for the daemon can be found in the Appendix\ \ref{appendix:metrics-collector} and the framework design is illustrated in Figure\ \ref{fig:framework-design}.
 
 \begin{table}[!ht]
     \centering
@@ -677,12 +678,12 @@ On a technical level, the metrics were collected using a set of tools installed 
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{img/framework_design.pdf}
-    \caption{Overview of the framework designed with a framework communicating with the \Gls{vm} management systems through SSH. The metric collector was installed on each node to collect utilization metrics. The green \Gls{vm} figure represents the \Gls{vm} management system control node and the orange \Gls{vm} figures represent the worker nodes.}
+    \includegraphics[scale=1]{img/framework_design.pdf}
+    \caption{Overview of the framework communicating with the \Gls{vm} management systems through \Gls{ssh}. The metric collector is installed on each node to collect utilization metrics. The green \Gls{vm} figure represents the \Gls{vm} management system control node and the orange \Gls{vm} figures represent the worker nodes.}
     \label{fig:framework-design}
 \end{figure}
 
-The framework's flow was split into four phases to allow for both caching and modular control. This was useful both when developing the framework, but also when running the tests, as the environments did not have to be deleted between each iteration. Skipping a phase was controlled by editing a configuration file. However, it is important to note that certain phases cannot always be skipped. For instance, if an environment has been torn down, the next iteration must both recreate and reinstall each hosting node. While skipping a clean-up phase could introduce noise in the results due to potential caching functionalities, it was deemed appropriate since each test was associated with a cost in Azure. The entire workflow is illustrated in Figure \ref{fig:framework-workflow} and is described below.
+The framework's flow is split into four phases to allow for both caching and modular control. This is useful when developing the framework, but also when running the tests, as the environments do not need to be deleted between each iteration. Skipping a phase is controlled by editing a configuration file. However, it is important to note that certain phases cannot always be skipped. For instance, if an environment has been torn down, the next iteration must both recreate and reinstall each hosting node. While skipping a clean-up phase can introduce noise in the results due to potential caching functionalities, it also reduces the cost of the hosting nodes in Azure. The entire workflow is illustrated in Figure \ref{fig:framework-workflow} and is described below.
 \begin{enumerate}
     \item \textbf{Setup}: The setup phase is responsible for creating the nodes and networking in Azure. It is also responsible for installing base packages that every node requires, such as \textit{sysstat} to collect utilization metrics and \textit{jq} to parse JSON output.
     \item \textbf{Installation}: The installation phase is responsible for installing and configuring the \Gls{vm} management system on the Azure nodes. Each \Gls{vm} management system implements an installation method that is responsible for installing and configuring the system with one control node and two worker nodes such that it can run a \Gls{vm}. The installation method also installs several standby workers that will be used when scaling up and down the number of worker nodes. By having standby workers, the framework can independently measure the cost of scaling up and down without the cost of downloading dependencies. While larger dependencies can be seen as a metric on their own, it is important to note that production environments usually generate \Gls{os} images with prepared dependencies, rendering the cost of downloading dependencies irrelevant.
@@ -692,15 +693,15 @@ The framework's flow was split into four phases to allow for both caching and mo
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.75\textwidth]{img/framework_workﬂow.pdf}
-    \caption{Overview of the workflow of the framework. The framework was divided into four phases that were responsible for different parts of the workflow. Each phase could be run independently of each other and disabled if not needed.}
+    \includegraphics[scale=1.6]{img/framework_workflow.pdf}
+    \caption{Overview of the framework's flow and how it is divided into four phases. A phase can be run independently of other phases and can be disabled if not needed.}
     \label{fig:framework-workflow}  
 \end{figure}
 
 \subsection{Implementation}
-On a technical level, the framework was implemented using the programming language Go. This choice was made due to its performance but also its concurrency features since many tests involved asynchronously making requests to a \Gls{vm} management system. 
+On a technical level, the framework is implemented using the programming language Go. This choice was made due to its performance but also its concurrency features since many tests involve asynchronously making requests to a \Gls{vm} management system. 
 
-Furthermore, the most important part of the framework was arguably to provide fair and reproducible comparisons. As described previously, each \Gls{vm} management system implemented an interface that defined methods for creating and deleting \Glspl{vm}. While this provided uniform operations from the framework's point of view, it also made the method's implementation crucial: KubeVirt's implementation of creating a \Gls{vm} should be as close to OpenNebula's implementation as possible to ensure that the comparisons are fair and that no unnecessary overhead is introduced. One example of this was that any network-related configuration had to be omitted since network-related metrics were not considered in the project. Another example was that the scheduling configuration had to be edited to ensure that \Glspl{vm} were created in as similar a manner as possible. However, all features that a \Gls{vm} management system offered and that were beneficial for the specific operation were considered. For instance, OpenNebula did not allow a live migration action to be performed on a \Gls{vm} that is not running, while KubeVirt allowed the operation to be requested despite the state of a \Gls{vm}.\ This allowed KubeVirt to omit the waiting time for a \Gls{vm} to be in the correct state before requesting a migration action. 
+Furthermore, the most important part of the framework is arguably to provide fair and reproducible comparisons. As described previously, each \Gls{vm} management system implements an interface that defines methods for creating and deleting \Glspl{vm}. While this provides uniform operations from the framework's point of view, it also makes the method's implementation crucial: KubeVirt's implementation of creating a \Gls{vm} should be as close to OpenNebula's implementation as possible to ensure that the comparisons are fair and that no unnecessary overhead is introduced. One example of this is that any network-related configuration is omitted since network-related metrics are not considered in the project. Another example is that the scheduling configuration had to be edited to ensure that \Glspl{vm} were created in as similar a manner as possible. However, all features that a \Gls{vm} management system offers and is beneficial for the specific operation are considered. For instance, OpenNebula does not allow a live migration action to be performed on a \Gls{vm} that is not running, while KubeVirt allows the operation to be requested despite the state of a \Gls{vm}.\ This allows KubeVirt to omit the waiting time for a \Gls{vm} to be in the correct state before requesting a migration action. 
 \\~\\
 \noindent Below is an extraction of OpenNebula's and KubeVirt's implementations for creating a \Gls{vm}.
 
@@ -758,29 +759,29 @@ EOF
 The entire framework is open-source and available at \url{INSERT URL HERE}. The GitHub repository contains all the code required to run the framework, including documentation on how to set up and run the framework. 
 
 \chapter{Usability Analysis}
-The qualitative aspects of this project came from a usability analysis, which was comprised of a set of tasks designed in cooperation with a system administrator at Net Insight. The goal of the usability analysis was to mimic tasks that a system administrator could face on a daily basis. Moreover, the tasks were designed to be done using the Kubernetes \Gls{cli} tool kubectl. This approach was deemed most appropriate since KubeVirt does not come with a \Gls{gui} like a traditional \Gls{vm} management system, and using a third-party alternative could risk introducing bias that is not directly tied to KubeVirt. 
+The qualitative aspects of this project come from a usability analysis, which is comprised of a set of tasks designed in cooperation with a system administrator at Net Insight. The goal of the usability analysis is to mimic tasks that a system administrator can face on a daily basis. Moreover, the tasks are designed to be done using the Kubernetes \Gls{cli} tool kubectl. This approach was deemed most appropriate since KubeVirt does not come with a \Gls{gui} like a traditional \Gls{vm} management system, and using a third-party alternative could risk introducing bias that is not directly tied to KubeVirt. 
 
 \section{Setup}
 The usability analysis was hosted using a managed Kubernetes cluster in Azure (AKS). Similarly to the performance analysis, this approach was chosen due to its availability. This means that the participants could perform the tasks anywhere at any time. Additionally, by not being required to install a local Kubernetes environment, the participants could focus on the tasks rather than the infrastructure. A usability analysis that evaluates the installation process of KubeVirt is thus a possible future research direction. Moreover, the predefined storage options provided by AKS allowed for simple management of persistent disks and snapshots. Similar to the performance analysis, the nodes setup was crucial to enable certain operations such as live migration that involves moving a \Gls{vm} between two worker nodes. For this reason, the usability opted for the same setup with one control node and two worker nodes.
 
 \section{Task Design}
-To ensure the focus of the analysis was kept on the usability of KubeVirt, it was designed as a step-by-step guide split into three tasks. This allowed the participants to familiarize themselves with KubeVirt before moving on to more complex tasks. the tasks are described below. 
+To ensure the focus of the analysis is kept on the usability of KubeVirt, it is designed as a step-by-step guide split into three tasks. This allows the participants to familiarize themselves with KubeVirt before moving on to more complex tasks. The tasks are described below. 
 
 \begin{itemize}
     \item\textbf{Basic usage}\\
-    This task was designed to act as a starting point for the usability analysis. The participants were asked to create a single \Gls{vm} configured with a \textit{containerDisk}, connect to it using SSH and VNC and then delete it. This task acted as a starting point for the participants and its purpose was to evaluate how well KubeVirt supports the most basic operations. 
+    This task is designed to act as a starting point for the usability analysis. The participants were asked to create a single \Gls{vm} configured with a \textit{containerDisk}, connect to it using SSH and \Gls{vnc} and then delete it. This task acts as a starting point for the participants and its purpose is to evaluate how well KubeVirt supports the most basic operations. 
 
     \item\textbf{Maintenance}\\
-    The second task dived into maintenance-related tasks, which are recurring tasks a system administrator might face when maintaining a set of \Glspl{vm}. This task can be divided into two parts: live migration and snapshots. The first part involved creating a \Gls{vm} on the first worker node, then using KubeVirt's mechanisms for live migration, moving it to the second worker node without any downtime. To keep the focus on live migration, a lightweight \Gls{vm} was used. The second part of this task was concerned with creating and restoring a snapshot of a \Gls{vm}. A snapshot of a \Gls{vm} represents the state of a \Gls{vm} at a given time point. Similarly to the first part, a lightweight \Gls{vm} was used to keep the focus on the snapshot-related operations. Both live migration and snapshotting were included in the usability analysis since they are applied differently in KubeVirt compared to traditional \Gls{vm} management systems due to KubeVirt's declarative approach, see\ \ref{sec:kubevirt}.
+    The second task dives into maintenance-related tasks, which are recurring tasks a system administrator might face when maintaining a set of \Glspl{vm}. This task can be divided into two parts: live migration and snapshots. The first part involves creating a \Gls{vm} on the first worker node, then using KubeVirt's mechanisms for live migration, moving it to the second worker node without any downtime. The second part of this task is concerned with creating and restoring a snapshot of a \Gls{vm}. A snapshot of a \Gls{vm} represents the state of a \Gls{vm} at a given time point. Both live migration and snapshotting are included in the usability analysis since they are applied differently in KubeVirt compared to traditional \Gls{vm} management systems due to KubeVirt's declarative approach, see\ \ref{sec:kubevirt}.
 
     \item\textbf{Debugging}\\
-    The third task was concerned with debugging and how well KubeVirt allowed a user to resolve potential configuration errors. As described in \ref{sec:kubevirt}, KubeVirt is implemented using \Glspl{crd}, which has built-in field validation to prevent misconfiguration. However, the validation does not stretch to include runtime issues, such as cloud-init configuration mismatches or typos. For this reason, this task was designed to present the user with a \Gls{vm} that has a cloud-init configuration error causing it to not be accessible over \Gls{ssh}. In this scenario, the participants had to find an alternative entry point to the \Gls{vm} to debug the issue or resolve the issue immediately by inspecting the configuration file. Similarly to previous tasks, a lightweight \Gls{vm} was used to keep the focus on the debugging aspect of the task. 
+    The third task was concerned with debugging and how well KubeVirt allows a user to resolve potential configuration errors. As described in\ \ref{sec:kubevirt}, KubeVirt is implemented using \Glspl{crd}, which has built-in field validation to prevent misconfiguration. However, the validation does not stretch to include runtime issues, such as cloud-init configuration mismatches or typos. For this reason, this task is designed to present the user with a \Gls{vm} that has a cloud-init configuration error causing it to not be accessible over \Gls{ssh}. In this scenario, the participants have to find an alternative entry point to the \Gls{vm} to debug the issue or resolve the issue immediately by inspecting the configuration file.
 \end{itemize}
 
 Feedback from the participants was collected from the participants either by answering a set of open-ended questions or as a summary of a group of tasks. 
 
 \section{Conducting the Usability Analysis}
-A group of system administrators at Net Insight were asked to perform the tasks presented above. They were chosen primarily by their role and experience with OpenNebula as well as Kubernetes. This provided a mix of knowledge among the participants, which reduced the risk of biases. The participants were given separate namespaces, a kubeconfig file to access the Kubernetes cluster and then presented with the tasks in the form of a PDF document. By giving each participant its namespace, it reduced the risk of interference between them. Moreover, the participants were given two weeks to complete the tasks, and while this is a long time relative to the number of tasks they were given, it allowed them to familiarize themselves with KubeVirt and potentially explore areas or features around it. The extra time to complete the tasks was also useful considering that they were encouraged to use the official KubeVirt documentation. The entire usability analysis can be found in the appendix\ \ref{appendix:usability-tasks}.
+A group of system administrators at Net Insight were asked to perform the tasks presented above. They were chosen primarily by their role and experience with OpenNebula as well as Kubernetes. This provided a mix of knowledge among the participants, which reduced the risk of biases. The participants were given separate namespaces, a kubeconfig file to access the Kubernetes cluster and then presented with the tasks in the form of a PDF document. By giving each participant its namespace, it reduces the risk of interference between them. Moreover, the participants were given two weeks to complete the tasks, and while this is a long time relative to the number of tasks they were given, it allows enough time to familiarize with KubeVirt and potentially explore areas or features around it, including its documentation. The entire usability analysis can be found in the Appendix\ \ref{appendix:usability-tasks}.
 
 \chapter{Results}
 This section contains the results of the performance analysis and usability analysis. Each test in the performance analysis was run 50 times, and the result visualizations were averaged using a rolling mean with a window size of 5\% of the total number of data points. As described in the previous chapter, the usability analysis received feedback in different forms, either by answering questions or providing a free-form response. 
@@ -792,7 +793,7 @@ This section contains the results of the performance analysis and usability anal
 \def\figurewidth{0.9}
 \def\labelprefix{fig}
 
-This section contains the results of the performance analysis with KubeVirt and OpenNebula. Only the most significant results are presented in this section, and the complete list of results can be found in the appendix \ref{appendix:performance-results}.
+This section contains the results of the performance analysis with KubeVirt and OpenNebula. Only the most significant results are presented in this section, and the complete list of results can be found in the Appendix \ref{appendix:performance-results}.
 % The most significant results are copied from the appendix
 % Create a tiny \Gls{vm} - KubeVirt
 \begin{figure}[H]
@@ -974,7 +975,7 @@ This section contains the results of the performance analysis with KubeVirt and 
 
 \section{Usability Analysis}
 
-The result of the usability analysis consists of the answers collected from its participants. As described previously, a participant could submit feedback either by answering questions or by summarizing their experience with KubeVirt. Below are some extracted answers, but all the answers can be found in the appendix\ \ref{appendix:usability-analysis-answers}.
+The result of the usability analysis consists of the answers collected from its participants. As described previously, a participant could submit feedback either by answering questions or by summarizing their experience with KubeVirt. Below are some extracted answers, but all the answers can be found in the Appendix\ \ref{appendix:usability-analysis-answers}.
 
 \subsection*{Basic Usage}
 The participants found the process of creating a \Gls{vm} in KubeVirt to be mostly straightforward. Using the kubectl \Gls{cli} tool appears to be one of the reasons the operation was smooth. 
@@ -1561,7 +1562,7 @@ WantedBy=multi-user.target
 
 \chapter{Usability Tasks}
 \label{appendix:usability-tasks}
-The following is a replicated version of what was given to the participants for the usability analysis formatted for the appendix. The original version was provided as a separate document to the participants.
+The following is a replicated version of what was given to the participants for the usability analysis formatted for the Appendix. The original version was provided as a separate document to the participants.
 
 \section*{Introduction}
 This is a usability analysis that aims to evaluate KubeVirt by performing a set of tasks and then reflecting on the experience. Your answers will be used as a base to evaluate the usability of KubeVirt.

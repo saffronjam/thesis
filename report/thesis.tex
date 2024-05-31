@@ -201,7 +201,31 @@ This is concerned with scenarios in which a traditional \Gls{vm} management syst
 This is focused on the practical implications of using KubeVirt and Kubernetes instead of traditional \Gls{vm} management systems. For instance, the number of steps required to deploy a \Gls{vm}.
 
 \section{Research Method}
-This project uses a mixed-methods approach to investigate the research questions. Initially, a literature study is conducted to explore what led up to KubeVirt being created, as well as the current challenges regarding \Gls{vm} management. Following this, both a quantitative and qualitative analysis are conducted to evaluate KubeVirt itself. The quantitative analysis is comprised of a performance analysis that compares KubeVirt against a traditional approach and benchmarks the performance of the systems when performing tasks such as creating \Glspl{vm}. The qualitative analysis, on the other hand, is based on a usability analysis where system administrators perform common tasks using KubeVirt. Together, these methods capture an overall image of KubeVirt for managing \Glspl{vm}.  
+This project employs a mixed-methods approach that combines qualitative and quantitative methodologies. The approach provides a comprehensive and holistic approach to evaluating the applicability of managing \Glspl{vm} in Kubernetes.
+
+\subsection{Literature Study}
+The literature study explores the current knowledge related to \Glspl{vm} management, its history and how it is related to container management. It also explores Kubernetes concepts and how KubeVirt enables the running of \Glspl{vm} in an environment previously only used for managing containers. A mix of articles, technical reports and conference papers are used for the literature study. The selection of these is key to providing a foundational understanding that is necessary for the subsequent analyses. 
+
+\subsection{Performance Analysis}
+The quantitative aspects of the project stem from the performance analysis that evaluates KubeVirt with a traditional \Gls{vm} management system. The performance analysis measures the efficiency of each system in creating \Glspl{vm} and scaling the underlying infrastructure. It uses a programmatic approach that automates running tests and systematically collects metrics on both systems. The performance analysis involves the following steps:
+
+\begin{itemize}
+    \item Review existing literature that evaluates \Gls{vm} management system to identify benchmarking strategies.
+    \item Design the testing strategy using existing research including metrics and payload size. 
+    \item Develop a testing tool that allows for reproducible testing and simple setup.
+    \item Perform the tests on KubeVirt and OpenNebula using the created tool.
+    \item Gather and evaluate the results of the benchmarks to find possible differences between KubeVirt and OpenNebula in terms of performance and scalability.
+\end{itemize}
+
+\subsection{Usability Analysis}
+A qualitative evaluation of KubeVirt is conducted through a usability analysis. It involves having a group of system administrators perform a set of predefined \Gls{vm}-related tasks using KubeVirt, after which they are asked to provide feedback on the experience. The analysis involves the following steps:
+
+\begin{itemize}
+    \item Develop realistic scenarios a system administrator could face daily, and translate them into practical tasks.
+    \item Create an environment that allows the participants to perform the tasks.
+    \item Conduct the usability analysis with system administrators experienced both in managing a traditional \Gls{vm} management system and Kubernetes. 
+    \item Gather and evaluate the feedback to identify possible advantages and challenges with using KubeVirt. 
+\end{itemize}
 
 \section{Limitations}
 \begin{enumerate}

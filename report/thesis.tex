@@ -207,7 +207,7 @@ This project employs a mixed-methods approach that combines qualitative and quan
 The literature study explores the current knowledge related to \Glspl{vm} management, its history and how it is related to container management. It also explores Kubernetes concepts and how KubeVirt enables the running of \Glspl{vm} in an environment previously only used for managing containers. A mix of articles, technical reports and conference papers are used for the literature study. The selection of these is key to providing a foundational understanding that is necessary for the subsequent analyses. 
 
 \subsection{Performance Analysis}
-The quantitative aspects of the project stem from the performance analysis that evaluates KubeVirt with a traditional \Gls{vm} management system. The performance analysis measures the efficiency of each system in creating \Glspl{vm} and scaling the underlying infrastructure. It uses a programmatic approach that automates running tests and systematically collects metrics on both systems. The performance analysis involves the following steps:
+The quantitative aspects of the project stem from the performance analysis that evaluates KubeVirt with a traditional \Gls{vm} management system. The performance analysis measures the efficiency of each system in creating \Glspl{vm} and scaling the underlying infrastructure. It uses a programmatic approach that automates the running of tests and systematically collects metrics on both systems. The performance analysis involves the following steps:
 
 \begin{itemize}
     \item Review existing literature that evaluates \Gls{vm} management system to identify benchmarking strategies.
@@ -819,8 +819,9 @@ This section contains the results of the performance analysis and usability anal
 This section contains the results of the performance analysis with KubeVirt and OpenNebula. Only the most significant results are presented in this section, and the complete list of results can be found in the Appendix\ \ref{appendix:performance-results}.
 
 \subsection{Create a Single VM}
-Four tests were performed to evaluate how well KubeVirt and OpenNebula could create and delete a \Gls{vm} of various sizes. OpenNebula maintained a significantly lower constant RAM utilization than KubeVirt, hovering above 8\% utilization compared to KubeVirt reaching almost 12\% for each of the tests. CPU utilization is similar for both systems, but KubeVirt's utilization declined faster than openenbula. KubeVirt has a significantly lower disk utilization for each of the tests that peaked below 8\%, while OpenNebula was more sporadic and reached up towards 16\%. The results for creating the smallest and the largest \Gls{vm} types in KubeVirt are visualized in Figures\ \ref{fig:create-tiny-kubevirt} and\ \ref{fig:create-large-kubevirt} respectively, and in Figure\ \ref{fig:create-tiny-opennebula} and \ \ref{fig:create-large-opennebula} for OpenNebula.
+Four tests were performed to evaluate how well KubeVirt and OpenNebula could create and delete a \Gls{vm} of various sizes and the results were close to identical for each payload size. Both KubeVirt and OpenNebula showed similar patterns in how a create-\Gls{vm} operation affected their control node, where both systems had a clear correlation between the operation performed and the induced CPU utilization. Both systems also had a constant RAM utilization throughout the test, indicating that a control node's RAM is not directly affected by creating and deleting a single \Gls{vm}. Additionally, the similar utilization between the payload sizes suggests that neither system's control node is affected by the size of the \Gls{vm} being deployed
 
+Figures\ \ref{fig:create-tiny-kubevirt} and\ \ref{fig:create-large-kubevirt} illustrate KubeVirt's control node's utilization when creating a type-1 and type-4 \Gls{vm} respectively. In both test cases, KubeVirt maintains the same pattern for CPU that correlated with the operation performed in the test, where it starts at 4\% utilization and peaks at just over 14\%. RAM utilization though, is constant at 12\% utilization throughout the tests, indicating that creating a single \Gls{vm} does not affect the control node's RAM usage. The sporadic disk utilization can be attributed to background processes interfering with the test. 
 
 % Create a tiny \Gls{vm} - KubeVirt
 \begin{figure}[H]
@@ -838,6 +839,8 @@ Four tests were performed to evaluate how well KubeVirt and OpenNebula could cre
     \expandafter\label\expandafter{\labelprefix:create-large-kubevirt}
 \end{figure}
 
+Figures\ \ref{fig:create-tiny-opennebula} and\ \ref{fig:create-large-opennebula} illustrate the utilization of OpenNebula's control node when creating a type-1 and type-4 \Gls{vm} respectively. The CPU utilization starts a 2\% and peaks at 14\%, which correlates with the operations performed in the test. RAM utilization remains constant below 8\% utilization for the entire duration of the test. The disk utilization sporadic patterns can be attributed to interfering background processes. 
+
 % Create a tiny \Gls{vm} - OpenNebula
 \begin{figure}[H]
     \centering
@@ -854,8 +857,7 @@ Four tests were performed to evaluate how well KubeVirt and OpenNebula could cre
     \expandafter\label\expandafter{\labelprefix:create-large-opennebula}
 \end{figure}
 
-
-The utilization was similar between the tests for both systems, which suggests that the size of the \Gls{vm} does not directly affect the utilization of either system's control plane. The duration of the tests further supports this where neither KubeVirt nor OpenNebula showed a correlation between the size of the \Gls{vm} and the time it took to create it. See Figures \ref{fig:create-vms-duration-kubevirt} and \ref{fig:create-vms-duration-opennebula}. 
+Figures\ \ref{fig:create-vms-duration-kubevirt} and\ \ref{fig:create-vms-duration-opennebula} illustrate the differences in duration for creating different types of \Glspl{vm}. KubeVirt shows close to no difference between the types indicating that the payload size does not affect the duration of creating it. OpenNebula has slight variations between the \Gls{vm} types, but it does not correlate with the payload size, and could thus instead be attributed to noise in the measurement or a less predictable scheduler. 
 
 % Create \Glspl{vm} - Duration - KubeVirt
 \begin{figure}[H]
@@ -876,7 +878,9 @@ The utilization was similar between the tests for both systems, which suggests t
 \newpage
 
 \subsection{Create many VMs}
-Creating a burst of \Glspl{vm} was an intense operation for both KubeVirt and OpenNebula, where both systems managed to reach upwards to 80\% CPU utilization in their control plane. However, KubeVirt declined significantly faster due to how much quicker it managed to complete the tasks. This is visualized in Figures\ \ref{fig:create-many-cpu} and\ \ref{fig:create-many-duration}. While both KubeVirt and OpenNebula quickly reached almost 80\% CPU utilization, OpenNebula's utilization took more than twice as long to complete, 63 seconds and 157 seconds respectively. 
+For the tests creating many \Glspl{vm}, a burst of requests was sent to each system that created a total of 20 \Glspl{vm}. Both KubeVirt and OpenNebula were greatly affected by the burst of requests. However, KubeVirt finished the operation faster, which allowed it to quickly return to an idle utilization level after 63 seconds. OpenNebula, on the other hand, took a significantly longer time to complete the same task at 157 seconds. This is illustrated in Figure\ \ref{fig:create-many-duration}. KubeVirt's speed could mostly be attributed to using worker nodes to aid in the scheduling of the many \Glspl{vm}, essentially offsetting a portion of the computational load away from the control node. OpenNebula, on the other hand, had a relatively steady utilization among its worker nodes and instead relied entirely on its control node. 
+
+Figure\ \ref{fig:create-many-cpu} illustrates the CPU utilization of the control node of KubeVirt and OpenNebula. The steep initial slopes reflect the intensity of the operation for both systems. However, KubeVirt's steep downward slope after 30 seconds indicates that many \Glspl{vm} were deleted at the same time, which suggests that KubeVirt can parallelize many of the operations in the task. Moreover, OpenNebula does not appear to return to an idle CPU utilization level after the task is finished and maintains a 20\% CPU utilization at the very end of the test. This could be attributed to background tasks such as garbage collection. 
 
 % Create many - CPU
 \begin{figure}[H]
@@ -894,7 +898,7 @@ Creating a burst of \Glspl{vm} was an intense operation for both KubeVirt and Op
     \expandafter\label\expandafter{\labelprefix:create-many-duration}
 \end{figure}
 
-From the perspective of the workers, OpenNebula was not as resource-intensive and remained relatively steady in comparison to KubeVirt. CPU-wise, it reached a cumulative utilization of barely 20\%, while KubeVirt reached almost 100\%. This is visualized in Figure\ \ref{fig:create-many-cpu-worker}. This pattern was also found for RAM utilization, albeit not as prominent. See Figures\ \ref{fig:create-many-memory} and\ \ref{fig:create-many-memory-worker}. However, the duration discrepancy is still present, meaning that there could exist a trade-off between a short-lived burst of utilization and a long but low utilization. This is discussed in\ \ref{result-intepretation}. 
+The cumulative CPU utilization among the two worker nodes of each system is illustrated in Figure\ \ref{fig:create-many-cpu-worker}. The figure shows that KubeVirt's workers have a much higher CPU utilization than OpenNebula, but that it does not last as long. This trade-off between the duration of the task and the resource utilization is discussed later in\ \ref{result-intepretation}. Additionally, KubeVirt appears to have mainly two peaks relating to \Glspl{vm} being created and deleted, with some intermediary waiting time. OpenNebula appears to have two peaks too, albeit not as prominent as KubeVirt due to its long task duration. 
 
 % Create many - CPU - workers
 \begin{figure}[H]
@@ -904,6 +908,8 @@ From the perspective of the workers, OpenNebula was not as resource-intensive an
     \expandafter\label\expandafter{\labelprefix:create-many-cpu-worker}
 \end{figure}
 
+Furthermore, Figure\ \ref{fig:create-many-memory} shows a strong correlation between RAM utilization and the operation being performed for both systems, with two distinct sections that reflect \Glspl{vm} being created and then deleted. However, KubeVirt's peaks are both smaller and steeper than OpenNebula's, indicating that KubeVirt's control node uses less RAM for the same task and manages to complete the operations in the task quicker than OpenNebla. Additionally, OpenNebula's first section appears to be significantly longer than the latter, indicating that the operation of creating a \Gls{vm} in OpenNebula is much more expensive than deleting a \Gls{vm}.   
+
 % Create many - RAM
 \begin{figure}[H]
     \centering
@@ -911,6 +917,12 @@ From the perspective of the workers, OpenNebula was not as resource-intensive an
     \caption{Memory utilization on the control node when creating 20 type-1 \Glspl{vm}}
     \expandafter\label\expandafter{\labelprefix:create-many-memory}
 \end{figure}
+
+The cumulative RAM utilization among the two workers nodes is illustrated in Figure\ \ref{fig:create-many-memory-worker}. The RAM utilization of a worker node is tied to the number of \Glspl{vm} running on the nodes, meaning that OpenNebula's gradual increase reflects that it is not able to create \Glspl{vm} as quickly as KubeVirt. However, deleting \Glspl{vm} appears to be done with similar efficiency. 
+
+Figures\ \ref{fig:create-many-memory-worker} and\ \ref{fig:create-many-memory} also show that KubeVirt's peak in cumulative RAM utilization is more central between its control node's two peaks than OpenNebula. Having the worker nodes' single peak offset towards the beginning or the end suggests that creating and deleting \Glspl{vm} are not equally expensive processes. In this case, OpenNebla appears to have a much slower creation process for \Glspl{vm}, indicated by its peak being shifted towards the end of the test. 
+
+Figure\ \ref{fig:create-many-memory-worker} also shows that the task induces a 17\% RAM utilization for both systems. While KubeVirt appears to use more RAM due to its higher peak, it can be attributed to it having a larger base utilization than OpenNebula. Trade-offs between different kinds of utilization and task duration are discussed in\ \ref{result-intepretation}.
 
 % Create many - RAM - workers
 \begin{figure}[H]
@@ -924,7 +936,9 @@ From the perspective of the workers, OpenNebula was not as resource-intensive an
 
 \subsection{Live migrating \Glspl{vm}}
 
-Live migrating a single \Glspl{vm} was not a particularly intense operation for either system and only supported the results from previous tests, such as when creating a single \Gls{vm}. However, when migrating 10 \Glspl{vm} concurrently, the resource utilization of a live migration operation became more obvious. For both CPU and RAM utilization, the systems followed a similar pattern with a steep initial incline reflecting the \Glspl{vm} being created, then a delines, before returning to a second peak, reflecting the migration operation. However, KubeVirt was slightly less resource intensive than OpenNebula, and also more consistent with fewer local peaks. This is visualized in Figure\ \ref{fig:migrate-many-cpu}. The pattern was also found for RAM utilization, but with the addition of what was found in previous tests where OpenNebula inhibits a lower base RAM utilization, see Figure\ \ref{fig:migrate-many-memory}. 
+Live migrating a single \Glspl{vm} was not a particularly intense operation for either system and only supported the results from previous tests, such as when creating a single \Gls{vm}. However, when migrating 10 \Glspl{vm} concurrently, the results were more significant. On the control nodes, KubeVirt had an overall lower utilization than OpenNebula, although its base overhead could lead to the resulting utilization being higher. From the workers' perspective, though, KubeVirt was more resource-intensive than OpenNebula in all resource utilizations, which could be attributed to having a less efficient implementation.
+
+Figure\ \ref{fig:migrate-many-cpu} illustrates the CPU utilization of each system's control node. Both systems follow a very similar pattern that can be attributed to creating, migrating and then finally deleting the \Glspl{vm}. Interestingly, the figure shows KubeVirt not reporting being finished immediately, even though its CPU utilization has returned to idle. This could be caused by some waiting mechanisms or safety checks built into KubeVirt. 
 
 % Migrate many - CPU
 \begin{figure}[H]
@@ -934,6 +948,8 @@ Live migrating a single \Glspl{vm} was not a particularly intense operation for 
     \expandafter\label\expandafter{\labelprefix:migrate-many-cpu}
 \end{figure}
 
+The RAM utilization of the control nodes is illustrated in Figure\ \ref{fig:migrate-many-memory}. The figure shows clear relationships between the operation performed in the task and three peaks representing creating, migrating and deleting \Glspl{vm}. While OpenNebula has higher peaks for both creating and deleting \Glspl{vm}, its control node is not as affected by the live migration requests. KubeVirt's control node appears to be equally affected by each type of operation performed in the task. The figure also shows the base overhead being more prominent than the induced load in the test. However, since OpenNebula's peaks are relatively high compared to the base overhead of KubeVirt, a larger number of live migration operations could potentially lead to the induced load being more significant.
+
 % Migrate many - RAM
 \begin{figure}[H]
     \centering
@@ -942,7 +958,7 @@ Live migrating a single \Glspl{vm} was not a particularly intense operation for 
     \expandafter\label\expandafter{\labelprefix:migrate-many-memory}
 \end{figure}
 
-From the workers' perspective, KubeVirt was more resource-intensive. Contrary to what was previously found, KubeVirt does not have the same trade-off with short test duration. KubeVirt also followed a different pattern than OpenNebula, with its utilization for both CPU and RAM shifted towards the end of the tests, while OpenNebula peaks in the middle. This could be explained by KubeVirt's migration operation being slower than OpenNebula's. This is visualized in Figures\ \ref{fig:migrate-many-cpu-worker} and\ \ref{fig:migrate-many-memory-worker}.
+The cumulative CPU and RAM utilization when migrating \Glspl{vm} are illustrated in Figures\ \ref{fig:migrate-many-cpu-worker} and\ \ref{fig:migrate-many-memory-worker}. While both figures show the task duration being similar between the two systems, they also show KubeVirt using significantly more resources. For CPU utilization in Figure\ \ref{fig:migrate-many-cpu-worker}, both systems start out following a similar pattern. However, KubeVirt does not manage to reduce its utilization as quickly as OpenNebula, leading to higher peaks for a majority of the test duration. As for RAM utilization in Figure\ \ref{fig:migrate-many-memory-worker}, both the base overhead and induced load are higher for KubeVirt, indicating that live migration is a significantly more expensive operation for KubeVirt than for OpenNebula. 
 
 % Migrate many - CPU - workers
 \begin{figure}[H]
@@ -964,7 +980,9 @@ From the workers' perspective, KubeVirt was more resource-intensive. Contrary to
 
 \subsection{Scale Cluster}
 
-KubeVirt and OpenNebula both showed similar utilization and patterns when scaling a cluster without any \Glspl{vm} residing in the nodes. KubeVirt was less resource-intensive but took a longer time to complete the operation. Interestingly enough, even though KubeVirt returned to an idle utilization level, it did not report the scaling processes being finished for an additional 30 seconds. This, counter-intuitively, caused OpenNebula to finish the scaling operation quicker, despite having a higher resource utilization for a longer period. This is visualized in Figures\ \ref{fig:scale-cluster-cpu}. 
+KubeVirt and OpenNebula both showed similar utilization and patterns when scaling a cluster without any \Glspl{vm} residing in the nodes. KubeVirt was less resource-intensive but took a longer time to complete the operation. Interestingly enough, even though KubeVirt returned to an idle utilization level, it did not report the scaling processes being finished for an additional 30 seconds. This, counter-intuitively, caused OpenNebula to finish the scaling operation quicker. This is discussed in\ \ref{result-intepretation}.
+
+Figure\ \ref{fig:scale-cluster-cpu} illustrates the CPU utilization of each system's control node when scaling the cluster up from 2 to 10 worker nodes without any \Glspl{vm}. They follow a similar initial pattern reaching 70\% CPU utilization, indicating that both systems are equally affected by the operation. However, KubeVirt reduces the CPU utilization more quickly and thus appears to complete the operation relatively fast compared to OpenNebula which gradually increases the CPU utilization to 80\% for an additional 30 seconds. However, an interesting observation can be made when KubeVirt returns to idle utilization level since it does not report being finished for another 30 seconds, which causes OpenNebula to finish the task faster. 
 
 % Scale cluster - CPU
 \begin{figure}[H]
@@ -974,7 +992,9 @@ KubeVirt and OpenNebula both showed similar utilization and patterns when scalin
     \expandafter\label\expandafter{\labelprefix:scale-cluster-cpu}
 \end{figure}
 
-For the extended version of the scaling test, where a \Gls{vm} resided in each of the nodes being scaled down, OpenNebula did not manage to complete. This is discussed in\ \ref{result-intepretation} together with possible causes. KubeVirt utilization, however, followed a similar pattern to the previous test, but without directly returning to an idle utilization level. The extra resource utilization towards the end could thus be caused by the migration process produced by the scaling operation. This is visualized Figures\ \ref{fig:scale-cluster-with-vms-cpu} and\ \ref{fig:scale-cluster-with-vms-disk}. 
+For the extended version of the scaling test, where a \Gls{vm} resided in each of the nodes being scaled down, OpenNebula did not manage to complete. This is discussed in\ \ref{result-intepretation} together with possible causes. KubeVirt utilization, however, followed a similar pattern to the previous test, but without immediately returning to an idle utilization level after the scaling operation was finished. 
+
+Figures\ \ref{fig:scale-cluster-with-vms-cpu} and\ \ref{fig:scale-cluster-with-vms-cpu} illustrate the CPU and disk utilization of the KubeVirt control node when scaling nodes with residing \Glspl{vm}. It follows a similar pattern to the previous version of the task, see Figure\ \ref{fig:scale-cluster-cpu}, but with an additional local maximum after the main peak. This second peak could thus be attributed to \Glspl{vm} being scheduled to other nodes and then being deleted at the end of the test.
 
 % Scale cluster with \Glspl{vm} - CPU
 \begin{figure}[H]
@@ -984,7 +1004,7 @@ For the extended version of the scaling test, where a \Gls{vm} resided in each o
     \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-cpu}
 \end{figure}
 
-% Scale cluster with \Glspl{vm} - RAM
+% Scale cluster with \Glspl{vm} - Disk
 \begin{figure}[H]
     \centering
     \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_disk.pdf}
@@ -1017,7 +1037,7 @@ However, KubeVirt's complementary \Gls{cli} tool virtctl was not as user-friendl
 Another issue encountered was related to the structure of the manifests. Participant 1, in particular, found the \Gls{vm} manifest definition to be complex and that it negatively affects the process of creating a \Gls{vm}. \textit{bus: virtio} is a configuration in KubeVirt that allows its disks to be attached as an ordinary hard disk\ \cite{kubevirt-docs-disks}.
 
 \begin{itemize}
-    \item Participant 1: \textit{...\ the \Gls{vm} definition is not very neat. It would be quite difficult for me to figure out I need to use \"bus: virtio\" without having someone else tell me I need to.}
+    \item Participant 1: \textit{...\ the \Gls{vm} definition is not very neat. It would be quite difficult for me to figure out I need to use "bus: virtio" without having someone else tell me I need to.}
 \end{itemize}
 
 KubeVirt's complementary \Gls{cli} tool \textit{virtctl} was found to be useful when connecting to the \Gls{vm}, as it provided a single tool for both VNC and SSH.

@@ -93,13 +93,13 @@ breaklines=true
 
 \title{Kubernetes as a Virtual Machine Management System}
 \subtitle{A Comparative Study of KubeVirt and Traditional Approaches}
-\alttitle{Swedish title TBD}
+\alttitle{Kubernetes som ett VM-hanteringssystem}
 \author{Emil Karlsson}
 \email{emilk2@kth.se}
 \supervisor{Han Fu}
 \examiner{Cyrille Artho}
 \hostcompany{Net Insight AB} % Remove this line if the project was not done at a host company
-\programme{Master in Computer Science}
+\programme{Master’s Programme, Software Engineering of Distributed Systems, 120 credits}
 \school{School of Electrical Engineering and Computer Science}
 \date{\today}
 
@@ -149,8 +149,8 @@ However, with the evolution of virtualization, an alternative to \Glspl{vm} was 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.85]{img/vm_container_virtualization.pdf}
-    \caption{Overview of \Glspl{vm} and containers. The virtualization layer is placed on a lower level for \Glspl{vm} than for containers, illustrating the difference in their respective virtualization techniques.}
+    \includegraphics[scale=0.96]{img/vm_container_virtualization.pdf}
+    \caption{An overview of how virtualization is achieved for \Glspl{vm} and containers.}
     \label{fig:container-vm-architecture}
 \end{figure}
 
@@ -160,7 +160,7 @@ Due to their different use cases, \Glspl{vm} and containers have traditionally b
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=1]{img/vm_management_system.pdf}
+    \includegraphics[scale=1.1]{img/vm_management_system.pdf}
     \caption{A brief overview of a \Gls{vm} management system built in a monolithic fashion, where clients can send \Gls{vm}-related instructions to a centralized location.} 
     \label{fig:vm-management-system}
 \end{figure}
@@ -169,8 +169,8 @@ Recently, Kubernetes was extended to accommodate \Glspl{vm} through KubeVirt. It
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.8]{img/container_vm_with_kubevirt.pdf}
-    \caption{Overview of \Glspl{vm} and containers managed by using KubeVirt. The figure illustrates how \Glspl{vm} and containers communicate natively in a single environment.}
+    \includegraphics[scale=1.05]{img/container_vm_with_kubevirt.pdf}
+    \caption{An overview of \Glspl{vm} and containers managed by using KubeVirt. It illustrates how \Glspl{vm} and containers communicate natively in a single environment.}
     \label{fig:container-vm-kubevirt-architecture}
 \end{figure}
 
@@ -188,17 +188,19 @@ The purpose of this project is to evaluate whether Kubernetes with KubeVirt is a
 The goal of this project is to provide a transparent evaluation with quantifiable results regarding the applicability of managing \Glspl{vm} inside the Kubernetes ecosystem. The results could be used as a fundamental argument for or against Kubernetes as a management platform. Results that argue for the use of KubeVirt in terms of performance could be used as an argument for future research regarding sustainability.
 
 \section{Research Questions}
-\noindent\textit{What performance, scalability, and operational efficiencies can be gained by integrating \Glspl{vm} in Kubernetes?}
-\\\\
-This could stem from using a single resource scheduler. Several metrics will be used to evaluate this, as described in the background and related work.
-\\\\
-\noindent\textit{What are the current challenges and limitations in managing \Glspl{vm} and containerized applications in separate environments?}
-\\\\
-This is concerned with scenarios in which a traditional \Gls{vm} management system is operated alongside Kubernetes.
-\\\\
-\noindent\textit{How can system administration be simplified by running \Glspl{vm} in Kubernetes using KubeVirt?}
-\\\\
-This is focused on the practical implications of using KubeVirt and Kubernetes instead of traditional \Gls{vm} management systems. For instance, the number of steps required to deploy a \Gls{vm}.
+\begin{enumerate}
+    \item What performance, scalability, and operational efficiencies can be gained by integrating \Glspl{vm} in Kubernetes?
+    \\\\
+    This could stem from using a single resource scheduler. Several metrics will be used to evaluate this, as described in the background and related work.
+
+    \item What are the current challenges and limitations in managing \Glspl{vm} and containerized applications in separate environments?
+    \\\\
+    This is concerned with scenarios in which a traditional \Gls{vm} management system is operated alongside Kubernetes.
+
+    \item How can system administration be simplified by running \Glspl{vm} in Kubernetes using KubeVirt?
+    \\\\
+    This is focused on the practical implications of using KubeVirt and Kubernetes instead of traditional \Gls{vm} management systems. For instance, the number of steps required to deploy a \Gls{vm}.
+\end{enumerate}
 
 \section{Research Method}
 This project employs a mixed-methods approach that combines qualitative and quantitative methodologies. The approach provides a comprehensive and holistic approach to evaluating the applicability of managing \Glspl{vm} in Kubernetes.
@@ -211,8 +213,7 @@ The quantitative aspects of the project stem from the performance analysis that 
 
 \begin{itemize}
     \item Review existing literature that evaluates \Gls{vm} management system to identify benchmarking strategies.
-    \item Design the testing strategy using existing research including metrics and payload size. 
-    \item Develop a testing tool that allows for reproducible testing and simple setup.
+    \item Design the testing strategy using existing research including metrics and payload size, and develop a testing tool.
     \item Perform the tests on KubeVirt and OpenNebula using the created tool.
     \item Gather and evaluate the results of the benchmarks to find possible differences between KubeVirt and OpenNebula in terms of performance and scalability.
 \end{itemize}
@@ -255,7 +256,7 @@ The three major levels for virtualizations are hardware level, \Gls{os}-level an
 \begin{figure}
     \centering
     \includegraphics[scale=1]{img/hardware_os_virtualization.pdf}
-    \caption{Overview of the different layers of virtualization for hardware-level and \Gls{os}-level virtualization. The figure illustrates how hardware virtualization inhibits several internal \Glspl{os} from running on the same hardware, while \Gls{os} virtualization keeps a single \Gls{os} for each process.}
+    \caption{An overview of the different layers of virtualization for hardware-level and \Gls{os}-level virtualization. It illustrates how hardware virtualization inhibits several internal \Glspl{os} from running on the same hardware, while \Gls{os} virtualization keeps a single \Gls{os} for each process.}
     \label{fig:hardware-os-virtualization}
 \end{figure}
 
@@ -297,7 +298,7 @@ The concept of \textit{security rings} is often used to describe the level of pr
 \begin{figure}
     \centering
     \includegraphics[scale=1]{img/hypervisor_security_rings.pdf}
-    \caption{Overview of security rings in a hypervisor. The figure illustrates how the inner rings have higher privileges than the outer rings.}
+    \caption{An overview of security rings in a hypervisor. It illustrates how the inner rings have higher privileges than the outer rings.}
     \label{fig:hypervisor-security-rings}
 \end{figure}
 
@@ -331,7 +332,7 @@ Scalability is a concept that is not directly tied to the \Glspl{vm} themselves,
 \begin{figure}
     \centering
     \includegraphics[scale=1]{img/availability_zones.pdf}
-    \caption{Overview of availability zones with several \Gls{api} gateways and databases operating in the same logical environment but in different availability zones to provide redundancy and fault tolerance.}
+    \caption{An overview of availability zones with several \Gls{api} gateways and databases operating in the same logical environment but in different availability zones to provide redundancy and fault tolerance.}
     \label{fig:availability-zones}
 \end{figure}
 
@@ -404,24 +405,24 @@ To provide a lightweight alternative to \Glspl{vm} while still being able to cre
 
 \subsection{Containers Explained}
 \label{containers}
-Containers are a form of virtualization that offers a lightweight alternative to \Glspl{vm}. Unlike \Glspl{vm}, containers do not require a hypervisor to run and instead run on top of an \Gls{os} and share the \Gls{os} kernel with other containers. By not requiring a hypervisor, containers can run with less overhead than \Glspl{vm}, making their life cycle relatively fast and efficient compared to \Glspl{vm}\ \cite{container-vm-overview, container-k8s-benchmark}. The differences between container and hypervisor virtualization are visualized in figure \ref{fig:container-vm-architecture-2}.
+Containers are a form of virtualization that offers a lightweight alternative to \Glspl{vm}. Unlike \Glspl{vm}, containers do not require a hypervisor to run and instead run on top of an \Gls{os} and share the \Gls{os} kernel with other containers. By not requiring a hypervisor, containers can run with less overhead than \Glspl{vm}, making their life cycle relatively fast and efficient compared to \Glspl{vm}\ \cite{container-vm-overview, container-k8s-benchmark}. The differences between container and hypervisor virtualization are visualized in Figure \ref{fig:container-vm-architecture-2}.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=1]{img/vm_container_virtualization.pdf}
-    \caption{Overview of \Glspl{vm} and containers. The virtualization layer is placed on a lower level for \Glspl{vm} than for containers, illustrating the difference in their respective virtualization techniques.}
+    \includegraphics[scale=0.96]{img/vm_container_virtualization.pdf}
+    \caption{An overview of \Glspl{vm} and containers. The virtualization layer is placed on a lower level for \Glspl{vm} than for containers, illustrating the difference in their respective virtualization techniques.}
     \label{fig:container-vm-architecture-2}
 \end{figure}
 
 \label{dockerfile}
-A container is created from a container image, which is a lightweight package that is used when configuring the virtual environment for the container. It encapsulates the application together with any dependencies such that it runs on any platform, which makes the container itself portable and consistent. The image itself is created using a configuration file called \textit{Dockerfile}*, which describes a parent image, such as an \Gls{os} image, together with several steps required to produce the container image. Once the container image is created, it can be used as a parent image in any other configuration files, creating a chain of dependencies.
+A container is created from a container image, which is a lightweight package that is used when configuring the virtual environment for the container. It encapsulates the application together with any dependencies such that it runs on any platform, which makes the container itself portable and consistent. The image itself is created using a configuration file called \textit{Dockerfile}\footnote{Recently, some movement has been made to change the name to \textit{Containerfile}, as this would describe the content better than the company that invented the technology. However, \textit{Dockerfile} is still the most widely used term.}, which describes a parent image, such as an \Gls{os} image, together with several steps required to produce the container image. Once the container image is created, it can be used as a parent image in any other configuration files, creating a chain of dependencies.
 
 To enable caching, a container image can be divided into a series of layers. Each layer represents a change to the parent image, such as adding a file or installing a package, and thus acts as a checkpoint. This enables container images to be built incrementally, where layers are only rebuilt when a change is made\ \cite{container-docker-layers, container-dockerfile, container-docker-reproducibility}. Figure\ \ref{fig:container-image-layers} illustrates the concept of container image layers, where each operation represents a change to the parent image.
 
 \begin{figure}
     \centering
-    \includegraphics[scale=1]{img/container_image_layers.pdf}
-    \caption{Overview of container image layers where each operation in a Dockerfile represents a layer that can be cached and reused. The layers are stacked on top of each other and appended to the parent image to form the final container image.}
+    \includegraphics[scale=0.77]{img/container_image_layers.pdf}
+    \caption{An overview of container image layers where each operation in a Dockerfile represents a layer that can be cached and reused. The layers are stacked on top of each other and appended to the parent image to form the final container image.}
     \label{fig:container-image-layers}
 \end{figure}
 
@@ -429,9 +430,6 @@ To enable caching, a container image can be divided into a series of layers. Eac
 Moreover, container images are often stored in container registries, which provide central storage and are used to distribute the images. A container registry often comes with tools to manage its images, such as tools for version control and scanning for malicious images. Another common event-based feature is webhook. It acts as a message broker for predefined events, such as notifying an external system that a new image was pushed. Together these features enable a container registry to integrate well in a cloud-native environment and development pipelines\ \cite{container-registries, container-registries-redhat}.
 
 Originally, containers were designed to run on top of a technology developed by the company that invented containers called the \textit{Docker Engine}. Docker Engine is a container runtime that creates and manages containers similar to a hypervisor. However, to standardize an interface for container communication, the Open Container Initiative (OCI) was created, which defines a group of standards that aims to make containers portable across different platforms\ \cite{oci}. It is split into three standards called the runtime specification, image specification and distribution specification. From these specifications, the \textit{containerd} runtime was created, which aims to provide a more transparent and open-source alternative to the Docker Engine. Since it adheres to the standards, it allows for simpler integration with tools and services built on top of it. Today, many large systems use containerd under the hood, such as Kubernetes\ \cite{k8s-overview} 
-\\
-\\
-* Recently, some movement has been made to change the name to \textit{Containerfile}, as this would describe the content better than the company that invented the technology. However, \textit{Dockerfile} is still the most widely used term.
 
 \subsection{Orchestration Using Kubernetes}
 \label{sec:kubernetes-orchestration}
@@ -447,8 +445,8 @@ Figure \ref{fig:k8s-overview} presents a brief overview of the Kubernetes abstra
 
 \begin{figure}
     \centering
-    \includegraphics[scale=1]{img/kubernetes_overview.pdf}
-    \caption{Brief overview of Kubernetes abstractions including many of the core components. The figure illustrates the communication between the different components and how storage is managed in Kubernetes.}
+    \includegraphics[scale=0.83]{img/kubernetes_overview.pdf}
+    \caption{Brief overview of Kubernetes abstractions including many of the core components. It illustrates the communication between the different components and how storage is managed in Kubernetes.}
     \label{fig:k8s-overview}
 \end{figure}
  
@@ -477,7 +475,7 @@ Overcommitment refers to a mechanism that allocates more virtual resources than 
 \begin{figure}
     \centering
     \includegraphics[scale=1]{img/memory_ballooning.pdf}
-    \caption{Overview of memory ballooning in two stages. The figure illustrates the memory of a \Gls{vm} is shrunk by the hypervisor (deflation) and then reused by another \Gls{vm} (inflation).}
+    \caption{An overview of memory ballooning in two stages.}
     \label{fig:memory-ballooning}
 \end{figure}
 
@@ -508,8 +506,8 @@ In summary, these three technologies provide different approaches to the same pr
 
 \begin{figure}
     \centering
-    \includegraphics[scale=1]{img/secure_containers_overview.pdf}
-    \caption{A overview of how gVisor and Kata Containers approaches container isolation differently by either using a proxy for system calls and file access or wrapping the container in a \Gls{vm}.}
+    \includegraphics[scale=0.92]{img/secure_containers_overview.pdf}
+    \caption{An overview of how gVisor and Kata Containers approaches container isolation differently by either using a proxy for system calls and file access or wrapping the container in a \Gls{vm}.}
     \label{fig:secure-containers-overview}
 \end{figure}
 
@@ -527,12 +525,12 @@ A consequence of being built on top of Kubernetes is that KubeVirt-related resou
 \label{sec:kubevirt-technical-overview}
 On a technical level, KubeVirt does not implement a new deployable unit for their \Glspl{vm} and was instead designed to encapsulate them using Pods (see \ref{sec:kubernetes-orchestration}). This design has allowed KubeVirt \Glspl{vm} to integrate well with other Kubernetes resources such as Sevices and PersistentVolumeClaims. 
 
-KubeVirt can be split into four core components: \textit{virt-controller}, \textit{virt-handler}, \textit{virt-launcher} and the \textit{libvirt daemon}. The virt-controller and virt-handler are both concerned with managing the life cycle of the \Glspl{vm}, where the virt-controller is responsible for creating the Pod for the \Gls{vm} and the virt-handler is responsible for creating the \Gls{vm} itself. The virt-launcher manages the runtime environment for a \Gls{vm} making it responsible for requesting start and stop operations, as well as monitoring. Finally, the libvirt daemon (libvirtd) provides the interface to manage the \Glspl{vm} hosted by the underlying \Gls{kvm} hypervisor. The relationship between the three components is illustrated in figure \ref{fig:kubevirt-components}, where the virt-controller operates closest to Kubernetes \Gls{api}-server, virt-handler operates on every node to communicate with the underlying hypervisor, and virt-launcher operates as a sidecar container in every Pod to manage the runtime environment of the \Gls{vm}\ \cite{kubevirt-architecture, k8s-docs-kubevirt}.
+KubeVirt can be split into four core components: \textit{virt-controller}, \textit{virt-handler}, \textit{virt-launcher} and the \textit{libvirt daemon}. The virt-controller and virt-handler are both concerned with managing the life cycle of the \Glspl{vm}, where the virt-controller is responsible for creating the Pod for the \Gls{vm} and the virt-handler is responsible for creating the \Gls{vm} itself. The virt-launcher manages the runtime environment for a \Gls{vm} making it responsible for requesting start and stop operations, as well as monitoring. Finally, the libvirt daemon (libvirtd) provides the interface to manage the \Glspl{vm} hosted by the underlying \Gls{kvm} hypervisor. The relationship between the three components is illustrated in Figure \ref{fig:kubevirt-components}, where the virt-controller operates closest to Kubernetes \Gls{api}-server, virt-handler operates on every node to communicate with the underlying hypervisor, and virt-launcher operates as a sidecar container in every Pod to manage the runtime environment of the \Gls{vm}\ \cite{kubevirt-architecture, k8s-docs-kubevirt}.
 
 \begin{figure}
     \centering
-    \includegraphics[scale=1]{img/kubevirt_components.pdf}
-    \caption{Overview of KubeVirt components, their logical place in the Kubernetes ecosystem and how they interact with each other. The green components represent the KubeVirt internal components.}
+    \includegraphics[scale=0.92]{img/kubevirt_components.pdf}
+    \caption{An overview of KubeVirt components, their logical place in the Kubernetes ecosystem and how they interact with each other. The green components represent the KubeVirt internal components.}
     \label{fig:kubevirt-components}
 \end{figure}
 
@@ -587,47 +585,74 @@ To enable the results to be easily reproducible, the setup and testing procedure
 
 Payload-wise, this project used a similar approach to the study by Paradowski et al.\ with predefined types for \Glspl{vm} with CPU ranging from 1 to 4 CPU cores, and RAM ranging from 128 MB to 4 GB (see Table\ \ref{table:vm-specs} for a detailed overview). Moreover, \Glspl{vm} used the lightweight Cirros Linux image since a lightweight \Gls{os} image is less likely to introduce noise in measurements\ \cite{linux-boot-time}. This also meant a \Gls{vm} disk could be smaller, which allowed for more \Glspl{vm} to be created per node and for tests to run quicker since a lightweight image is usually faster to boot than a larger image.
 
+\begin{table}[!ht]
+    \caption{Specifications used for the different payload sizes.}
+    \centering
+    \begin{tabular}{ |c c c c| } 
+        \hline
+        \textbf{Type} & \textbf{CPU} & \textbf{RAM} & \textbf{Disk}\\ 
+        \hline
+        \hline
+        Type 1 & 1 & 128\ MB & 1\ GB \\
+        \hline
+        Type 2 & 1 & 1\ GB & 5\ GB \\
+        \hline
+        Type 3 & 2 & 2\ GB & 10\ GB \\
+        \hline
+        Type 4 & 4 & 4\ GB & 20\ GB \\
+        \hline
+    \end{tabular}
+    \label{table:vm-specs}
+\end{table}
+
 Each test was run on three hosting nodes, one management node and two worker nodes. This setup was the minimal setup required to be able to facilitate the tests, as some tests such as the live migration ones, consisted of moving a \Gls{vm} between two workers. The hosting nodes were configured large enough to be able to run a variety of tests, including tests with many small \Glspl{vm} or few large \Glspl{vm}. However, it was also important to consider the cost of the setup since the hosting nodes came with a cost directly tied to their performance and capabilities. Azure offered many different \Gls{vm} types, many of which were suitable in terms of CPU and memory specification. However, only a few offered virtualization support, which was required when running nested \Glspl{vm}. This left the Azure Dv3-series as the most suitable \Gls{vm} type and, specifically, the D4v3 \Gls{vm} type that has 4 CPU cores and 16 GB of memory\ \cite{azure-dv3-series}. The price of the D4v3 \Gls{vm} type was 0.2 USD per hour, which was deemed acceptable for the project\ \cite{azure-pricing}. Table\ \ref{table:node-specs} shows the overview of the Azure node specification used in the tests.
 
 \begin{table}[!ht]
+    \caption{Specifications used for the hosting nodes.}
     \centering
-    \begin{tabular}{ |c|c|c|c| }
+    \begin{tabular}{ | c c c c c | }
         \hline
-        \textbf{Role} & \textbf{CPU} & \textbf{RAM} & \textbf{Disk}\\
+        \textbf{Role} & \textbf{VM Type} & \textbf{CPU} & \textbf{RAM} & \textbf{Disk}\\
         \hline
         \hline
-        Control Plane (Azure D4v3) & 4 & 16\ GB & 100\ GB  \\
-        Worker 1 (Azure D4v3) & 4 & 16\ GB & 100\ GB  \\
-        Worker 2 (Azure D4v3) & 4 & 16\ GB & 100\ GB  \\
-        Scale-up Workers 3-10 (Azure D4v3) & 4 & 16\ GB & 100\ GB  \\
+        Control Plane & Azure D4v3 & 4 & 16\ GB & 100\ GB  \\
+        \hline
+        Worker 1 & Azure D4v3 & 4 & 16\ GB & 100\ GB  \\
+        \hline
+        Worker 2 & Azure D4v3 & 4 & 16\ GB & 100\ GB  \\
+        \hline
+        Scale-up Workers 3-10 & Azure D4v3 & 4 & 16\ GB & 100\ GB  \\
         \hline
     \end{tabular}
-    \caption{Node specifications used for the nodes hosting the \Gls{vm} management systems.}
     \label{table:node-specs}
 \end{table}
 
 Several metrics were collected on each hosting node to capture the utilization before, during and after the test was completed. Capturing for a brief moment before and after meant it could detect if some utilization was unrelated to a test. See Table\ \ref{table:performance-metrics} for a complete list of the metrics used. Further technical details on how metrics were collected are described later in this chapter.
 
 \begin{table}
+    \caption{Metrics used in the performance analysis.}
     \centering
-    \begin{tabular}{ |c|c|c|c| }
+    \begin{tabular}{ |c c c| }
         \hline
         \textbf{Metric} & \textbf{Unit} & \textbf{Description}\\
         \hline
         \hline
         CPU utilization & \% & The percentage of CPU used by the system\\
+        \hline
         Memory utilization & \% & The percentage of memory used by the system\\
+        \hline
         Disk utilization & \% & The percentage of disk used by the system\\
+        \hline
         Task duration & s & The duration of a specific task\\
         \hline
     \end{tabular}
-    \caption{Performance metrics that were used to quantify the results of the tests.}
     \label{table:performance-metrics}
 \end{table}
 
 The tests were designed for three different purposes: basic, limit testing and scaling. Basic tests were designed to evaluate the core functionality of a \Gls{vm} management system, such as creating and deleting \Glspl{vm}. These were the initial tests since the following tests were partially based on them. A limit testing category was added since the study by Paradowski did not consider this factor. These tests are designed to evaluate how a management system handles a burst of operations, such as creating many small \Glspl{vm}. Finally, scaling tests were designed to manage operations unrelated to \Gls{vm} creation and instead focused on how well the management system itself can scale. See Table\ \ref{table:performance-tests} for an overview of the tests and their purpose.
 
 \begin{table}
+    \caption{Tests used in the performance analysis.}
     \centering
     \begin{tabular}{ |p{6cm}|p{6cm}| }
         \hline
@@ -647,26 +672,7 @@ The tests were designed for three different purposes: basic, limit testing and s
         Scale up and down 2 to 10 workers with a type-1 \Gls{vm} on each worker & Evaluate how the \Gls{vm} management systems handle scaling operations that incur migration operations.\\
         \hline
     \end{tabular}
-    \caption{Performance tests that were used when evaluating the \Gls{vm} management systems. During each test, metrics were collected for each node.}
     \label{table:performance-tests}
-\end{table}
-
-
-\begin{table}[!ht]
-    \centering
-    \begin{tabular}{ |c|c|c|c| } 
-        \hline
-        \textbf{Type} & \textbf{CPU} & \textbf{RAM} & \textbf{Disk Size}\\ 
-        \hline
-        \hline
-        Type 1 & 1 & 128\ MB & 1\ GB \\
-        Type 2 & 1 & 1\ GB & 5\ GB \\
-        Type 3 & 2 & 2\ GB & 10\ GB \\
-        Type 4 & 4 & 4\ GB & 20\ GB \\
-        \hline
-    \end{tabular}
-    \caption{\Gls{vm} specifications for the different types of \Gls{vm}S that were used in the tests.}
-    \label{table:vm-specs}
 \end{table}
 
 \section{Building a Framework}
@@ -680,11 +686,12 @@ Each implementation is given a state consisting of metadata for hosting nodes, s
 
 As previously described, metrics are collected before, during and after the test is completed. This poses a challenge where a bad implementation of a metrics collector can introduce noise in the measurements. To minimize the effect of the metrics collector itself, the framework relies on a daemon running locally on each hosting node. A daemon is a service that acts like a detached process, running as long as its host does. However, to reduce unnecessary burden on the hosting nodes, metrics are only collected when a test is active. This is controlled by placing an empty file called \textit{run} in a specific directory. The daemon simply checks for the existence of the file and starts collecting metrics accordingly. The metrics are collected on each hosting node by the daemon that stores a \Gls{json} file locally with all its collected data in a predefined format. After each test is finished, the framework stops the daemon from collecting metrics and then downloads its output file. This approach reduces the number of required interactions with each hosting node down to zero since the metrics are collected after the test is finished. 
 
-On a technical level, the metrics are collected using a set of tools installed on each hosting node, which are installed before any test is run. The choice of tools was based on how standardized they are, as well as general availability to ensure future attempts to reproduce the results are possible. Table\ \ref{table:metric-tools} shows an overview of tools the daemon uses. Since the cumulative delay among the tools was substantial, the daemon fetches metrics from each tool asynchronously. Additionally, since each tool produces an output with its unique format, some additional tools are used to parse the outputs, such as \textit{awk} and \textit{grep}. The daemon is written in Bash to ensure that it can run on any Linux distribution and does not require any external dependencies. The code for the daemon can be found in the Appendix\ \ref{appendix:metrics-collector} and the framework design is illustrated in Figure\ \ref{fig:framework-design}.
+On a technical level, the metrics are collected using a set of tools installed on each hosting node, which are installed before any test is run. The choice of tools was based on how standardized they are, as well as general availability to ensure future attempts to reproduce the results are possible. Table\ \ref{table:metric-tools} shows an overview of tools the daemon uses. Since the cumulative delay among the tools was substantial, the daemon fetches metrics from each tool asynchronously. Additionally, since each tool produces an output with its unique format, some additional tools are used to parse the outputs, such as \textit{awk} and \textit{grep}. The daemon is written in Bash to ensure that it can run on any Linux distribution and does not require any external dependencies. The code for the daemon can be found in Appendix\ \ref{appendix:metrics-collector} and the framework design is illustrated in Figure\ \ref{fig:framework-design}.
 
 \begin{table}[!ht]
+    \caption{Tools used by the metrics collector daemon.}
     \centering
-    \begin{tabular}{ |p{2cm}|p{2cm}|p{6cm}| }
+    \begin{tabular}{ |p{2cm} p{2cm} p{6cm}| }
         \hline
         \textbf{Tool} & \textbf{Utilization} & \textbf{Description}\\
         \hline
@@ -696,14 +703,13 @@ On a technical level, the metrics are collected using a set of tools installed o
         iostat & Disk & Reports CPU utilization and disk I/O statistics\\
         \hline
     \end{tabular}
-    \caption{Tools used by the metrics collector daemon. Each tool was installed on each Azure node during the installation phase.}
     \label{table:metric-tools}
 \end{table}
 
-\begin{figure}
+\begin{figure}[h!]
     \centering
     \includegraphics[scale=1]{img/framework_design.pdf}
-    \caption{Overview of the framework communicating with the \Gls{vm} management systems through \Gls{ssh}. The metric collector is installed on each node to collect utilization metrics. The green \Gls{vm} figure represents the \Gls{vm} management system control node and the orange \Gls{vm} figures represent the worker nodes.}
+    \caption{An overview of the framework communicating with the \Gls{vm} management systems through \Gls{ssh}. The green \Gls{vm} \Glspl{vm} represents a control node and an orange \Gls{vm} represents a worker node.}
     \label{fig:framework-design}
 \end{figure}
 
@@ -715,20 +721,14 @@ The framework's flow is split into four phases to allow for both caching and mod
     \item \textbf{Teardown}: The teardown phase is responsible for deleting the Azure nodes and ensuring that no resources are left behind. Having this as a separate phase allows for tests to run sequentially without the time cost of creating and deleting nodes for each test. 
 \end{enumerate}
 
-\begin{figure}
-    \centering
-    \includegraphics[scale=1.6]{img/framework_workflow.pdf}
-    \caption{Overview of the framework's flow and how it is divided into four phases. A phase can be run independently of other phases and can be disabled if not needed.}
-    \label{fig:framework-workflow}  
-\end{figure}
-
 \subsection{Implementation}
 On a technical level, the framework is implemented using the programming language Go. This choice was made due to its performance but also its concurrency features since many tests involve asynchronously making requests to a \Gls{vm} management system. 
 
-Furthermore, the most important part of the framework is arguably to provide fair and reproducible comparisons. As described previously, each \Gls{vm} management system implements an interface that defines methods for creating and deleting \Glspl{vm}. While this provides uniform operations from the framework's point of view, it also makes the method's implementation crucial: KubeVirt's implementation of creating a \Gls{vm} should be as close to OpenNebula's implementation as possible to ensure that the comparisons are fair and that no unnecessary overhead is introduced. One example of this is that any network-related configuration is omitted since network-related metrics are not considered in the project. However, all features that a \Gls{vm} management system offers and is beneficial for the specific operation are considered. For instance, OpenNebula does not allow a live migration action to be performed on a \Gls{vm} that is not running, while KubeVirt allows the operation to be requested despite the state of a \Gls{vm}.\ This allows KubeVirt to omit the waiting time for a \Gls{vm} to be in the correct state before requesting a migration action. 
+Furthermore, the most important part of the framework is arguably to provide fair and reproducible comparisons. As described previously, each \Gls{vm} management system implements an interface that defines methods for creating and deleting \Glspl{vm}. While this provides uniform operations from the framework's point of view, it also makes the method's implementation crucial: KubeVirt's implementation of creating a \Gls{vm} should be as close to OpenNebula's implementation as possible to ensure that the comparisons are fair and that no unnecessary over head is introduced. One example of this is that any network-related configuration is omitted since network-related metrics are not considered in the project. However, all features that a \Gls{vm} management system offers and is beneficial for the specific operation are considered. For instance, OpenNebula does not allow a live migration action to be performed on a \Gls{vm} that is not running, while KubeVirt allows the operation to be requested despite the state of a \Gls{vm}.\ This allows KubeVirt to omit the waiting time for a \Gls{vm} to be in the correct state before requesting a migration action. 
 \\~\\
-\noindent Below is an extraction of OpenNebula's and KubeVirt's implementations for creating a \Gls{vm}.
+\noindent The following is an extraction of OpenNebula's and KubeVirt's implementations for creating a \Gls{vm}.
 
+\newpage 
 \subsubsection*{KubeVirt}
 \begin{lstlisting}[language=yaml]
 kubectl apply -f <<EOF
@@ -767,6 +767,7 @@ kubectl apply -f <<EOF
 EOF
 \end{lstlisting}
 
+\newpage
 \subsubsection*{OpenNebula}
 \begin{lstlisting}[language=bash]
 onetemplate instantiate $TEMPLATE_ID --name $NAME <<EOF
@@ -781,6 +782,13 @@ EOF
 \end{lstlisting}
 
 The entire framework is open-source and available at \url{https://github.com/saffronjam/virtometer}. The GitHub repository contains all the code required to run the framework, including documentation on how to set up and run the framework. 
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=1.57]{img/framework_workflow.pdf}
+    \caption{An overview of the framework's flow and how it is divided into four phases. A phase can be run independently of other phases and can be disabled if not needed.}
+    \label{fig:framework-workflow}  
+\end{figure}
 
 \chapter{Usability Analysis}
 The qualitative aspects of this project are derived from a usability analysis, which is comprised of a set of tasks designed in cooperation with a system administrator at Net Insight. The goal of the usability analysis is to mimic tasks that a system administrator can face on a daily basis. The tasks are designed to be done using the Kubernetes \Gls{cli} tool kubectl since KubeVirt does not come with a \Gls{gui} like a traditional \Gls{vm} management system, and using a third-party alternative could risk introducing bias that is not directly tied to KubeVirt. 
@@ -807,9 +815,8 @@ To ensure the focus is kept on the usability of KubeVirt, the analysis is struct
 A group of system administrators at Net Insight were asked to perform the tasks presented above. They were chosen primarily by their role and experience with OpenNebula as well as Kubernetes. This provided a mix of knowledge among the participants, which reduced the risk of biases. The participants were given separate namespaces, a kubeconfig file to access the Kubernetes cluster and then presented with the tasks in the form of a PDF document. By giving each participant its namespace, it reduced the risk of interference between them. Moreover, the participants were given two weeks to complete the tasks, which allowed plenty of time to familiarize themselves with KubeVirt and potentially explore areas or features around it, including its documentation. The entire usability analysis can be found in the Appendix\ \ref{appendix:usability-tasks}.
 
 \chapter{Results}
-This section contains the results of the performance analysis and usability analysis. Each test in the performance analysis was run 50 times, and the result visualizations were averaged using a rolling mean with a window size of 5\% of the total number of data points. As described in the previous chapter, the usability analysis received feedback in different forms, either by answering questions or providing a free-form response. 
+This chapter contains the results of the performance analysis and usability analysis. Each test in the performance analysis was run 50 times, and the result visualizations were averaged using a rolling mean with a window size of 5\% of the total number of data points. As described in the previous chapter, the usability analysis received feedback in different forms, either by answering questions or providing a free-form response. 
 
-\newpage
 \section{Performance Analysis}
 
 % First page, figures are slightly smaller due to the title
@@ -820,13 +827,13 @@ This section contains the results of the performance analysis with KubeVirt and 
 
 \subsection{Create a Single VM}
 Four tests were performed to evaluate how well KubeVirt and OpenNebula could create and delete a \Gls{vm} of various sizes and the results were close to identical for each payload size. Both KubeVirt and OpenNebula showed similar patterns in how a create-\Gls{vm} operation affected their control node, where both systems had a clear correlation between the operation performed and the induced CPU utilization. Both systems also had a constant RAM utilization throughout the test, indicating that a control node's RAM is not directly affected by creating and deleting a single \Gls{vm}. Additionally, the similar utilization between the payload sizes suggests that neither system's control node is affected by the size of the \Gls{vm} being deployed
-
-Figures\ \ref{fig:create-tiny-kubevirt} and\ \ref{fig:create-large-kubevirt} illustrate KubeVirt's control node's utilization when creating a type-1 and type-4 \Gls{vm} respectively. In both test cases, KubeVirt maintains the same pattern for CPU that correlated with the operation performed in the test, where it starts at 4\% utilization and peaks at just over 14\%. RAM utilization though, is constant at 12\% utilization throughout the tests, indicating that creating a single \Gls{vm} does not affect the control node's RAM usage. The sporadic disk utilization can be attributed to background processes interfering with the test. 
+\newpage
+\noindent Figures\ \ref{fig:create-tiny-kubevirt} and\ \ref{fig:create-large-kubevirt} illustrate KubeVirt's control node's utilization when creating a type-1 and type-4 \Gls{vm} respectively. In both test cases, KubeVirt maintains the same pattern for CPU that correlated with the operation performed in the test, where it starts at 4\% utilization and peaks at just over 14\%. RAM utilization though, is constant at 12\% utilization throughout the tests, indicating that creating a single \Gls{vm} does not affect the control node's RAM usage. The sporadic disk utilization can be attributed to background processes interfering with the test. 
 
 % Create a tiny \Gls{vm} - KubeVirt
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\figurewidth\textwidth]{plt/create-tiny_kubevirt.pdf}
+    \includegraphics[scale=0.6]{plt/create-tiny_kubevirt.pdf}
     \caption{Resource utilization on the control node when creating a \Gls{vm} type 1 in KubeVirt}
     \expandafter\label\expandafter{\labelprefix:create-tiny-kubevirt}
 \end{figure}
@@ -834,17 +841,17 @@ Figures\ \ref{fig:create-tiny-kubevirt} and\ \ref{fig:create-large-kubevirt} ill
 % Create a large \Gls{vm} - KubeVirt
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\figurewidth\textwidth]{plt/create-large_kubevirt.pdf}
+    \includegraphics[scale=0.6]{plt/create-large_kubevirt.pdf}
     \caption{Resource utilization on the control node when creating a \Gls{vm} type 4 in KubeVirt}
     \expandafter\label\expandafter{\labelprefix:create-large-kubevirt}
 \end{figure}
 
-Figures\ \ref{fig:create-tiny-opennebula} and\ \ref{fig:create-large-opennebula} illustrate the utilization of OpenNebula's control node when creating a type-1 and type-4 \Gls{vm} respectively. The CPU utilization starts a 2\% and peaks at 14\%, which correlates with the operations performed in the test. RAM utilization remains constant below 8\% utilization for the entire duration of the test. The disk utilization sporadic patterns can be attributed to interfering background processes. 
+\noindent Figures\ \ref{fig:create-tiny-opennebula} and\ \ref{fig:create-large-opennebula} illustrate the utilization of OpenNebula's control node when creating a type-1 and type-4 \Gls{vm} respectively. The CPU utilization starts a 2\% and peaks at 14\%, which correlates with the operations performed in the test. RAM utilization remains constant below 8\% utilization for the entire duration of the test. The disk utilization sporadic patterns can be attributed to interfering background processes. 
 
 % Create a tiny \Gls{vm} - OpenNebula
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\figurewidth\textwidth]{plt/create-tiny_opennebula.pdf}
+    \includegraphics[scale=0.6]{plt/create-tiny_opennebula.pdf}
     \caption{Resource utilization on the control node when creating a \Gls{vm} type 1 in OpenNebula}
     \expandafter\label\expandafter{\labelprefix:create-tiny-opennebula}
 \end{figure}
@@ -852,17 +859,18 @@ Figures\ \ref{fig:create-tiny-opennebula} and\ \ref{fig:create-large-opennebula}
 % Create large \Gls{vm} - OpenNebula
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\figurewidth\textwidth]{plt/create-large_opennebula.pdf}
+    \includegraphics[scale=0.6]{plt/create-large_opennebula.pdf}
     \caption{Resource utilization on the control node when creating a \Gls{vm} type 4 in OpenNebula}
     \expandafter\label\expandafter{\labelprefix:create-large-opennebula}
 \end{figure}
 
-Figures\ \ref{fig:create-vms-duration-kubevirt} and\ \ref{fig:create-vms-duration-opennebula} illustrate the differences in duration for creating different types of \Glspl{vm}. KubeVirt shows close to no difference between the types indicating that the payload size does not affect the duration of creating it. OpenNebula has slight variations between the \Gls{vm} types, but it does not correlate with the payload size, and could thus instead be attributed to noise in the measurement or a less predictable scheduler. 
+\newpage
+\noindent Figures\ \ref{fig:create-vms-duration-kubevirt} and\ \ref{fig:create-vms-duration-opennebula} illustrate the differences in duration for creating different types of \Glspl{vm}. KubeVirt shows close to no difference between the types indicating that the payload size does not affect the duration of creating it. OpenNebula has slight variations between the \Gls{vm} types, but it does not correlate with the payload size, and could thus instead be attributed to noise in the measurement or a less predictable scheduler. 
 
 % Create \Glspl{vm} - Duration - KubeVirt
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\figurewidth\textwidth]{plt/create-vms_duration_kubevirt.pdf}
+    \includegraphics[scale=0.6]{plt/create-vms_duration_kubevirt.pdf}
     \caption{Duration of creating \Glspl{vm} in KubeVirt}
     \expandafter\label\expandafter{\labelprefix:create-vms-duration-kubevirt}
 \end{figure}
@@ -870,7 +878,7 @@ Figures\ \ref{fig:create-vms-duration-kubevirt} and\ \ref{fig:create-vms-duratio
 % Create \Glspl{vm} - Duration - OpenNebula
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\figurewidth\textwidth]{plt/create-vms_duration_opennebula.pdf}
+    \includegraphics[scale=0.6]{plt/create-vms_duration_opennebula.pdf}
     \caption{Duration of creating \Glspl{vm} in OpenNebula}
     \expandafter\label\expandafter{\labelprefix:create-vms-duration-opennebula}
 \end{figure}
@@ -885,7 +893,7 @@ Figure\ \ref{fig:create-many-cpu} illustrates the CPU utilization of the control
 % Create many - CPU
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_cpu.pdf}
+    \includegraphics[scale=0.6]{plt/create-many_cpu.pdf}
     \caption{CPU utilization on the control node when creating 20 type-1 \Glspl{vm}. The CPU utilization peaks quickly for both KubeVirt and OpenNebula due to the burst of requests.}
     \expandafter\label\expandafter{\labelprefix:create-many-cpu}
 \end{figure}
@@ -893,77 +901,76 @@ Figure\ \ref{fig:create-many-cpu} illustrates the CPU utilization of the control
 % Create many - duration
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_duration.pdf}
+    \includegraphics[scale=0.6]{plt/create-many_duration.pdf}
     \caption{Duration of creating 20 type-1 \Glspl{vm}}
     \expandafter\label\expandafter{\labelprefix:create-many-duration}
 \end{figure}
 
-The cumulative CPU utilization among the two worker nodes of each system is illustrated in Figure\ \ref{fig:create-many-cpu-worker}. The figure shows that KubeVirt's workers have a much higher CPU utilization than OpenNebula, but that it does not last as long. This trade-off between the duration of the task and the resource utilization is discussed later in\ \ref{result-intepretation}. Additionally, KubeVirt appears to have mainly two peaks relating to \Glspl{vm} being created and deleted, with some intermediary waiting time. OpenNebula appears to have two peaks too, albeit not as prominent as KubeVirt due to its long task duration. 
+\noindent The cumulative CPU utilization among the two worker nodes of each system is illustrated in Figure\ \ref{fig:create-many-cpu-worker}. The figure shows that KubeVirt's workers have a much higher CPU utilization than OpenNebula, but that it does not last as long. This trade-off between the duration of the task and the resource utilization is discussed later in\ \ref{result-intepretation}. Additionally, KubeVirt appears to have mainly two peaks relating to \Glspl{vm} being created and deleted, with some intermediary waiting time. OpenNebula appears to have two peaks too, albeit not as prominent as KubeVirt due to its long task duration. 
 
 % Create many - CPU - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_cpu_worker.pdf}
+    \includegraphics[scale=0.6]{plt/create-many_cpu_worker.pdf}
     \caption{Cumulative CPU utilization among worker nodes when creating 20 type-1 \Glspl{vm}}
     \expandafter\label\expandafter{\labelprefix:create-many-cpu-worker}
 \end{figure}
 
-Furthermore, Figure\ \ref{fig:create-many-memory} shows a strong correlation between RAM utilization and the operation being performed for both systems, with two distinct sections that reflect \Glspl{vm} being created and then deleted. However, KubeVirt's peaks are both smaller and steeper than OpenNebula's, indicating that KubeVirt's control node uses less RAM for the same task and manages to complete the operations in the task quicker than OpenNebla. Additionally, OpenNebula's first section appears to be significantly longer than the latter, indicating that the operation of creating a \Gls{vm} in OpenNebula is much more expensive than deleting a \Gls{vm}.   
+\noindent Furthermore, Figure\ \ref{fig:create-many-memory} shows a strong correlation between RAM utilization and the operation being performed for both systems, with two distinct sections that reflect \Glspl{vm} being created and then deleted. However, KubeVirt's peaks are both smaller and steeper than OpenNebula's, indicating that KubeVirt's control node uses less RAM for the same task and manages to complete the operations in the task quicker than OpenNebla. Additionally, OpenNebula's first section appears to be significantly longer than the latter, indicating that the operation of creating a \Gls{vm} in OpenNebula is more expensive duration-wise than deleting a \Gls{vm}.   
 
 % Create many - RAM
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_ram.pdf}
+    \includegraphics[scale=0.6]{plt/create-many_ram.pdf}
     \caption{Memory utilization on the control node when creating 20 type-1 \Glspl{vm}}
     \expandafter\label\expandafter{\labelprefix:create-many-memory}
 \end{figure}
 
-The cumulative RAM utilization among the two workers nodes is illustrated in Figure\ \ref{fig:create-many-memory-worker}. The RAM utilization of a worker node is tied to the number of \Glspl{vm} running on the nodes, meaning that OpenNebula's gradual increase reflects that it is not able to create \Glspl{vm} as quickly as KubeVirt. However, deleting \Glspl{vm} appears to be done with similar efficiency. 
+\noindent The cumulative RAM utilization among the two workers nodes is illustrated in Figure\ \ref{fig:create-many-memory-worker}. The RAM utilization of a worker node is tied to the number of \Glspl{vm} running on the nodes, meaning that OpenNebula's gradual increase reflects that it is not able to create \Glspl{vm} as quickly as KubeVirt. However, deleting \Glspl{vm} appears to be done with similar efficiency. 
 
-Figures\ \ref{fig:create-many-memory-worker} and\ \ref{fig:create-many-memory} also show that KubeVirt's peak in cumulative RAM utilization is more central between its control node's two peaks than OpenNebula. Having the worker nodes' single peak offset towards the beginning or the end suggests that creating and deleting \Glspl{vm} are not equally expensive processes. In this case, OpenNebla appears to have a much slower creation process for \Glspl{vm}, indicated by its peak being shifted towards the end of the test. 
+Figures\ \ref{fig:create-many-memory} and\ \ref{fig:create-many-memory-worker} also show that KubeVirt's peak in cumulative RAM utilization is more central between its control node's two peaks than OpenNebula. Having the worker nodes' single peak offset towards the beginning or the end suggests that creating and deleting \Glspl{vm} are not equally expensive processes. In this case, OpenNebla appears to have a much slower creation process for \Glspl{vm}, indicated by its peak being shifted towards the end of the test, further supporting the claim in the previous paragraph.
 
-Figure\ \ref{fig:create-many-memory-worker} also shows that the task induces a 17\% RAM utilization for both systems. While KubeVirt appears to use more RAM due to its higher peak, it can be attributed to it having a larger base utilization than OpenNebula. Trade-offs between different kinds of utilization and task duration are discussed in\ \ref{result-intepretation}.
+\newpage
+\noindent Figure\ \ref{fig:create-many-memory-worker} also shows that the task induces a 17\% RAM utilization for both systems. While KubeVirt appears to use more RAM due to its higher peak, it can be attributed to it having a larger base utilization than OpenNebula. Trade-offs between different kinds of utilizations and task duration are discussed in\ \ref{result-intepretation}.
 
 % Create many - RAM - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\figurewidth\textwidth]{plt/create-many_ram_worker.pdf}
+    \includegraphics[scale=0.6]{plt/create-many_ram_worker.pdf}
     \caption{Cumulative memory utilization among worker nodes when creating 20 type-1 \Glspl{vm}}
     \expandafter\label\expandafter{\labelprefix:create-many-memory-worker}
 \end{figure}
 
-\newpage
-
 \subsection{Live migrating \Glspl{vm}}
 
-Live migrating a single \Glspl{vm} was not a particularly intense operation for either system and only supported the results from previous tests, such as when creating a single \Gls{vm}. However, when migrating 10 \Glspl{vm} concurrently, the results were more significant. On the control nodes, KubeVirt had an overall lower utilization than OpenNebula, although its base overhead could lead to the resulting utilization being higher. From the workers' perspective, though, KubeVirt was more resource-intensive than OpenNebula in all resource utilizations, which could be attributed to having a less efficient implementation.
+Live migrating a single \Gls{vm} was not a particularly intense operation for either system and only supported the results from previous tests, such as when creating a single \Gls{vm}. However, when migrating 10 \Glspl{vm} concurrently, the results were more significant. On the control nodes, KubeVirt had an overall lower utilization than OpenNebula, although its base overhead led to the resulting utilization being higher. From the workers' perspective, though, KubeVirt was more resource-intensive than OpenNebula in all resource utilizations, which could be attributed to having a less efficient implementation.
 
 Figure\ \ref{fig:migrate-many-cpu} illustrates the CPU utilization of each system's control node. Both systems follow a very similar pattern that can be attributed to creating, migrating and then finally deleting the \Glspl{vm}. Interestingly, the figure shows KubeVirt not reporting being finished immediately, even though its CPU utilization has returned to idle. This could be caused by some waiting mechanisms or safety checks built into KubeVirt. 
 
 % Migrate many - CPU
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate-many_cpu.pdf}
+    \includegraphics[scale=0.56]{plt/live-migrate-many_cpu.pdf}
     \caption{CPU utilization on the control node when live migrating 10 type-1 \Glspl{vm}}
     \expandafter\label\expandafter{\labelprefix:migrate-many-cpu}
 \end{figure}
 
-The RAM utilization of the control nodes is illustrated in Figure\ \ref{fig:migrate-many-memory}. The figure shows clear relationships between the operation performed in the task and three peaks representing creating, migrating and deleting \Glspl{vm}. While OpenNebula has higher peaks for both creating and deleting \Glspl{vm}, its control node is not as affected by the live migration requests. KubeVirt's control node appears to be equally affected by each type of operation performed in the task. The figure also shows the base overhead being more prominent than the induced load in the test. However, since OpenNebula's peaks are relatively high compared to the base overhead of KubeVirt, a larger number of live migration operations could potentially lead to the induced load being more significant.
+\noindent The RAM utilization of the control nodes is illustrated in Figure\ \ref{fig:migrate-many-memory}. The figure shows clear relationships between the operation performed in the task and three peaks representing creating, migrating and deleting \Glspl{vm}. While OpenNebula has higher peaks for both creating and deleting \Glspl{vm}, its control node is not as affected by the live migration requests. KubeVirt's control node appears to be equally affected by each type of operation performed in the task. The figure also shows the base overhead being more prominent than the induced load in the test. However, since OpenNebula's peaks are relatively high compared to the base overhead of KubeVirt, a larger number of live migration operations could potentially lead to KubeVirt using fewer resources in the end.
 
 % Migrate many - RAM
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate-many_ram.pdf}
+    \includegraphics[scale=0.56]{plt/live-migrate-many_ram.pdf}
     \caption{Memory utilization on the control node when live migrating 10 type-1 \Glspl{vm}}
     \expandafter\label\expandafter{\labelprefix:migrate-many-memory}
 \end{figure}
 
-The cumulative CPU and RAM utilization when migrating \Glspl{vm} are illustrated in Figures\ \ref{fig:migrate-many-cpu-worker} and\ \ref{fig:migrate-many-memory-worker}. While both figures show the task duration being similar between the two systems, they also show KubeVirt using significantly more resources. For CPU utilization in Figure\ \ref{fig:migrate-many-cpu-worker}, both systems start out following a similar pattern. However, KubeVirt does not manage to reduce its utilization as quickly as OpenNebula, leading to higher peaks for a majority of the test duration. As for RAM utilization in Figure\ \ref{fig:migrate-many-memory-worker}, both the base overhead and induced load are higher for KubeVirt, indicating that live migration is a significantly more expensive operation for KubeVirt than for OpenNebula. 
+\noindent The cumulative CPU and RAM utilization when migrating \Glspl{vm} are illustrated in Figures\ \ref{fig:migrate-many-cpu-worker} and\ \ref{fig:migrate-many-memory-worker}. While both figures show the task duration being similar between the two systems, they also show KubeVirt using significantly more resources. For CPU utilization in Figure\ \ref{fig:migrate-many-cpu-worker}, both systems start out following a similar pattern. However, KubeVirt does not manage to reduce its utilization as quickly as OpenNebula, leading to higher peaks for a majority of the test duration. As for RAM utilization in Figure\ \ref{fig:migrate-many-memory-worker}, both the base overhead and induced load are higher for KubeVirt, indicating that live migration is a significantly more expensive operation for KubeVirt than for OpenNebula. 
 
 % Migrate many - CPU - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate-many_cpu_worker.pdf}
+    \includegraphics[scale=0.56]{plt/live-migrate-many_cpu_worker.pdf}
     \caption{Cumulative CPU utilization among worker nodes when live migrating 10 type-1 \Glspl{vm}}
     \expandafter\label\expandafter{\labelprefix:migrate-many-cpu-worker}
 \end{figure}
@@ -971,7 +978,7 @@ The cumulative CPU and RAM utilization when migrating \Glspl{vm} are illustrated
 % Migrate many - RAM - workers
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\figurewidth\textwidth]{plt/live-migrate-many_ram_worker.pdf}
+    \includegraphics[scale=0.56]{plt/live-migrate-many_ram_worker.pdf}
     \caption{Cumulative memory utilization among worker nodes when live migrating 10 type-1 \Glspl{vm}}
     \expandafter\label\expandafter{\labelprefix:migrate-many-memory-worker}
 \end{figure}
@@ -987,19 +994,19 @@ Figure\ \ref{fig:scale-cluster-cpu} illustrates the CPU utilization of each syst
 % Scale cluster - CPU
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster_cpu.pdf}
+    \includegraphics[scale=0.56]{plt/scale-cluster_cpu.pdf}
     \caption{CPU utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes}
     \expandafter\label\expandafter{\labelprefix:scale-cluster-cpu}
 \end{figure}
 
-For the extended version of the scaling test, where a \Gls{vm} resided in each of the nodes being scaled down, OpenNebula did not manage to complete. This is discussed in\ \ref{result-intepretation} together with possible causes. KubeVirt utilization, however, followed a similar pattern to the previous test, but without immediately returning to an idle utilization level after the scaling operation was finished. 
+For the extended version of the scaling test, where a \Gls{vm} resided in each of the nodes being scaled down, OpenNebula did not manage to complete. This is discussed in\ \ref{result-intepretation} together with possible causes. KubeVirt's utilization, however, followed a similar pattern to the previous test, but without immediately returning to an idle utilization level after the scaling operation was finished. 
 
-Figures\ \ref{fig:scale-cluster-with-vms-cpu} and\ \ref{fig:scale-cluster-with-vms-cpu} illustrate the CPU and disk utilization of the KubeVirt control node when scaling nodes with residing \Glspl{vm}. It follows a similar pattern to the previous version of the task, see Figure\ \ref{fig:scale-cluster-cpu}, but with an additional local maximum after the main peak. This second peak could thus be attributed to \Glspl{vm} being scheduled to other nodes and then being deleted at the end of the test.
+\noindent Figures\ \ref{fig:scale-cluster-with-vms-cpu} and\ \ref{fig:scale-cluster-with-vms-disk} illustrate the CPU and disk utilization of the KubeVirt's control node when scaling nodes with residing \Glspl{vm}. It follows a similar pattern to the previous version of the task, see Figure\ \ref{fig:scale-cluster-cpu}, but with an additional local maximum after the main peak. This second peak could thus be attributed to \Glspl{vm} being scheduled to other nodes and then being deleted at the end of the test.
 
 % Scale cluster with \Glspl{vm} - CPU
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_cpu.pdf}
+    \includegraphics[scale=0.56]{plt/scale-cluster-with-vms_cpu.pdf}
     \caption{CPU utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 \Gls{vm} running on each node}
     \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-cpu}
 \end{figure}
@@ -1007,7 +1014,7 @@ Figures\ \ref{fig:scale-cluster-with-vms-cpu} and\ \ref{fig:scale-cluster-with-v
 % Scale cluster with \Glspl{vm} - Disk
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\figurewidth\textwidth]{plt/scale-cluster-with-vms_disk.pdf}
+    \includegraphics[scale=0.6]{plt/scale-cluster-with-vms_disk.pdf}
     \caption{Disk utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 \Gls{vm} running on each node}
     \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-disk}
 \end{figure}
@@ -1088,7 +1095,8 @@ The performance analysis was created to explore any quantifiable difference betw
 
 However, this creates a flaw where, depending on the implementation, a \Gls{vm} management system can appear to be more or less efficient than it is. This means that, by definition, such a framework is only as good as the implementations are, which is why the implementations for KubeVirt and OpenNebula were designed as close to each other as possible. However, certain features and settings were not able to be tuned in the same way since they did not exist at all in both systems, such as the scheduling configuration where OpenNebula provides only a single option for scheduling: the number of \Glspl{vm} that can be dispatched concurrently. If both systems are not able to be tuned in the same way, it leaves the results for certain tests open for interpretation.
 
-To favor a system that is more tunable and configurable, this project has opted for an approach where if a system does not provide a specific setting, that setting is assumed to be fully optimized. The primary example of this can be found in the \textit{Create Many Type-1 \Glspl{vm}} tests, see figures\ \ref{fig:create-many-cpu} and\ \ref{fig:create-many-duration}. KubeVirt, using the Kubernetes scheduler, was able to create 20 type-1 \Glspl{vm} in 63 seconds, while it took OpenNebula 157 seconds on average. However, the results also suggest that KubeVirt uses more resources than OpenNebula, albeit during a significantly shorter time. This creates another dilemma when interpreting the results whether a longer but lower resource utilization is more favorable than a short burst. By interpreting the results, KubeVirt appears to use most of the available resources, while OpenNebula remains idle in comparison. For this reason, this project has chosen to favor a short burst of resource utilization since it reflects the system's ability to use the resources it was allocated to its fullest potential. 
+\newpage
+\noindent To favor a system that is more tunable and configurable, this project has opted for an approach where if a system does not provide a specific setting, that setting is assumed to be fully optimized. The primary example of this can be found in the \textit{Create Many Type-1 \Glspl{vm}} tests, see Figures\ \ref{fig:create-many-cpu} and\ \ref{fig:create-many-duration}. KubeVirt, using the Kubernetes scheduler, was able to create 20 type-1 \Glspl{vm} in 63 seconds, while it took OpenNebula 157 seconds on average. However, the results also suggest that KubeVirt uses more resources than OpenNebula, albeit during a significantly shorter time. This creates another dilemma when interpreting the results whether a longer but lower resource utilization is more favorable than a short burst. By interpreting the results, KubeVirt appears to use most of the available resources, while OpenNebula remains idle in comparison. For this reason, this project has chosen to favor a short burst of resource utilization since it reflects the system's ability to use the resources it was allocated to its fullest potential. 
 
 \subsection{KubeVirt Shortcomings}
 It is not always the case that KubeVirt experienced a short-lived burst of utilization and OpenNebula experienced a long but low utilization. In the \textit{Live Migrate Many} tests, KubeVirt has a significantly larger CPU utilization among the workers than OpenNebula for a similar period, see Figure\ \ref{fig:migrate-many-cpu-worker}. This means, the benefit KubeVirt had in terms of utilization over duration, is not apparent in this case. This could be due to the way KubeVirt implements live migration and the possible trade-offs made since it's taking place in a Kubernetes cluster. Another explanation could be that the specific Kubernetes distribution used in the tests acts as a bottleneck. However, exploring solutions for this is outside the scope of this project.
@@ -1099,7 +1107,7 @@ The final test in the performance analysis involved scaling a cluster whose host
 A possible explanation for this could be that OpenNebula attempted to move a \Gls{vm} to a host that was just about to disconnect but hadn't yet, causing the receiving host to end up in a bad state. Another explanation could be that OpenNebula required more than one control plane node to handle such bursts for migration operation since its environment only included a single control plane node. However, this is purely speculative and exploring the cause of the issue is a possible future research direction. The issue of \Glspl{vm} stuck on hosts could be resolved by manual intervention, but since this was deemed unfair to the other system, OpenNebula was disqualified from the \textit{Scale with \Glspl{vm}} tests. For this reason, OpenNebula's result was omitted from the test and only KubeVirt was evaluated.
 
 \section{Kubernetes Overhead and Induced Load}
-Throughout the results of the performance analysis, there is a pattern where OpenNebula experiences a consistently lower base overhead than KubeVirt despite of whether an operation is active or not, especially in terms of RAM utilization. Having a larger overhead means that the management system has more background processes, which is generally not desired. A clear example of this can be found in the \textit{Create VM Type 1} test and \textit{Create VM Type 4}, see figures\ \ref{fig:create-tiny-kubevirt},\ \ref{fig:create-tiny-opennebula},\ \ref{fig:create-large-kubevirt} and\ \ref{fig:create-large-opennebula}, where KubeVirt's CPU utilization hovers just above 4\% while OpenNebula stays around 2\% utilization, and memory utilization being 8\% and 12\% respectively. This is further supported by the \textit{Live Migrate} test where their memory utilization is also 8\% and 12\% respectively. This is highly indicative that KubeVirt is more resource-intensive while not performing any operation.
+Throughout the results of the performance analysis, there is a pattern where OpenNebula experiences a consistently lower base overhead than KubeVirt despite of whether an operation is active or not, especially in terms of RAM utilization. Having a larger overhead means that the management system has more background processes, which is generally not desired. A clear example of this can be found in the \textit{Create VM Type 1} test and \textit{Create VM Type 4}, see Figures\ \ref{fig:create-tiny-kubevirt},\ \ref{fig:create-tiny-opennebula},\ \ref{fig:create-large-kubevirt} and\ \ref{fig:create-large-opennebula}, where KubeVirt's CPU utilization hovers just above 4\% while OpenNebula stays around 2\% utilization, and memory utilization being 8\% and 12\% respectively. This is further supported by the \textit{Live Migrate} test where their memory utilization is also 8\% and 12\% respectively. This is highly indicative that KubeVirt is more resource-intensive while not performing any operation.
 
 \subsection{Source of Overhead}
 The first possible cause of this could be tied to Kubernetes not originally being designed to manage \Glspl{vm}. Certain operations and orchestration mechanisms might not yet translate well to \Glspl{vm}, which could manifest as resource usage overhead. A Kubernetes cluster could also have services running that aid container orchestration but are not necessary for the operation performed in the tests. 
@@ -1114,7 +1122,7 @@ The results suggest that KubeVirt has a significantly lower induced load for mos
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/live-migrate-many_ram_induced.pdf}
-    \caption{Induced memory utilization on the control node when live migrating 10 type-1 \Glspl{vm}. The induced load is a more significant part of the total utilization for OpenNebula than for KubeVirt. The figure is based on the results from figure\ \ref{fig:migrate-many-memory}.}
+    \caption{Induced memory utilization on the control node when live migrating 10 type-1 \Glspl{vm}. The induced load is a more significant part of the total utilization for OpenNebula than for KubeVirt. It is based on Figure\ \ref{fig:migrate-many-memory}.}
     \label{fig:migrate-many-memory-induced}
 \end{figure}
 
@@ -1122,7 +1130,7 @@ The results suggest that KubeVirt has a significantly lower induced load for mos
 In summary, the performance analysis has shown that KubeVirt has a larger base overhead, but a significantly lower induced load for most of the tests. This suggests that KubeVirt is more scalable than OpenNebula, but could be resource-heavy in scenarios where the available hardware resources are small or where operations are few. 
 
 \section{Jagged Disk Utilization}
-Throughout the performance analysis results, there is a recurring and notable pattern specifically tied to disk utilization. The disk utilization graphs are jagged and, in many cases, do not follow the expected pattern of the specific operation performed in the test. This is particularly evident in the \textit{Create \Gls{vm} Type 4} tests, see figures\ \ref{fig:create-large-kubevirt} and\ \ref{fig:create-large-opennebula}. 
+Throughout the performance analysis results, there is a recurring and notable pattern specifically tied to disk utilization. The disk utilization graphs are jagged and, in many cases, do not follow the expected pattern of the specific operation performed in the test. This is particularly evident in the \textit{Create \Gls{vm} Type 4} tests, see Figures\ \ref{fig:create-large-kubevirt} and\ \ref{fig:create-large-opennebula}. 
 
 The disk utilization for both Kubevirt and OpenNebula is initially larger than expected and does not return to the same state after the test is finished. Since the tests were run multiple times in no particular order, this likely means that noise was introduced in the measurement that caused each test to generate data points in different ranges. When the induced disk utilization was low for a particular test, background disk utilization from sources such as \Gls{os}-level operations, was more prominent in the results. By then applying a rolling mean smoothing function to the dataset, the noise was reduced, but due to the variability, some jagged features remained. 
 

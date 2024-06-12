@@ -96,7 +96,7 @@ breaklines=true
 \alttitle{Kubernetes som ett VM-hanteringssystem}
 \author{Emil Karlsson}
 \email{emilk2@kth.se}
-\supervisor{Han Fu}
+\supervisor{Han Fu, Robert Ödman}
 \examiner{Cyrille Artho}
 \hostcompany{Net Insight AB} % Remove this line if the project was not done at a host company
 \programme{Master’s Programme, Software Engineering of Distributed Systems, 120 credits}
@@ -150,7 +150,7 @@ However, with the evolution of virtualization, an alternative to \Glspl{vm} was 
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.96]{img/vm_container_virtualization.pdf}
-    \caption{An overview of how virtualization is achieved for \Glspl{vm} and containers.}
+    \caption{An overview of \Gls{vm} and container virtualization}
     \label{fig:container-vm-architecture}
 \end{figure}
 
@@ -161,7 +161,7 @@ Due to their different use cases, \Glspl{vm} and containers have traditionally b
 \begin{figure}[h]
     \centering
     \includegraphics[scale=1.1]{img/vm_management_system.pdf}
-    \caption{A brief overview of a \Gls{vm} management system built in a monolithic fashion, where clients can send \Gls{vm}-related instructions to a centralized location.} 
+    \caption{An overview of a monolithic \Gls{vm} management system.} 
     \label{fig:vm-management-system}
 \end{figure}
 
@@ -170,7 +170,7 @@ Recently, Kubernetes was extended to accommodate \Glspl{vm} through KubeVirt. It
 \begin{figure}[h]
     \centering
     \includegraphics[scale=1.05]{img/container_vm_with_kubevirt.pdf}
-    \caption{An overview of \Glspl{vm} and containers managed by using KubeVirt. It illustrates how \Glspl{vm} and containers communicate natively in a single environment.}
+    \caption{An overview of \Glspl{vm} and containers managed by using KubeVirt}
     \label{fig:container-vm-kubevirt-architecture}
 \end{figure}
 
@@ -256,7 +256,7 @@ The three major levels for virtualizations are hardware level, \Gls{os}-level an
 \begin{figure}
     \centering
     \includegraphics[scale=1]{img/hardware_os_virtualization.pdf}
-    \caption{An overview of the different layers of virtualization for hardware-level and \Gls{os}-level virtualization. It illustrates how hardware virtualization inhibits several internal \Glspl{os} from running on the same hardware, while \Gls{os} virtualization keeps a single \Gls{os} for each process.}
+    \caption{An overview of hardware-level and \Gls{os}-level virtualization}
     \label{fig:hardware-os-virtualization}
 \end{figure}
 
@@ -287,7 +287,7 @@ Hypervisors can be used in primarily two ways, either by having it manage its \G
 \begin{figure}
     \centering
     \includegraphics[scale=1]{img/type1_type2_hypervisor.pdf}
-    \caption{An overview of type 1 and type 2 hypervisors illustrating how a type 2 hypervisor requires an underlying \Gls{os}, while a type 1 runs directly on top of the hardware.}
+    \caption{An overview of a type 1 and a type 2 hypervisor}
     \label{fig:hypervisor-types}
 \end{figure}
 
@@ -295,10 +295,10 @@ Hypervisors can be further categorized into \textit{monolithic} and \textit{micr
 
 The concept of \textit{security rings} is often used to describe the level of privilege different part of a hypervisor has. A security ring represents a hierarchical protection domain, where the innermost ring (ring 0), usually reserved for the \Gls{os} kernel, has the highest privilege, and the outermost ring (ring 3), usually reserved for user applications, has the lowest privilege. The hypervisor itself is often placed in ring 0, its \Gls{vm} kernel space in ring 1, and the \Gls{vm} user space in ring 3. Security rings are thus used to define execution level to provide a system to limit the execution capabilities of \Glspl{vm} to regulate access to shared memory. The abstraction leads to more transparency regarding the execution level of certain applications and is key for ensuring that a \Gls{vm} maintains its isolation\ \cite{hypervisor-comparion-2013, microkernel-monolithic}. Figure \ref{fig:hypervisor-security-rings} illustrates this concept as a layered group of rings.
 
-\begin{figure}
+\begin{figure}[h!]
     \centering
     \includegraphics[scale=1]{img/hypervisor_security_rings.pdf}
-    \caption{An overview of security rings in a hypervisor. It illustrates how the inner rings have higher privileges than the outer rings.}
+    \caption{An overview of security rings in a hypervisor}
     \label{fig:hypervisor-security-rings}
 \end{figure}
 
@@ -329,10 +329,10 @@ Availability is another concept tied to a system managing \Glspl{vm} and is conc
 
 Scalability is a concept that is not directly tied to the \Glspl{vm} themselves, but rather to how well the system scales up or down. Fundamentally, a system can scale either by adding additional nodes or by increasing the resource capacity of the nodes, such as the number of CPU cores. These methods are called scaling out and scaling up respectively. Scaling out is commonly referred to as the more scalable of the two. This is because, in practice, there is a stricter upper limit on the performance that can be gained by adding hardware resources to a single node. A scale-out operation also causes less downtime since the responsibility is not as large per server. However, a possible argument against scaling out is that certain applications might not be designed to operate in several instances, such as a single-node database\ \cite{scale-up-out-case-study, scale-up-out-ibm}.
 
-\begin{figure}
+\begin{figure}[h!]
     \centering
     \includegraphics[scale=1]{img/availability_zones.pdf}
-    \caption{An overview of availability zones with several \Gls{api} gateways and databases operating in the same logical environment but in different availability zones to provide redundancy and fault tolerance.}
+    \caption{An overview of availability zones with \Gls{api} gateways and databases}
     \label{fig:availability-zones}
 \end{figure}
 
@@ -342,10 +342,10 @@ In IT infrastructure, \Glspl{vm} are not the only component required, and \Gls{v
 
 \Gls{iaas} is a subset of a larger group called cloud service models, which also defines models such as \Gls{paas} and \Gls{saas}. Compared to \Gls{iaas}, they provide a higher level of abstraction that is used either to build or distribute applications Together, the three cloud service models form a hierarchical relationship with each other, which means a \Gls{saas} service can be built on top of a \Gls{paas} service, which in turn can be built on top of an \Gls{iaas} service. Figure\ \ref{fig:cloud-service-models} illustrates this relationship. Both \Gls{paas} and \Gls{saas} are out of the scope of this project\ \cite{cloud-service-models-overview}.
 
-\begin{figure}
+\begin{figure}[h]
     \centering
     \includegraphics[scale=1]{img/cloud_service_models.pdf}
-    \caption{An overview of the relationship between cloud server models, where a \Gls{saas} platform can be built on top of a \Gls{paas} platform, which in turn can be built on top of an \Gls{iaas} platform}
+    \caption{An overview of the relationship between cloud service models}
     \label{fig:cloud-service-models}
 \end{figure}
 
@@ -410,7 +410,7 @@ Containers are a form of virtualization that offers a lightweight alternative to
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.96]{img/vm_container_virtualization.pdf}
-    \caption{An overview of \Glspl{vm} and containers. The virtualization layer is placed on a lower level for \Glspl{vm} than for containers, illustrating the difference in their respective virtualization techniques.}
+    \caption{An overview of \Glspl{vm} and containers}
     \label{fig:container-vm-architecture-2}
 \end{figure}
 
@@ -422,7 +422,7 @@ To enable caching, a container image can be divided into a series of layers. Eac
 \begin{figure}
     \centering
     \includegraphics[scale=0.77]{img/container_image_layers.pdf}
-    \caption{An overview of container image layers where each operation in a Dockerfile represents a layer that can be cached and reused. The layers are stacked on top of each other and appended to the parent image to form the final container image.}
+    \caption{An overview of container image layers}
     \label{fig:container-image-layers}
 \end{figure}
 
@@ -446,7 +446,7 @@ Figure \ref{fig:k8s-overview} presents a brief overview of the Kubernetes abstra
 \begin{figure}
     \centering
     \includegraphics[scale=0.83]{img/kubernetes_overview.pdf}
-    \caption{Brief overview of Kubernetes abstractions including many of the core components. It illustrates the communication between the different components and how storage is managed in Kubernetes.}
+    \caption{Kubernetes core abstractions and how they communicate}
     \label{fig:k8s-overview}
 \end{figure}
  
@@ -475,7 +475,7 @@ Overcommitment refers to a mechanism that allocates more virtual resources than 
 \begin{figure}
     \centering
     \includegraphics[scale=1]{img/memory_ballooning.pdf}
-    \caption{An overview of memory ballooning in two stages.}
+    \caption{An overview of memory ballooning in two stages}
     \label{fig:memory-ballooning}
 \end{figure}
 
@@ -507,7 +507,7 @@ In summary, these three technologies provide different approaches to the same pr
 \begin{figure}
     \centering
     \includegraphics[scale=0.92]{img/secure_containers_overview.pdf}
-    \caption{An overview of how gVisor and Kata Containers approaches container isolation differently by either using a proxy for system calls and file access or wrapping the container in a \Gls{vm}.}
+    \caption{An overview of gVisor and Kata Container technologies}
     \label{fig:secure-containers-overview}
 \end{figure}
 
@@ -530,7 +530,7 @@ KubeVirt can be split into four core components: \textit{virt-controller}, \text
 \begin{figure}
     \centering
     \includegraphics[scale=0.92]{img/kubevirt_components.pdf}
-    \caption{An overview of KubeVirt components, their logical place in the Kubernetes ecosystem and how they interact with each other. The green components represent the KubeVirt internal components.}
+    \caption{An overview of KubeVirt components. The green components represent the KubeVirt's internal components.}
     \label{fig:kubevirt-components}
 \end{figure}
 
@@ -709,7 +709,7 @@ On a technical level, the metrics are collected using a set of tools installed o
 \begin{figure}[h!]
     \centering
     \includegraphics[scale=1]{img/framework_design.pdf}
-    \caption{An overview of the framework communicating with the \Gls{vm} management systems through \Gls{ssh}. The green \Gls{vm} \Glspl{vm} represents a control node and an orange \Gls{vm} represents a worker node.}
+    \caption{A logical overview of the framework. The green \Gls{vm} represents a control node and an orange \Gls{vm} represents a worker node.}
     \label{fig:framework-design}
 \end{figure}
 
@@ -786,7 +786,7 @@ The entire framework is open-source and available at \url{https://github.com/saf
 \begin{figure}
     \centering
     \includegraphics[scale=1.57]{img/framework_workflow.pdf}
-    \caption{An overview of the framework's flow and how it is divided into four phases. A phase can be run independently of other phases and can be disabled if not needed.}
+    \caption{An overview of the framework's workflow}
     \label{fig:framework-workflow}  
 \end{figure}
 
@@ -818,6 +818,7 @@ A group of system administrators at Net Insight were asked to perform the tasks 
 This chapter contains the results of the performance analysis and usability analysis. Each test in the performance analysis was run 50 times, and the result visualizations were averaged using a rolling mean with a window size of 5\% of the total number of data points. As described in the previous chapter, the usability analysis received feedback in different forms, either by answering questions or providing a free-form response. 
 
 \section{Performance Analysis}
+\label{sec:method:performance-analysis}
 
 % First page, figures are slightly smaller due to the title
 \def\figurewidth{1}
@@ -894,7 +895,7 @@ Figure\ \ref{fig:create-many-cpu} illustrates the CPU utilization of the control
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.6]{plt/create-many_cpu.pdf}
-    \caption{CPU utilization on the control node when creating 20 type-1 \Glspl{vm}. The CPU utilization peaks quickly for both KubeVirt and OpenNebula due to the burst of requests.}
+    \caption{CPU utilization on the control node when creating 20 type-1 \Glspl{vm}}
     \expandafter\label\expandafter{\labelprefix:create-many-cpu}
 \end{figure}
 
@@ -995,7 +996,7 @@ Figure\ \ref{fig:scale-cluster-cpu} illustrates the CPU utilization of each syst
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.56]{plt/scale-cluster_cpu.pdf}
-    \caption{CPU utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes}
+    \caption{CPU utilization on the control node when scaling the cluster}
     \expandafter\label\expandafter{\labelprefix:scale-cluster-cpu}
 \end{figure}
 
@@ -1007,7 +1008,7 @@ For the extended version of the scaling test, where a \Gls{vm} resided in each o
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.56]{plt/scale-cluster-with-vms_cpu.pdf}
-    \caption{CPU utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 \Gls{vm} running on each node}
+    \caption{CPU utilization on the control node when scaling the cluster}
     \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-cpu}
 \end{figure}
 
@@ -1015,7 +1016,7 @@ For the extended version of the scaling test, where a \Gls{vm} resided in each o
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.6]{plt/scale-cluster-with-vms_disk.pdf}
-    \caption{Disk utilization on the control node when scaling the cluster from 2 worker nodes to 10 worker nodes, then back to 2 worker nodes with 1 type-1 \Gls{vm} running on each node}
+    \caption{Disk utilization on the control node when scaling the cluster with \Glspl{vm}}
     \expandafter\label\expandafter{\labelprefix:scale-cluster-with-vms-disk}
 \end{figure}
 
@@ -1122,7 +1123,7 @@ The results suggest that KubeVirt has a significantly lower induced load for mos
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/live-migrate-many_ram_induced.pdf}
-    \caption{Induced memory utilization on the control node when live migrating 10 type-1 \Glspl{vm}. The induced load is a more significant part of the total utilization for OpenNebula than for KubeVirt. It is based on Figure\ \ref{fig:migrate-many-memory}.}
+    \caption{Induced memory utilization on the control node when live migrating 10 type-1 \Glspl{vm}. The figure is based on Figure\ \ref{fig:migrate-many-memory}.}
     \label{fig:migrate-many-memory-induced}
 \end{figure}
 
@@ -1279,6 +1280,9 @@ WantedBy=multi-user.target
 \end{lstlisting}
 
 \chapter{Performance Analysis Results}
+The following figures form an exhaustive collection of all the data collected in the performance analysis. See \ref{sec:method:performance-analysis} for a more detailed description of the most significant results.
+
+
 \def\figurewidth{1}
 \def\labelprefix{appendix:fig}
 

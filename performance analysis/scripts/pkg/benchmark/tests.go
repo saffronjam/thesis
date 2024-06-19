@@ -10,6 +10,7 @@ import (
 	"performance/pkg/app/pretty_log"
 	"performance/utils"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -31,38 +32,38 @@ func (b *Benchmark) AllTests() []models.TestDefinition {
 		{
 			Name:     "CreateEachType",
 			Func:     b.CreateEachType,
-			RunCount: 20,
-			Disabled: true,
+			RunCount: 50,
+			Disabled: false,
 		},
 		{
 			Name:     "CreateMany",
 			Func:     b.CreateMany,
-			RunCount: 20,
-			Disabled: true,
+			RunCount: 50,
+			Disabled: false,
 		},
 		{
 			Name:     "LiveMigrate",
 			Func:     b.LiveMigrate,
-			RunCount: 10,
-			Disabled: true,
+			RunCount: 50,
+			Disabled: false,
 		},
 		{
 			Name:     "LiveMigrateMany",
 			Func:     b.LiveMigrateMany,
-			RunCount: 10,
-			Disabled: true,
+			RunCount: 50,
+			Disabled: false,
 		},
 		{
 			Name:     "ScaleCluster",
 			Func:     b.ScaleCluster,
-			RunCount: 10,
+			RunCount: 50,
 			Disabled: false,
 		},
 		{
 			Name:     "ScaleClusterWithVMs",
 			Func:     b.ScaleClusterWithVMs,
-			RunCount: 10,
-			Disabled: true,
+			RunCount: 50,
+			Disabled: false,
 		},
 	}
 }
@@ -811,6 +812,10 @@ func (b *Benchmark) ScaleClusterWithVMs() []models.TestResult {
 				Err:   err,
 			},
 		}
+	}
+
+	if strings.ToLower(b.Environment.Name) == "opennebula" {
+		return errResp(fmt.Errorf("scaling with VMs is not supported for OpenNebula"))
 	}
 
 	pretty_log.TaskGroup("[%s] Setting up metrics for scaling cluster with VMs", b.Environment.Name)

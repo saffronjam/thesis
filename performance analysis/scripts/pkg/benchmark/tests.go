@@ -33,24 +33,24 @@ func (b *Benchmark) AllTests() []models.TestDefinition {
 			Name:     "CreateEachType",
 			Func:     b.CreateEachType,
 			RunCount: 50,
-			Disabled: false,
+			Disabled: true,
 		},
 		{
 			Name:     "CreateMany",
 			Func:     b.CreateMany,
 			RunCount: 50,
-			Disabled: false,
+			Disabled: true,
 		},
 		{
 			Name:     "LiveMigrate",
 			Func:     b.LiveMigrate,
 			RunCount: 50,
-			Disabled: false,
+			Disabled: true,
 		},
 		{
 			Name:     "LiveMigrateMany",
 			Func:     b.LiveMigrateMany,
-			RunCount: 50,
+			RunCount: 25,
 			Disabled: false,
 		},
 		{
@@ -63,7 +63,7 @@ func (b *Benchmark) AllTests() []models.TestDefinition {
 			Name:     "ScaleClusterWithVMs",
 			Func:     b.ScaleClusterWithVMs,
 			RunCount: 50,
-			Disabled: false,
+			Disabled: true,
 		},
 	}
 }

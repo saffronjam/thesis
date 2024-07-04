@@ -57,7 +57,7 @@ application-virtualization: https://ieeexplore.ieee.org/abstract/document/648866
 
 kvm-performance: https://dl.acm.org/doi/abs/10.1145/2668138.2668143?casa_token=UkpdZyu-hXQAAAAA:vpxVpWCp2FBfaBUPSFzvTPdPlxE-pJ8vAQ1Ybr6huQ_rFZPG9tU7lRXXqjhGxDv13NEINjldWa6yxWE
 
-### Hyper Visor 
+### Hypervisor 
 
 hypervisor-survery: https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=650fe84a42c2914fb94c282cb3736c48e506d462
 hypervisor-types-1-2: https://www.techtarget.com/searchitoperations/tip/Whats-the-difference-between-Type-1-vs-Type-2-hypervisor
@@ -95,6 +95,7 @@ gce-overview-web https://www.techtarget.com/searchaws/definition/Google-Compute-
 gce-overview https://link.springer.com/chapter/10.1007/978-1-4842-1004-8_4
 public-private-cloud https://www.researchgate.net/profile/Gurudatt-Kulkarni/publication/258253155_Private_Vs_Public_Cloud/links/00b7d5279d2e6dfb22000000/Private-Vs-Public-Cloud.pdf
 hybrid-cloud https://iopscience.iop.org/article/10.1088/1742-6596/1025/1/012091/pdf
+azure-aws-gcp-comparison https://ieeexplore.ieee.org/abstract/document/9673425
 
 ### Containers and Kubernetes
 
@@ -194,3 +195,7 @@ kubevirt-docs-validation https://kubevirt.io/user-guide/operations/api_validatio
 kubevirt-docs-virtctl https://kubevirt.io/user-guide/operations/virtctl_client_tool/
 kubevirt-vs-aws-creation https://kubevirt.io/2022/KubeVirt-Introduction-of-instancetypes.html
 free-turtles https://ieeexplore.ieee.org/abstract/document/10255007
+
+
+# Results
+68-95-99-rule https://link.springer.com/chapter/10.1007/978-3-030-50625-4_10

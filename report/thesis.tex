@@ -241,6 +241,10 @@ The second part describes the research method used in the project and is divided
 
 The third and last part involves result evaluation and discussions regarding the interpretation of the results. It combines the quantitative and qualitative aspects to provide a more comprehensive understanding of the results, as well as answer the research questions and conclude the project as a whole.
 
+\section{Ethics and Sustainability}
+
+Since this project collects opinions and feedback from people, it necessitates careful consideration of ethical issues. All participants have provided consent to include their answers and names in the study. Furthermore, the project also evaluates KubeVirt in terms of its performance by measuring the resource utilization on hosting nodes, thereby linking the results of the project to sustainability. For example, lower resource utilization over time is directly tied to lower power usage, and in turn, reduced energy consumption. An efficient system has a lower resource utilization and can thus be argued to be more sustainable. This means that, if KubeVirt offers efficiencies over an organization's existing system, it could result in the organization having a lower energy consumption and thus increased sustainability. 
+
 \chapter{Background}
 
 This chapter provides all the fundamentals to understand the problem this project aims to solve. It includes fundamentals for what virtualization, hypervisors and containers are but also practical information regarding the currently used technologies. As such, this chapter provides the necessary information to understand why KubeVirt was created.
@@ -312,7 +316,7 @@ There are several hypervisors available, each with its own set of features and c
     \item \textbf{Microsoft Hyper-V}\\
     A type 1 microkernelized hypervisor is used in the Window Servers suite. Its microkernelized properties stem from having a parent and child relationship between its components\ \cite{hypervisor-comparion-2013, hypervisor-hyper-v-esxi}. Being a type 1 hypervisor, it does not require an underlying \Gls{os} to run.  
     \item \textbf{Citrix Hypervisor}\\
-    A type 1 microkernelized hypervisor that was previously known as XenServer. Its centralized parts consist of a modified Linux kernel called Dom0, which takes care of I/O operations and underlying hardware access, as well as creating other \Glspl{vms}, called DomU guests\ \cite{hypervisor-xen, hypervisor-comparion-2013}. Being a type 1 hypervisor, it does not require an underlying \Gls{os} to run.  
+    A type 1 microkernelized hypervisor that was previously known as XenServer. Its centralized parts consist of a modified Linux kernel called Dom0, which takes care of I/O operations and underlying hardware access, as well as creating other \Glspl{vm}, called DomU guests\ \cite{hypervisor-xen, hypervisor-comparion-2013}. Being a type 1 hypervisor, it does not require an underlying \Gls{os} to run.  
     \item \textbf{\Gls{kvm}}\\
     A type 1 hypervisor that is neither microkernelized nor monolithic. Instead, \Gls{kvm} is built into the Linux kernel and uses many of its functionalities such as the scheduler and memory management. \Gls{kvm} is also free and open-source, which has made it a popular alternative to proprietary hypervisors\ \cite{hypervisor-comparion-2013, hypervisor-kvm}. 
 \end{itemize}
@@ -349,6 +353,7 @@ In IT infrastructure, \Glspl{vm} are not the only component required, and \Gls{v
     \label{fig:cloud-service-models}
 \end{figure}
 
+\newpage
 \subsection{Comparison of VM Management Systems}
 This far, managing \Glspl{vm} has been described as being multifaceted, where a management system should provide availability and scalability. However, there are additional factors when deciding on which management system to use, such as its cost or required skillset to manage. 
 
@@ -382,13 +387,13 @@ OpenNebula is an open-source \Gls{iaas} platform that is mainly used to build pr
 In summary, OpenNebula provides a simple yet efficient approach to \Gls{vm} management. Its simplicity and low overhead have made it a popular choice in the industry\ \cite{opennebula-website}.
 
 \subsubsection*{Amazon EC2}
-Amazon \Gls{ec2} is a service that provides \Glspl{vm} management in the public cloud platform \Gls{aws}, and it is used to host general-purpose applications\ \cite{ec2-overview, ec2-overview-web}. Since AWS is a public cloud platform, the technical specifications regarding hypervisor technology and such are not visible to the end user. \Gls{aws} provides a large set of templates that can be used when creating \Glspl{vm}, called  Amazon Machine Images (AMIs)\ \cite{ec2-overview}.
+Amazon \Gls{ec2} is a service that provides \Gls{vm} management in the public cloud platform \Gls{aws}, and it is used to host general-purpose applications\ \cite{ec2-overview, ec2-overview-web}. Being a public cloud platform, many of the internal technical specifications are not available for the public, and can thus not be entirely presented here for comparison, apart from their underlying hypervisor being Xen. This is also true for the end user who is not aware of the underlying technology when creating a \Gls{vm}. \Gls{aws} provides a large set of templates that can be used when creating \Glspl{vm}, called  Amazon Machine Images (AMIs)\ \cite{ec2-overview}. Apart from \Gls{vm} management, \Gls{aws} provides a wide variety of flexible and cost-effective services including all the parts that make up a production-ready application, such as databases, management tools and data delivery services\ \cite{azure-aws-gcp-comparison}. 
 
 \subsubsection*{Azure Virtual Machines}
-Azure Virtual Machines is a service provided by the public cloud platform Azure to manage \Glspl{vm}\ \cite{azure-overview, azure-cost-effective}. Similar to \Gls{aws}, Azure provides a set of preconfigured templates that can be used when creating \Glspl{vm} are chosen depending on the use case, such as general-purpose or \Gls{hpc} \cite{azure-overview-web}. Any technical specifications on the architecture of Azure Virtual Machines are not visible to the end user.
+Azure Virtual Machines is a service provided by the public cloud platform Azure to manage \Glspl{vm}\ \cite{azure-overview, azure-cost-effective}. Similar to \Gls{aws}, since Azure is also a service in a public cloud platform, many of the internal technical specifications are not available for the public, and can thus not be entirely presented here for comparison. However, Azure does reveal some internal specifications, such as their choice of hypervisor being a modified version of Hyper-V. Azure provides a set of preconfigured templates that can be used when creating \Glspl{vm} and are chosen depending on the use case, such as general-purpose or \Gls{hpc} \cite{azure-overview-web}. Apart from managing \Glspl{vm}, Azure is a cloud platform that provides a wide variety of cloud services, many of which integrate with the Microsoft ecosystem, such as on-premise Microsoft solutions\ \cite{azure-aws-gcp-comparison}. 
 
 \subsubsection*{Google Compute Engine}
-\Gls{gce} is a service provided by Google Cloud to manage \Glspl{vms} in the cloud\ \cite{gce-overview-web}. Similar to both \Gls{aws} and Azure, Google Cloud provides a set of templates when creating \Glspl{vm}\ \cite{gce-overview}. 
+\Gls{gce} is a service provided by Google Cloud to manage \Glspl{vm} in the cloud\ \cite{gce-overview-web}. Similar to both \Gls{aws} and Azure, \Gls{gce} is a service in the public cloud platform. This means that many of the internal technical aspects of \Gls{gce} are not available to the public, apart from that they use \Gls{kvm} for virtualization. Google Cloud provides a set of templates when creating \Glspl{vm} depending on the need\ \cite{gce-overview}. Google Cloud itself provides many cloud services that allow a wide variety of apps to be hosted, including Google's major applications such as YouTube and Gmail\ \cite{azure-aws-gcp-comparison}. 
 
 \subsubsection{Comparison}
 \label{vm-management-comparison}
@@ -530,7 +535,7 @@ KubeVirt can be split into four core components: \textit{virt-controller}, \text
 \begin{figure}
     \centering
     \includegraphics[scale=0.92]{img/kubevirt_components.pdf}
-    \caption{An overview of KubeVirt components. The green components represent the KubeVirt's internal components.}
+    \caption{An overview of KubeVirt components. The green components represent the KubeVirt's internal components}
     \label{fig:kubevirt-components}
 \end{figure}
 
@@ -586,7 +591,7 @@ To enable the results to be easily reproducible, the setup and testing procedure
 Payload-wise, this project used a similar approach to the study by Paradowski et al.\ with predefined types for \Glspl{vm} with CPU ranging from 1 to 4 CPU cores, and RAM ranging from 128 MB to 4 GB (see Table\ \ref{table:vm-specs} for a detailed overview). Moreover, \Glspl{vm} used the lightweight Cirros Linux image since a lightweight \Gls{os} image is less likely to introduce noise in measurements\ \cite{linux-boot-time}. This also meant a \Gls{vm} disk could be smaller, which allowed for more \Glspl{vm} to be created per node and for tests to run quicker since a lightweight image is usually faster to boot than a larger image.
 
 \begin{table}[!ht]
-    \caption{Specifications used for the different payload sizes.}
+    \caption{Specifications used for the different payload sizes}
     \centering
     \begin{tabular}{ |c c c c| } 
         \hline
@@ -608,7 +613,7 @@ Payload-wise, this project used a similar approach to the study by Paradowski et
 Each test was run on three hosting nodes, one management node and two worker nodes. This setup was the minimal setup required to be able to facilitate the tests, as some tests such as the live migration ones, consisted of moving a \Gls{vm} between two workers. The hosting nodes were configured large enough to be able to run a variety of tests, including tests with many small \Glspl{vm} or few large \Glspl{vm}. However, it was also important to consider the cost of the setup since the hosting nodes came with a cost directly tied to their performance and capabilities. Azure offered many different \Gls{vm} types, many of which were suitable in terms of CPU and memory specification. However, only a few offered virtualization support, which was required when running nested \Glspl{vm}. This left the Azure Dv3-series as the most suitable \Gls{vm} type and, specifically, the D4v3 \Gls{vm} type that has 4 CPU cores and 16 GB of memory\ \cite{azure-dv3-series}. The price of the D4v3 \Gls{vm} type was 0.2 USD per hour, which was deemed acceptable for the project\ \cite{azure-pricing}. Table\ \ref{table:node-specs} shows the overview of the Azure node specification used in the tests.
 
 \begin{table}[!ht]
-    \caption{Specifications used for the hosting nodes.}
+    \caption{Specifications used for the hosting nodes}
     \centering
     \begin{tabular}{ | c c c c c | }
         \hline
@@ -630,7 +635,7 @@ Each test was run on three hosting nodes, one management node and two worker nod
 Several metrics were collected on each hosting node to capture the utilization before, during and after the test was completed. Capturing for a brief moment before and after meant it could detect if some utilization was unrelated to a test. See Table\ \ref{table:performance-metrics} for a complete list of the metrics used. Further technical details on how metrics were collected are described later in this chapter.
 
 \begin{table}
-    \caption{Metrics used in the performance analysis.}
+    \caption{Metrics used in the performance analysis}
     \centering
     \begin{tabular}{ |c c c| }
         \hline
@@ -652,7 +657,7 @@ Several metrics were collected on each hosting node to capture the utilization b
 The tests were designed for three different purposes: basic, limit testing and scaling. Basic tests were designed to evaluate the core functionality of a \Gls{vm} management system, such as creating and deleting \Glspl{vm}. These were the initial tests since the following tests were partially based on them. A limit testing category was added since the study by Paradowski did not consider this factor. These tests are designed to evaluate how a management system handles a burst of operations, such as creating many small \Glspl{vm}. Finally, scaling tests were designed to manage operations unrelated to \Gls{vm} creation and instead focused on how well the management system itself can scale. See Table\ \ref{table:performance-tests} for an overview of the tests and their purpose.
 
 \begin{table}
-    \caption{Tests used in the performance analysis.}
+    \caption{Tests used in the performance analysis}
     \centering
     \begin{tabular}{ |p{6cm}|p{6cm}| }
         \hline
@@ -689,7 +694,7 @@ As previously described, metrics are collected before, during and after the test
 On a technical level, the metrics are collected using a set of tools installed on each hosting node, which are installed before any test is run. The choice of tools was based on how standardized they are, as well as general availability to ensure future attempts to reproduce the results are possible. Table\ \ref{table:metric-tools} shows an overview of tools the daemon uses. Since the cumulative delay among the tools was substantial, the daemon fetches metrics from each tool asynchronously. Additionally, since each tool produces an output with its unique format, some additional tools are used to parse the outputs, such as \textit{awk} and \textit{grep}. The daemon is written in Bash to ensure that it can run on any Linux distribution and does not require any external dependencies. The code for the daemon can be found in Appendix\ \ref{appendix:metrics-collector} and the framework design is illustrated in Figure\ \ref{fig:framework-design}.
 
 \begin{table}[!ht]
-    \caption{Tools used by the metrics collector daemon.}
+    \caption{Tools used by the metrics collector daemon}
     \centering
     \begin{tabular}{ |p{2cm} p{2cm} p{6cm}| }
         \hline
@@ -709,7 +714,7 @@ On a technical level, the metrics are collected using a set of tools installed o
 \begin{figure}[h!]
     \centering
     \includegraphics[scale=1]{img/framework_design.pdf}
-    \caption{A logical overview of the framework. The green \Gls{vm} represents a control node and an orange \Gls{vm} represents a worker node.}
+    \caption{A logical overview of the framework. The green \Gls{vm} represents a control node and an orange \Gls{vm} represents a worker node}
     \label{fig:framework-design}
 \end{figure}
 
@@ -794,7 +799,14 @@ The entire framework is open-source and available at \url{https://github.com/saf
 The qualitative aspects of this project are derived from a usability analysis, which is comprised of a set of tasks designed in cooperation with a system administrator at Net Insight. The goal of the usability analysis is to mimic tasks that a system administrator can face on a daily basis. The tasks are designed to be done using the Kubernetes \Gls{cli} tool \texttt{kubectl} since KubeVirt does not come with a \Gls{gui} like a traditional \Gls{vm} management system, and using a third-party alternative could risk introducing bias that is not directly tied to KubeVirt. 
 
 \section{Setup}
-The usability analysis was hosted on a managed Kubernetes cluster in Azure (AKS). Similar to the performance analysis, this approach was chosen due to its availability. This means that the participants could perform the tasks anywhere at any time. Additionally, by not being required to install a local Kubernetes environment, the participants could focus on the tasks rather than the infrastructure.  Moreover, AKS provided predefined storage options that allowed for simple management of persistent disks and snapshots, which was useful to keep the focus on a specific operation, rather than the required configuration and infrastructure. Similar to the performance analysis, the node setup was crucial to enable certain operations such as live migration that involves moving a \Gls{vm} between two worker nodes. For this reason, a setup consisting of one control node and two worker nodes was used. Feedback from the participants was collected from the participants either by answering a set of open-ended questions or as a summary of a group of tasks. 
+The usability analysis was hosted on a managed Kubernetes cluster in Azure (AKS). Similar to the performance analysis, this approach was chosen due to its availability. This means that the participants could perform the tasks anywhere at any time. Additionally, by not being required to install a local Kubernetes environment, the participants could focus on the tasks rather than the infrastructure.  Moreover, AKS provided predefined storage options that allowed for simple management of persistent disks and snapshots, which was useful to keep the focus on a specific operation, rather than the required configuration and infrastructure. Similar to the performance analysis, the node setup was crucial to enable certain operations such as live migration that involves moving a \Gls{vm} between two worker nodes. For this reason, a setup consisting of one control node and two worker nodes was used. This is illustrated in Figure\ \ref{fig:usability-analysis-nodes}. Feedback from the participants was collected from the participants either by answering a set of open-ended questions or as a summary of a group of tasks. 
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=1.1]{img/usability_analysis_setup.pdf}
+    \caption{An overview of the usability analysis node setup}
+    \label{fig:usability-analysis-nodes}
+\end{figure}
 
 \section{Task Design}
 To ensure the focus is kept on the usability of KubeVirt, the analysis is structured as a step-by-step guide split into three tasks. This allows the participants to familiarize themselves with KubeVirt before moving on to more complex tasks. The tasks are described below. 
@@ -826,7 +838,7 @@ This chapter presents and evaluates the results collected by the performance ana
 
 A total of 8 tests were run on KubeVirt and OpenNebula, but only the most significant results are presented in this section, and the complete list of results can be found in the Appendix\ \ref{appendix:performance-results}. Each test in the performance analysis was run 50 times, which created a distribution of data points tied to a time axis. For visualization, a rolling mean was applied with a window size of 5 seconds. 
 
-Lineplots have a shadow behind them to illustrate the standard deviation over the distribution of data points collected during the test runs. Standard deviation is used when evaluating the significance of a found pattern, using the 68-95-99.7 rule. Boxplots used in the results have their whiskers set between the 5th and 95th percentile. Furthermore, to visualize worker node resource utilization, cumulative plots are used, where the load of every worker is summarized. This approach is appropriate since a \Gls{vm} management system manages its workers with no particular order and could thus incur a load that is only interesting once summarized. 
+Lineplots have a shadow behind them to illustrate one standard deviation over the distribution of data points collected during the test runs. Standard deviation is used when evaluating the significance of a found pattern, using the 68-95-99.7 rule\ \cite{68-95-99-rule}. Boxplots used in the results have their whiskers set between the 5th and 95th percentile, and the green dashed line and the orange solid line represent the mean and median respectively. Furthermore, to visualize worker node resource utilization, cumulative plots are used, where the load of every worker is summarized. This approach is appropriate since a \Gls{vm} management system manages its workers with no particular order and could thus incur a load that is only interesting once summarized. 
 
 \subsection{Create a Single VM}
 Four tests were performed to evaluate how well KubeVirt and OpenNebula could create and delete a \Gls{vm} of various sizes and the results were close to identical for each payload size. Both KubeVirt and OpenNebula showed similar patterns in how a create-\Gls{vm} operation affected their control node, where both systems had a clear correlation between the operation performed and the induced CPU utilization. Both systems also had a constant RAM utilization throughout the test, indicating that a control node's RAM is not directly affected by creating and deleting a single \Gls{vm}. Additionally, the similar utilization between the payload sizes suggests that neither system's control node is affected by the size of the \Gls{vm} being deployed.
@@ -1178,7 +1190,7 @@ The results suggest that KubeVirt has a significantly lower induced load for mos
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{plt/live-migrate-many_ram_induced.pdf}
-    \caption{Induced memory utilization on the control node when live migrating 10 type-1 \Glspl{vm}. The figure is based on Figure\ \ref{fig:migrate-many-memory}.}
+    \caption{Induced memory utilization on the control node when live migrating 10 type-1 \Glspl{vm}, based on Figure\ \ref{fig:migrate-many-memory}}
     \label{fig:migrate-many-memory-induced}
 \end{figure}
 

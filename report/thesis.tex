@@ -1,5 +1,6 @@
 \documentclass{kththesis}
 
+\usepackage{pdfpages}
 \usepackage{blindtext}
 \usepackage{ifluatex}
 \ifluatex
@@ -22,6 +23,8 @@ columns=flexible,
 breaklines=true
 }
 \usepackage[acronym,nonumberlist]{glossaries}
+
+
 \makeglossaries
 \newacronym{vm}{VM}{Virtual Machine}
 \newacronym{os}{OS}{Operating System}
@@ -109,6 +112,9 @@ breaklines=true
 
 \begin{document}
 
+\includepdf{img/cover-front.pdf}
+\cleardoublepage
+
 \frontmatter
 
 \titlepage%
@@ -121,6 +127,7 @@ breaklines=true
     The results suggest that KubeVirt with Kubernetes offers a scalable alternative to traditional approaches, but that in certain use cases, KubeVirt might not be suitable. The results also show that the adoption and perceived usability of KubeVirt are tied to the experience of Kubernetes and its concepts.
 \end{abstract}
 
+\cleardoublepage
 
 \begin{otherlanguage}{swedish}
 \begin{abstract}
@@ -132,6 +139,7 @@ breaklines=true
 \end{abstract}
 \end{otherlanguage}
 
+\cleardoublepage
 
 \tableofcontents
 
@@ -324,7 +332,7 @@ There are several hypervisors available, each with its own set of features and c
 \section{VM Management Essentials}
 To provide a control plane when managing \Glspl{vm}, many \Gls{vm} management systems were created. These systems comprise tools and mechanisms for managing the entire life-cycle of \Glspl{vm}, including creation, deletion and access. This makes a \Gls{vm} management system comparable to a hypervisor, in that they both manage a set of \Glspl{vm}. However, a \Gls{vm} management system operates both on a high level and on a larger scale by spanning over multiple nodes. As such, it often supports a wide variety of hypervisors among its nodes\ \cite{cloudframeworks-and-hypervisors}. However, certain hypervisor features, such as live migration, could have unique implementations for different hypervisors. This creates a possible trade-off for a \Gls{vm} management system where it can choose to implement fewer but homogeneous operations, or more tunable operations that implement hypervisor-specific features\ \cite{openstack-opennebula-comparison}.
 
-\subsection*{Concepts and Features}
+\subsection{Concepts and Features}
 With a higher abstraction layer, a \Gls{vm} management system brings a set of concepts to simplify the management of \Glspl{vm}. Many such features and concepts exist and can be broadly grouped as clustering, availability and scalability\ \cite{cloudframeworks-and-hypervisors}. 
 
 Clustering is a common mechanism found in \Gls{vm} management system that involves grouping a set of resources such that they are perceived as a bigger unit. This is useful in scenarios where a workload is too large for a unit. A \Gls{vm} management system can provide tools for grouping \Glspl{vm} in various forms. A common example of clustering computing resources is \Gls{hpc}, which is often used to process larger datasets by dividing larger computations into fewer but smaller units. However, clustering can also refer to placing a group of \Glspl{vm} behind a load balancer that distributes the load evenly\ \cite{google-hpc-overview,oracle-hpc-overview}. 
@@ -340,7 +348,7 @@ Scalability is a concept that is not directly tied to the \Glspl{vm} themselves,
     \label{fig:availability-zones}
 \end{figure}
 
-\subsection*{Cloud Service Models}
+\subsection{Cloud Service Models}
 \label{sec:cloud-service-models}
 In IT infrastructure, \Glspl{vm} are not the only component required, and \Gls{vm} management is instead part of a larger infrastructure that provides additional features such as networking and storage. These are referred to as an \Gls{iaas} platform, and they form the foundation for managing virtual infrastructure\ \cite{iaas-overview}. 
 
@@ -795,6 +803,8 @@ The entire framework is open-source and available at \url{https://github.com/saf
     \label{fig:framework-workflow}  
 \end{figure}
 
+\cleardoublepage
+
 \chapter{Usability Analysis}
 The qualitative aspects of this project are derived from a usability analysis, which is comprised of a set of tasks designed in cooperation with a system administrator at Net Insight. The goal of the usability analysis is to mimic tasks that a system administrator can face on a daily basis. The tasks are designed to be done using the Kubernetes \Gls{cli} tool \texttt{kubectl} since KubeVirt does not come with a \Gls{gui} like a traditional \Gls{vm} management system, and using a third-party alternative could risk introducing bias that is not directly tied to KubeVirt. 
 
@@ -826,6 +836,7 @@ To ensure the focus is kept on the usability of KubeVirt, the analysis is struct
 \section{Conducting the Usability Analysis}
 A group of system administrators at Net Insight were asked to perform the tasks presented above. They were chosen primarily by their role and experience with OpenNebula as well as Kubernetes. This provided a mix of knowledge among the participants, which reduced the risk of biases. The participants were given separate namespaces, a kubeconfig file to access the Kubernetes cluster and then presented with the tasks in the form of a PDF document. By giving each participant its namespace, it reduced the risk of interference between them. Moreover, the participants were given two weeks to complete the tasks, which allowed plenty of time to familiarize themselves with KubeVirt and potentially explore areas or features around it, including its documentation. The entire usability analysis can be found in the Appendix\ \ref{appendix:usability-tasks}.
 
+\cleardoublepage
 \chapter{Results}
 This chapter presents and evaluates the results collected by the performance analysis and usability analysis. The results of the performance analysis are a set of plots illustrating both resource utilization over time and the duration of specific tasks. The results of the usability analysis are a set of extracted sentences from participants' answers and discussions around them.
 
@@ -1271,9 +1282,11 @@ The usability analysis found that users are generally keen on the idea of using 
 
 In summary, this project has shown that while KubeVirt is not suitable for all scenarios, it can provide a more scalable alternative to traditional \Gls{vm} management systems. However, since it is based on Kubernetes, it inevitably inherits its positive and negative aspects, meaning that if Kubernetes is not well received in an organization, KubeVirt probably won't be either.
 
+\cleardoublepage
 \chapter{Future Work}
 The discussion chapter brought up many possible future research directions, related to both performance and usability. These include exploring the source of the overhead discrepancy found in the performance analysis, and why KubeVirt experiences a larger base overhead than OpenNebula. Additionally, future work could investigate the if usability of KubeVirt is different depending on the previous \Gls{vm} management system. This could be done by conducting a usability analysis with people experienced in various systems. Lastly, since \Glspl{vm} are often used to host applications with strict security requirements, it could be an interesting future research topic to evaluate if KubeVirt with Kubernetes provides as secure environments as used today.
 
+\cleardoublepage
 % Print the bibliography (and make it appear in the table of contents)
 \printbibliography[heading=bibintoc]
 
@@ -1363,6 +1376,7 @@ Restart=always
 WantedBy=multi-user.target
 \end{lstlisting}
 
+\cleardoublepage
 \chapter{Performance Analysis Results}
 The following figures form an exhaustive collection of all the data collected in the performance analysis. See \ref{sec:method:performance-analysis} for a more detailed description of the most significant results.
 
@@ -1742,6 +1756,7 @@ The following figures form an exhaustive collection of all the data collected in
 
 \newpage
 
+\cleardoublepage
 \chapter{Usability Tasks}
 \label{appendix:usability-tasks}
 The following is a replicated version of what was given to the participants for the usability analysis formatted for the Appendix. The original version was provided as a separate document to the participants.
@@ -2355,13 +2370,14 @@ Since I was just trying it out, I haven't had any real issues that I need to deb
 \item \textbf{Sai}
 
 I've been using KubeVirt for several months and I like it.
-Specifically, the cloud native approach where everything is API accessible, which makes it easier to build tooling around and the community has done a great job of that as expected. Due to the fact it's APIs first, it opens up many approaches to manage virtual machines. Personally, from having worked with older virtualization platforms and Kubernetes, I'd prefer to use KubeVirt as my virtualization platform.
+Specifically, the cloud-native approach where everything is API accessible, which makes it easier to build tooling around and the community has done a great job of that as expected. Due to the fact it's APIs first, it opens up many approaches to managing virtual machines. Personally, from having worked with older virtualization platforms and Kubernetes, I'd prefer to use KubeVirt as my virtualization platform.
 
 I'd say I like this relatively new take on how to deal with virtual machines. At the same time, it may not be for everyone. In the end, it depends on what problems you are trying to solve and the need. 
 
 \end{itemize}
 
-% Tailmatter inserts the back cover page (if enabled)
-\tailmatter%
+\cleardoublepage
+
+\includepdf[pages=-]{img/cover-back.pdf}
 
 \end{document}

@@ -242,7 +242,7 @@ A qualitative evaluation of KubeVirt is conducted through a usability analysis. 
     \item This project primarily focuses on the practical implications of moving into a KubeVirt-based system. However, it does not investigate or explore processes regarding the installation and configuration of a KubeVirt-based system.
 \end{enumerate}
 
-\section{Structure of the thesis}
+\section{Structure of the Thesis}
 This report is divided into three main parts. The first part is concerned with background information and the relevant concepts and technologies that are necessary to understand the problem presented in this project. It aims to provide the fundamentals to understand why \Gls{vm} management and container orchestration have traditionally been separated as well as why KubeVirt was created. This part also includes related work that is used as a base for the methods used in the project. 
 
 The second part describes the research method used in the project and is divided into two branches, performance analysis and usability analysis. These branches cover both the quantitative and qualitative aspects of the project. 
@@ -556,12 +556,12 @@ So far, KubeVirt has been presented as a silver bullet for \Gls{vm} management. 
 
 \section{Related Work}
 \label{literature-study}
-\subsection{Current challenges}
+\subsection{Current Challenges}
 The \Gls{cncf} presents in a report some of the current challenges of managing \Gls{vm} using traditional approaches, such as an \Gls{iaas} platform\ \cite{kubevirt-cncf}. They argue that a platform such as OpenStack is overly complex and difficult to manage for an organization that only wants to manage \Glspl{vm}. They conclude by suggesting KubeVirt with Kubernetes as a simpler alternative to \Gls{vm} management.
 
 Moreover, the \Gls{cncf} report also mentions the potential benefits of a unified platform for both \Glspl{vm} and containers. They argue that a unified platform reduces the required skillset and management burden for personnel, as well as reducing the architectural complexity of the system. These benefits are supported in a report by Kubacki\ \cite{kubevirt-storware}. He argues that managing both a traditional \Gls{vm} management system and a Kubernetes could lead to unnecessary costs for an organization. Additionally, he argues that by allowing \Glspl{vm} and containers to exist in a single platform \Gls{vm}-only organizations could potentially be driven toward adopting containers for suitable workloads. 
 
-\subsection{KubeVirt challenges}
+\subsection{KubeVirt Challenges}
 While KubeVirt is presented as a solution to many challenges related to managing \Glspl{vm}, it is important to consider the challenges that come with KubeVirt. A study by Trakulmaiphol and Piromsopa presents some shortcomings when moving into a KubeVirt-based system and found some issues related to how networking\ \cite{kubevirt-migrate-issues}. One of the issues was related to how IP address management differs in Kubernetes compared to traditional \Gls{vm} management systems. For instance, static IP addresses were difficult to assign and manage. In the study, they developed a framework to solve some of the issues on the application level, such as DNS queries, and provided a set of guidelines related to KubeVirt's unique features including the Multus Container Network Interface. 
 
 A common practice when managing Kubernetes clusters is to deploy Kubernetes nodes on \Glspl{vm} created by a \Gls{vm} management system. This means that when using KubeVirt, \Glspl{vm} are created inside other \Glspl{vm} leading to nested virtualization. Ye et al.\ argue in a study that nested virtualization raises security concerns since it increases the size of the \Gls{tcb}\ \cite{free-turtles}. A larger \Gls{tcb} means that the size of the system's attack vector increases, which in turn leads to an increased risk for vulnerabilities. This study is particularly relevant as it highlights a potential limitation if KubeVirt is simply seen as another Kubernetes resource and not as a \Gls{vm} management system. 
@@ -911,7 +911,7 @@ OpenNebula has, compared to KubeVirt, a larger variation between the \Gls{vm} ty
     \expandafter\label\expandafter{\labelprefix:create-vms-duration-opennebula}
 \end{figure}
 
-\subsection{Create many VMs}
+\subsection{Create Many VMs}
 For the tests creating many \Glspl{vm}, a burst of requests was sent to each system that created a total of 20 \Glspl{vm}. Both KubeVirt and OpenNebula were greatly affected by the burst of requests. However, KubeVirt finished the operation faster, which allowed it to quickly return to an idle utilization level. This is visualized in Figure\ \ref{fig:create-many-duration}, where 90\% of the test runs finished after 58--70 seconds. OpenNebula, on the other hand, took a significantly longer time to complete the same task, between 105--115 seconds for 50\% of the tests. KubeVirt's speed could mostly be attributed to using worker nodes to aid in the scheduling of the many \Glspl{vm}, essentially offsetting a portion of the computational load away from the control node. OpenNebula, on the other hand, had a relatively steady utilization among its worker nodes and instead relied entirely on its control node. 
 
 % Create many - duration
@@ -964,7 +964,7 @@ Figures\ \ref{fig:create-many-memory} and\ \ref{fig:create-many-memory-worker} a
     \expandafter\label\expandafter{\labelprefix:create-many-memory-worker}
 \end{figure}
 
-\subsection{Live migrating VMs}
+\subsection{Live Migrating VMs}
 
 Live migrating a single \Gls{vm} was not a particularly intense operation for either system and only supported the results from previous tests, such as when creating a single \Gls{vm}, and its result was thus omitted for this chapter and only added to the appendix. However, when migrating 10 \Glspl{vm} concurrently, the results were more significant. On the control nodes, KubeVirt had an overall lower utilization than OpenNebula, although its base overhead led to the resulting utilization being higher. From the workers' perspective, though, KubeVirt was more resource-intensive than OpenNebula in all resource utilizations, which could be attributed to having a less efficient implementation.
 
@@ -1120,7 +1120,7 @@ However, while debugging the issue presented in the task was found to be complex
     \item Participant 3: \textit{Debugging the issue was easy because the manifest uses standard constructs that are easily googleable.}
 \end{itemize}
 
-\subsection{Overall}
+\subsection{Summary}
 While the feedback to KubeVirt was generally mixed, Participant 4, who already managed other Kubernetes resources, highlighted GitOps as one of KubeVirt's strengths. 
 
 \begin{itemize}
@@ -1164,7 +1164,6 @@ On a broader view, it is important to realize that not all \Gls{vm} management s
 Another aspect of the comparison is related to how certain features and settings might not exist in both systems. Should a \Gls{vm} management system be tuned in any way to make it more suitable for the tests even if the other system does not support it? One such example is the scheduling configuration where OpenNebula provides only a single option for scheduling: the number of \Glspl{vm} that can be dispatched concurrently. This could be the reason KubeVirt is much faster than OpenNebula in the \textit{Create Many Type-1 \Glspl{vm}} tests, see Figures\ \ref{fig:create-many-duration} and\ \ref{fig:create-many-cpu}. KubeVirt, using the Kubernetes scheduler, was able to create 20 type-1 \Glspl{vm} in 63 seconds on average, while it took OpenNebula 105 seconds. 
 
 Moreover, not being able to to the same configuration is an unavoidable problem when comparing such systems, but it also leaves the results more open for interpretation. To favor a system that is more tunable and configurable, this project has opted for an approach where if a system does not provide a specific setting, that setting is assumed to be fully optimized. 
-Not being able to to the same configuration is an unavoidable problem when comparing such systems, but it also leaves the results more open for interpretation. However, to favor a system that is more tunable and configurable, this project has opted for an approach where if a system does not provide a specific setting, that setting is assumed to be fully optimized. 
 
 Finally, this approach of generalizing an interface for a \Gls{vm} management system is not a silver bullet for comparing such systems and many other strategies can presumably be argued to be fair in their way. However, this approach is quantifiable and measurable on a general level, making it suitable for a wider comparison and future research. 
 
